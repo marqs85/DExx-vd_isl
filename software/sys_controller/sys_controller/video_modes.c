@@ -96,13 +96,16 @@ const mode_data_t video_modes_default[] = { \
 };
 
 const ad_mode_data_t adaptive_modes_default[] = { \
-    /* 240p modes */ \
+    /* 262-line modes */ \
     { STDMODE_720p,                   { 960,  240,  1170, 0,  262,  128, 15,   54, 3},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  2,  0, 0,  {0x016BA, 0x00028, 0x01A9C, 0x00420, 0x00000, 0x00004, 0, 0, 0} },          \
     { STDMODE_1080p,                  {1280,  240,  1560, 0,  262,  170, 15,   72, 3},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  3,  0, 0,  {4138, 1050, 1703, 256, 0, 1, 0, 0, 0} },                                   \
     { STDMODE_1080p,                  {1600,  240,  1950, 0,  262,  212, 15,   90, 3},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  4,  0, 0,  {0x00C88, 0x00348, 0x006A7, 0x00100, 0x00000, 0x00001, 0, 0, 0} },          \
     { STDMODE_1440p,                  {1920,  240,  2340, 0,  262,  256, 15,  108, 3},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  5,  0, 0,  {3346, 350, 393, 256, 0, 1, 0, 0, 0} },         \
     /*{ STDMODE_1440p,                  { 960,  240,  1170, 0,  262,  128, 15,   54, 3},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  5,  0, 0,  {4534, 1234, 5109, 256, 0, 1, 0, 0, 0} },         */ \
-    /* 480p modes */ \
+    /* 263-line modes */ \
+    { STDMODE_1080p,                  {1600,  240,  1950, 0,  263,  212, 15,   90, 3},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  4,  0, 0,  {3194, 1186, 3419, 256, 0, 1, 0, 0, 0} },          \
+    { STDMODE_1440p,                  {1920,  240,  2340, 0,  263,  256, 15,  108, 3},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  5,  0, 0,  {2050, 1922, 2367, 0, 0, 1, 0, 0, 3} },         \
+    /* 525-line modes */ \
     { STDMODE_1080p,                  {1280,  480,  1560, 0,  525,  170, 30,   72, 6},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  1,  0, 0,  {4129, 69, 91, 256, 0, 1, 1, 0, 0} },                                   \
     { STDMODE_1440p,                  {1920,  480,  2340, 0,  525,  256, 30,  108, 6},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  2,  0, 0,  {2055, 3277, 4725, 0, 0, 1, 1, 0, 3} },         \
 };
