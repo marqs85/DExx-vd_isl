@@ -150,7 +150,8 @@ wire nios_reset_req;
 
 wire [31:0] sys_status = {6'h0, btn_sync2_reg, ir_code_cnt, ir_code};
 
-wire [31:0] h_in_config, h_in_config2, v_in_config, h_out_config, h_out_config2, v_out_config, v_out_config2, xy_out_config;
+wire [31:0] hv_in_config, hv_in_config2, hv_in_config3, hv_out_config, hv_out_config2, hv_out_config3, xy_out_config, xy_out_config2;
+wire [31:0] misc_config, sl_config, sl_config2;
 
 reg [23:0] resync_led_ctr;
 reg resync_strobe_sync1_reg, resync_strobe_sync2_reg, resync_strobe_prev;
@@ -201,9 +202,9 @@ isl51002_frontend u_isl_frontend (
     .FID_i(ISL_FID),
     .vs_type(isl_vs_type),
     .vs_polarity(isl_vs_pol),
-    .h_in_config(h_in_config),
-    .h_in_config2(h_in_config2),
-    .v_in_config(v_in_config),
+    .hv_in_config(hv_in_config),
+    .hv_in_config2(hv_in_config2),
+    .hv_in_config3(hv_in_config3),
     .R_o(ISL_R_post),
     .G_o(ISL_G_post),
     .B_o(ISL_B_post),
@@ -290,20 +291,20 @@ sys u0 (
     .i2c_opencores_1_export_spi_miso_pad_i  (1'b0),
     .pio_0_sys_ctrl_out_export              (sys_ctrl),
     .pio_1_controls_in_export               (sys_status),
-    .sc_config_0_sc_if_sc_status_i          ({20'h0, ISL_fe_interlace, ISL_fe_vtotal}),
-    .sc_config_0_sc_if_sc_status2_i         ({12'h0, ISL_fe_pcnt_frame}),
+    .sc_config_0_sc_if_fe_status_i          ({20'h0, ISL_fe_interlace, ISL_fe_vtotal}),
+    .sc_config_0_sc_if_fe_status2_i         ({12'h0, ISL_fe_pcnt_frame}),
     .sc_config_0_sc_if_lt_status_i          (32'h00000000),
-    .sc_config_0_sc_if_h_in_config_o        (h_in_config),
-    .sc_config_0_sc_if_h_in_config2_o       (h_in_config2),
-    .sc_config_0_sc_if_v_in_config_o        (v_in_config),
-    .sc_config_0_sc_if_misc_config_o        (),
-    .sc_config_0_sc_if_sl_config_o          (),
-    .sc_config_0_sc_if_sl_config2_o         (),
-    .sc_config_0_sc_if_h_out_config_o       (h_out_config),
-    .sc_config_0_sc_if_h_out_config2_o      (h_out_config2),
-    .sc_config_0_sc_if_v_out_config_o       (v_out_config),
-    .sc_config_0_sc_if_v_out_config2_o      (v_out_config2),
-    .sc_config_0_sc_if_xy_out_config_o      (xy_out_config)
+    .sc_config_0_sc_if_hv_in_config_o       (hv_in_config),
+    .sc_config_0_sc_if_hv_in_config2_o      (hv_in_config2),
+    .sc_config_0_sc_if_hv_in_config3_o      (hv_in_config3),
+    .sc_config_0_sc_if_hv_out_config_o      (hv_out_config),
+    .sc_config_0_sc_if_hv_out_config2_o     (hv_out_config2),
+    .sc_config_0_sc_if_hv_out_config3_o     (hv_out_config3),
+    .sc_config_0_sc_if_xy_out_config_o      (xy_out_config),
+    .sc_config_0_sc_if_xy_out_config2_o     (xy_out_config2),
+    .sc_config_0_sc_if_misc_config_o        (misc_config),
+    .sc_config_0_sc_if_sl_config_o          (sl_config),
+    .sc_config_0_sc_if_sl_config2_o         (sl_config2)
 );
 
 scanconverter scanconverter_inst (
@@ -317,17 +318,18 @@ scanconverter scanconverter_inst (
     .VSYNC_i(ISL_VSYNC_post),
     .DE_i(ISL_DE_post),
     .FID_i(ISL_FID_post),
+    .interlaced_in_i(ISL_fe_interlace),
     .frame_change_i(ISL_fe_frame_change),
     .xpos_i(ISL_fe_xpos),
     .ypos_i(ISL_fe_ypos),
-    .h_out_config(h_out_config),
-    .h_out_config2(h_out_config2),
-    .v_out_config(v_out_config),
-    .v_out_config2(v_out_config2),
+    .hv_out_config(hv_out_config),
+    .hv_out_config2(hv_out_config2),
+    .hv_out_config3(hv_out_config3),
     .xy_out_config(xy_out_config),
-    .misc_config(32'h0),
-    .sl_config(32'h0),
-    .sl_config2(32'h0),
+    .xy_out_config2(xy_out_config2),
+    .misc_config(misc_config),
+    .sl_config(sl_config),
+    .sl_config2(sl_config2),
     .testpattern_enable(testpattern_enable),
     .PCLK_o(PCLK_sc),
     .R_o(R_sc),

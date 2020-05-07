@@ -3,6 +3,8 @@
 
 #include "system.h"
 
+#define DExx_FW
+
 #ifndef DEBUG
 #define OS_PRINTF(...)
 #define ErrorF(...)

@@ -26,6 +26,7 @@
 #include "avconfig.h"
 
 #define LINECNT_MAX_TOLERANCE   30
+#define V_HZ_MAX_TOLERANCE      5
 
 #define VM_OUT_YMULT        (vm_conf->y_rpt+1)
 #define VM_OUT_XMULT        (vm_conf->x_rpt+1)
@@ -34,133 +35,185 @@
 
 const mode_data_t video_modes_default[] = { \
     /* 240p modes */ \
-    { "1600x240",   HDMI_Unknown,     {1600,  240,  2046, 0,  262,  202, 15,  150, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L5_GEN_4_3),                                                        TX_1X, TX_1X,  1, {0} },  \
-    { "1280x240",   HDMI_Unknown,     {1280,  240,  1560, 0,  262,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L3_GEN_16_9 | MODE_L4_GEN_4_3),                                     TX_1X, TX_1X,  1, {0} },  \
-    { "960x240",    HDMI_Unknown,     { 960,  240,  1170, 0,  262,  128, 15,   54, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L3_GEN_4_3),                                                        TX_1X, TX_1X,  1, {0} },  \
-    { "512x240",    HDMI_Unknown,     { 512,  240,   682, 0,  262,   77, 14,   50, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L2_512_COL | MODE_L3_512_COL | MODE_L4_512_COL | MODE_L5_512_COL),  TX_1X, TX_1X,  1, {0} },  \
-    { "384x240",    HDMI_Unknown,     { 384,  240,   512, 0,  262,   59, 14,   37, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L2_384_COL | MODE_L3_384_COL | MODE_L4_384_COL | MODE_L5_384_COL),  TX_1X, TX_1X,  1, {0} },  \
-    { "320x240",    HDMI_Unknown,     { 320,  240,   426, 0,  262,   49, 14,   31, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L2_320_COL | MODE_L3_320_COL | MODE_L4_320_COL | MODE_L5_320_COL),  TX_1X, TX_1X,  1, {0} },  \
-    { "256x240",    HDMI_Unknown,     { 256,  240,   341, 0,  262,   39, 14,   25, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L2_256_COL | MODE_L3_256_COL | MODE_L4_256_COL | MODE_L5_256_COL),  TX_1X, TX_1X,  1, {0} },  \
-    { "240p",       HDMI_240p60_PR2x, { 720,  240,   858, 0,  262,   57, 15,   62, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_PT | MODE_L2),                                                      TX_2X, TX_2X,  1, {0, 0, 0, 0, 0, 0, 0, 1, 0} },  \
+    { "1600x240",      HDMI_Unknown,     {1600,  240,   60,  2046, 0,  262,  202, 15,  150, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L5_GEN_4_3),                                                        TX_1X, TX_1X,  1, {0} },  \
+    { "1280x240",      HDMI_Unknown,     {1280,  240,   60,  1560, 0,  262,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L3_GEN_16_9 | MODE_L4_GEN_4_3),                                     TX_1X, TX_1X,  1, {0} },  \
+    { "960x240",       HDMI_Unknown,     { 960,  240,   60,  1170, 0,  262,  128, 15,   54, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L3_GEN_4_3),                                                        TX_1X, TX_1X,  1, {0} },  \
+    { "512x240",       HDMI_Unknown,     { 512,  240,   60,   682, 0,  262,   77, 14,   50, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L2_512_COL | MODE_L3_512_COL | MODE_L4_512_COL | MODE_L5_512_COL),  TX_1X, TX_1X,  1, {0} },  \
+    { "384x240",       HDMI_Unknown,     { 384,  240,   60,   512, 0,  262,   59, 14,   37, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L2_384_COL | MODE_L3_384_COL | MODE_L4_384_COL | MODE_L5_384_COL),  TX_1X, TX_1X,  1, {0} },  \
+    { "320x240",       HDMI_Unknown,     { 320,  240,   60,   426, 0,  262,   49, 14,   31, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L2_320_COL | MODE_L3_320_COL | MODE_L4_320_COL | MODE_L5_320_COL),  TX_1X, TX_1X,  1, {0} },  \
+    { "256x240",       HDMI_Unknown,     { 256,  240,   60,   341, 0,  262,   39, 14,   25, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L2_256_COL | MODE_L3_256_COL | MODE_L4_256_COL | MODE_L5_256_COL),  TX_1X, TX_1X,  1, {0} },  \
+    { "240p",          HDMI_240p60_PR2x, { 720,  240,   60,   858, 0,  262,   57, 15,   62, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_PT | MODE_L2),                                                      TX_2X, TX_2X,  1, {0, 0, 0, 0, 0, 0, 0, 1, 0} },  \
     /* 288p modes */ \
-    { "1600x240L",  HDMI_Unknown,     {1600,  240,  2046, 0,  312,  202, 41,  150, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L5_GEN_4_3),                                                        TX_1X, TX_1X,  1, {0} },  \
-    { "1280x288",   HDMI_Unknown,     {1280,  288,  1560, 0,  312,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L3_GEN_16_9 | MODE_L4_GEN_4_3),                                     TX_1X, TX_1X,  1, {0} },  \
-    { "960x288",    HDMI_Unknown,     { 960,  288,  1170, 0,  312,  128, 15,   54, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L3_GEN_4_3),                                                        TX_1X, TX_1X,  1, {0} },  \
-    { "512x240LB",  HDMI_Unknown,     { 512,  240,   682, 0,  312,   77, 41,   50, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L2_512_COL | MODE_L3_512_COL | MODE_L4_512_COL | MODE_L5_512_COL),  TX_1X, TX_1X,  1, {0} },  \
-    { "384x240LB",  HDMI_Unknown,     { 384,  240,   512, 0,  312,   59, 41,   37, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L2_384_COL | MODE_L3_384_COL | MODE_L4_384_COL | MODE_L5_384_COL),  TX_1X, TX_1X,  1, {0} },  \
-    { "320x240LB",  HDMI_Unknown,     { 320,  240,   426, 0,  312,   49, 41,   31, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L2_320_COL | MODE_L3_320_COL | MODE_L4_320_COL | MODE_L5_320_COL),  TX_1X, TX_1X,  1, {0} },  \
-    { "256x240LB",  HDMI_Unknown,     { 256,  240,   341, 0,  312,   39, 41,   25, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_L2_256_COL | MODE_L3_256_COL | MODE_L4_256_COL | MODE_L5_256_COL),  TX_1X, TX_1X,  1, {0} },  \
-    { "288p",       HDMI_288p50,      { 720,  288,   864, 0,  312,   69, 19,   63, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,   (MODE_PT | MODE_L2),                                                      TX_2X, TX_2X,  1, {0, 0, 0, 0, 0, 0, 0, 1, 0} },  \
+    { "1600x240L",     HDMI_Unknown,     {1600,  240,   50,  2046, 0,  312,  202, 41,  150, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,   (MODE_L5_GEN_4_3),                                                        TX_1X, TX_1X,  1, {0} },  \
+    { "1280x288",      HDMI_Unknown,     {1280,  288,   50,  1560, 0,  312,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,   (MODE_L3_GEN_16_9 | MODE_L4_GEN_4_3),                                     TX_1X, TX_1X,  1, {0} },  \
+    { "960x288",       HDMI_Unknown,     { 960,  288,   50,  1170, 0,  312,  128, 15,   54, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,   (MODE_L3_GEN_4_3),                                                        TX_1X, TX_1X,  1, {0} },  \
+    { "512x240LB",     HDMI_Unknown,     { 512,  240,   50,   682, 0,  312,   77, 41,   50, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,   (MODE_L2_512_COL | MODE_L3_512_COL | MODE_L4_512_COL | MODE_L5_512_COL),  TX_1X, TX_1X,  1, {0} },  \
+    { "384x240LB",     HDMI_Unknown,     { 384,  240,   50,   512, 0,  312,   59, 41,   37, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,   (MODE_L2_384_COL | MODE_L3_384_COL | MODE_L4_384_COL | MODE_L5_384_COL),  TX_1X, TX_1X,  1, {0} },  \
+    { "320x240LB",     HDMI_Unknown,     { 320,  240,   50,   426, 0,  312,   49, 41,   31, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,   (MODE_L2_320_COL | MODE_L3_320_COL | MODE_L4_320_COL | MODE_L5_320_COL),  TX_1X, TX_1X,  1, {0} },  \
+    { "256x240LB",     HDMI_Unknown,     { 256,  240,   50,   341, 0,  312,   39, 41,   25, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,   (MODE_L2_256_COL | MODE_L3_256_COL | MODE_L4_256_COL | MODE_L5_256_COL),  TX_1X, TX_1X,  1, {0} },  \
+    { "288p",          HDMI_288p50,      { 720,  288,   50,   864, 0,  312,   69, 19,   63, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,   (MODE_PT | MODE_L2),                                                      TX_2X, TX_2X,  1, {0, 0, 0, 0, 0, 0, 0, 1, 0} },  \
     /* 360p: GBI */ \
-    { "480x360",    HDMI_Unknown,     { 480,  360,   600, 0,  375,   63, 10,   38, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV),             GROUP_384P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
-    { "240x360",    HDMI_Unknown,     { 256,  360,   300, 0,  375,   24, 10,   18, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV),             GROUP_384P,   (MODE_L2_240x360 | MODE_L3_240x360),                                      TX_1X, TX_1X,  1, {0} },  \
+    { "480x360",       HDMI_Unknown,     { 480,  360,   60,   600, 0,  375,   63, 10,   38, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV),             GROUP_384P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
+    { "240x360",       HDMI_Unknown,     { 256,  360,   60,   300, 0,  375,   24, 10,   18, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV),             GROUP_384P,   (MODE_L2_240x360 | MODE_L3_240x360),                                      TX_1X, TX_1X,  1, {0} },  \
     /* 384p: Sega Model 2 */ \
-    { "384p",       HDMI_Unknown,     { 496,  384,   640, 0,  423,   50, 29,   62, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV),             GROUP_384P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
+    { "384p",          HDMI_Unknown,     { 496,  384,   55,   640, 0,  423,   50, 29,   62, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV),             GROUP_384P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
     /* 400p line3x */ \
-    { "1600x400",   HDMI_Unknown,     {1600,  400,  2000, 0,  449,  120, 34,  240, 2,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_384P,   (MODE_L3_GEN_16_9),                                                       TX_1X, TX_1X,  1, {0} },  \
+    { "1600x400",      HDMI_Unknown,     {1600,  400,   60,  2000, 0,  449,  120, 34,  240, 2,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_384P,   (MODE_L3_GEN_16_9),                                                       TX_1X, TX_1X,  1, {0} },  \
     /* 720x400@70Hz, VGA Mode 3+/7+ */ \
-    { "720x400",    HDMI_Unknown,     { 720,  400,   900, 0,  449,   64, 34,   96, 2,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_384P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
+    { "720x400_70",    HDMI_Unknown,     { 720,  400,   70,   900, 0,  449,   64, 34,   96, 2,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_384P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
     /* 640x400@70Hz, VGA Mode 13h */ \
-    { "640x400",    HDMI_Unknown,     { 640,  400,   800, 0,  449,   48, 34,   96, 2,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_384P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
+    { "640x400_70",    HDMI_Unknown,     { 640,  400,   70,   800, 0,  449,   48, 34,   96, 2,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_384P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
     /* 384p: X68k @ 24kHz */ \
-    { "640x384",    HDMI_Unknown,     { 640,  384,   800, 0,  492,   48, 63,   96, 2,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_384P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
+    { "640x384",       HDMI_Unknown,     { 640,  384,   55,   800, 0,  492,   48, 63,   96, 2,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_384P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
     /* ~525-line modes */ \
-    { "480i",       HDMI_480i60_PR2x, { 720,  240,   858, 0,  525,   57, 15,   62, 3,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_480I,   (MODE_PT | MODE_L2 | MODE_L3_GEN_16_9 | MODE_L4_GEN_4_3),                 TX_2X, TX_2X,  1, {0, 0, 0, 0, 0, 0, 0, 1, 0} },  \
-    { "480p",       HDMI_480p60,      { 720,  480,   858, 0,  525,   60, 30,   62, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
-    { "640x480",    HDMI_640x480p60,  { 640,  480,   800, 0,  525,   48, 33,   96, 2,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_PC | VIDEO_EDTV),  GROUP_480P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
+    { "480i",          HDMI_480i60_PR2x, { 720,  240,   60,   858, 0,  525,   57, 15,   62, 3,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_480I,   (MODE_PT | MODE_L2 | MODE_L3_GEN_16_9 | MODE_L4_GEN_4_3),                 TX_2X, TX_2X,  1, {0, 0, 0, 0, 0, 0, 0, 1, 0} },  \
+    { "480p",          HDMI_480p60,      { 720,  480,   60,   858, 0,  525,   60, 30,   62, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
+    { "640x480_60",    HDMI_640x480p60,  { 640,  480,   60,   800, 0,  525,   48, 33,   96, 2,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_PC | VIDEO_EDTV),  GROUP_480P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
     /* X68k @ 31kHz */ \
-    { "640x512",    HDMI_Unknown,     { 640,  512,   800, 0,  568,   48, 28,   96, 2,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_PC | VIDEO_EDTV),  GROUP_480P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
+    { "640x512",       HDMI_Unknown,     { 640,  512,   60,   800, 0,  568,   48, 28,   96, 2,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_PC | VIDEO_EDTV),  GROUP_480P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
     /* ~625-line modes */ \
-    { "576i",       HDMI_576i50,      { 720,  288,   864, 0,  625,   69, 19,   63, 3,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_480I,   (MODE_PT | MODE_L2 | MODE_L3_GEN_16_9 | MODE_L4_GEN_4_3),                 TX_2X, TX_2X,  1, {0, 0, 0, 0, 0, 0, 0, 1, 0} },  \
-    { "576p",       HDMI_576p50,      { 720,  576,   864, 0,  625,   68, 39,   64, 5,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
-    { "800x600",    HDMI_Unknown,     { 800,  600,  1056, 0,  628,   88, 23,  128, 4,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  1, {0} },  \
+    { "576i",          HDMI_576i50,      { 720,  288,   50,   864, 0,  625,   69, 19,   63, 3,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_576I,   (MODE_PT | MODE_L2 | MODE_L3_GEN_16_9 | MODE_L4_GEN_4_3),                 TX_2X, TX_2X,  1, {0, 0, 0, 0, 0, 0, 0, 1, 0} },  \
+    { "576p",          HDMI_576p50,      { 720,  576,   50,   864, 0,  625,   68, 39,   64, 5,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_576P,   (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
+    { "800x600_60",    HDMI_Unknown,     { 800,  600,   60,  1056, 0,  628,   88, 23,  128, 4,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  1, {0} },  \
     /* 720p modes */ \
-    { "720p",       HDMI_720p60,      {1280,  720,  1650, 0,  750,  220, 20,   40, 5,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_HDTV | VIDEO_PC),  GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  0, {3712, 0, 1, 1024, 0, 1, 0, 0, 0} },  \
+    { "720p_50",       HDMI_720p50,      {1280,  720,   60,  1980, 0,  750,  220, 20,   40, 5,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_HDTV | VIDEO_PC),  GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  0, {3712, 0, 1, 1024, 0, 1, 0, 0, 0} },  \
+    { "720p_60",       HDMI_720p60,      {1280,  720,   60,  1650, 0,  750,  220, 20,   40, 5,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_HDTV | VIDEO_PC),  GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  0, {3712, 0, 1, 1024, 0, 1, 0, 0, 0} },  \
     /* VESA XGA,1280x960 and SXGA modes */ \
-    { "1024x768",   HDMI_Unknown,     {1024,  768,  1344, 0,  806,  160, 29,  136, 6,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  1, {0} },  \
-    { "1280x960",   HDMI_Unknown,     {1280,  960,  1800, 0, 1000,  312, 36,  112, 3,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  4, {0} },  \
-    { "1280x1024",  HDMI_Unknown,     {1280, 1024,  1688, 0, 1066,  248, 38,  112, 3,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  4, {0} },  \
+    { "1024x768_60",   HDMI_Unknown,     {1024,  768,   60,  1344, 0,  806,  160, 29,  136, 6,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  1, {0} },  \
+    { "1280x960_60",   HDMI_Unknown,     {1280,  960,   60,  1800, 0, 1000,  312, 36,  112, 3,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  4, {0} },  \
+    { "1280x1024_60",  HDMI_Unknown,     {1280, 1024,   60,  1688, 0, 1066,  248, 38,  112, 3,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  4, {0} },  \
     /* PS2 GSM 960i mode */ \
-    { "640x960i",   HDMI_Unknown,     { 640,  480,   800, 0, 1050,   48, 33,   96, 2,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_1080I,  (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
+    { "640x960i",      HDMI_Unknown,     { 640,  480,   60,   800, 0, 1050,   48, 33,   96, 2,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_1080I,  (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
     /* 1080i/p modes */ \
-    { "1080i",      HDMI_1080i60,     {1920,  540,  2200, 0, 1125,  148, 16,   44, 5,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_HDTV | VIDEO_PC),  GROUP_1080I,  (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
-    { "1080p",      HDMI_1080p60,     {1920, 1080,  2200, 0, 1125,  148, 36,   44, 5,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_HDTV | VIDEO_PC),  GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  0, {3712, 0, 1, 256, 0, 1, 0, 0, 0} },  \
+    { "1080i_60",      HDMI_1080i60,     {1920,  540,   60,  2200, 0, 1125,  148, 16,   44, 5,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_HDTV | VIDEO_PC),  GROUP_1080I,  (MODE_PT | MODE_L2),                                                      TX_1X, TX_1X,  1, {0} },  \
+    { "1080p_50",      HDMI_1080p50,     {1920, 1080,   60,  2640, 0, 1125,  148, 36,   44, 5,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_HDTV | VIDEO_PC),  GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  0, {3712, 0, 1, 256, 0, 1, 0, 0, 0} },  \
+    { "1080p_60",      HDMI_1080p60,     {1920, 1080,   60,  2200, 0, 1125,  148, 36,   44, 5,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_HDTV | VIDEO_PC),  GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  0, {3712, 0, 1, 256, 0, 1, 0, 0, 0} },  \
     /* VESA UXGA mode */ \
-    { "1600x1200",  HDMI_Unknown,     {1600, 1200,  2160, 0, 1250,  304, 46,  192, 3,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  6, {0} },  \
+    { "1600x1200_60",  HDMI_Unknown,     {1600, 1200,   60,  2160, 0, 1250,  304, 46,  192, 3,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  6, {0} },  \
     /* CVT 1920x1200 with reduced blanking */ \
-    { "1920x1200",  HDMI_Unknown,     {1920, 1200,  2080, 0, 1235,   80, 26,   32, 6,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  0, {2408, 8, 27, 0, 0, 1, 0, 0, 3} },  \
+    { "1920x1200_60",  HDMI_Unknown,     {1920, 1200,   60,  2080, 0, 1235,   80, 26,   32, 6,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  0, {2408, 8, 27, 0, 0, 1, 0, 0, 3} },  \
     /* CVT 1920x1440 with reduced blanking */ \
-    { "1920x1440",  HDMI_Unknown,     {1920, 1440,  2080, 0, 1481,   80, 34,   32, 4,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  0, {2991, 11, 27, 0, 0, 1, 0, 0, 3} },  \
+    { "1920x1440_60",  HDMI_Unknown,     {1920, 1440,   60,  2080, 0, 1481,   80, 34,   32, 4,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_1X, TX_1X,  0, {2991, 11, 27, 0, 0, 1, 0, 0, 3} },  \
     /* CVT 2560x1440 with reduced blanking and pixelrep */ \
-    { "2560x1440",  HDMI_Unknown,     {1280, 1440,  1360, 0, 1481,   40, 33,   16, 5,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_2X, TX_1X,  4, {0} },  \
+    { "2560x1440_60",  HDMI_Unknown,     {1280, 1440,   60,  1360, 0, 1481,   40, 33,   16, 5,  0},  DEFAULT_SAMPLER_PHASE,  VIDEO_PC,                 GROUP_NONE,   MODE_PT,                                                                  TX_2X, TX_1X,  4, {0} },  \
 };
 
 const ad_mode_data_t adaptive_modes_default[] = { \
     /* Generic 261-line modes */ \
-    { ADMODE_480p,                    { 720,  240,   858, 0,  261,   57, 15,   62, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 1,  0, 0,  {7984,    16,    29,  3712, 0, 1,  0, 0, 0} },  \
-    { ADMODE_720p,                    { 960,  240,  1170, 0,  261,  128, 15,   54, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 2,  0, 0,  {5712,   656,  1131,  1024, 0, 1,  0, 0, 0} },  \
-    { ADMODE_1280x1024,               {1280,  240,  1560, 0,  261,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4154,  2348,  2610,   544, 0, 4,  0, 0, 0} },  \
-    { ADMODE_1080p_LB,                {1280,  240,  1560, 0,  261,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4156,   166,   377,   256, 0, 1,  0, 0, 0} },  \
-    { ADMODE_1080p_CR,                {1600,  240,  1950, 0,  261,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {3222,   282,   377,   256, 0, 1,  0, 0, 0} },  \
-    { ADMODE_1600x1200,               {1600,  240,  1950, 0,  261,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2204,    68,   377,     0, 0, 1,  0, 0, 3} },  \
-    { ADMODE_1920x1200,               {1600,  240,  1950, 0,  261,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2072,   152,   783,     0, 0, 1,  0, 0, 3} },  \
-    { ADMODE_1920x1440,               {1920,  240,  2340, 0,  261,  256, 15,  108, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 5,  0, 0,  {2070,  1058,  2349,     0, 0, 1,  0, 0, 3} },  \
+    { ADMODE_480p,                       { 720,  240,   60,   858, 0,  261,   57, 15,   62, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 1,  0, 0,  {7984,    16,    29,  3712, 0, 1,  0, 0, 0} },  \
+    { ADMODE_720p_60,                    { 960,  240,   60,  1170, 0,  261,  128, 15,   54, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 2,  0, 0,  {5712,   656,  1131,  1024, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1280x1024_60,               {1280,  240,   60,  1560, 0,  261,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4154,  2348,  2610,   544, 0, 4,  0, 0, 0} },  \
+    { ADMODE_1080p_60_LB,                {1280,  240,   60,  1560, 0,  261,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4156,   166,   377,   256, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1080p_60_CR,                {1600,  240,   60,  1950, 0,  261,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {3222,   282,   377,   256, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1600x1200_60,               {1600,  240,   60,  1950, 0,  261,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2204,    68,   377,     0, 0, 1,  0, 0, 3} },  \
+    { ADMODE_1920x1200_60,               {1600,  240,   60,  1950, 0,  261,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2072,   152,   783,     0, 0, 1,  0, 0, 3} },  \
+    { ADMODE_1920x1440_60,               {1920,  240,   60,  2340, 0,  261,  256, 15,  108, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 5,  0, 0,  {2070,  1058,  2349,     0, 0, 1,  0, 0, 3} },  \
 
     /* Generic 262-line modes */ \
-    { ADMODE_480p,                    { 720,  240,   858, 0,  262,   57, 15,   62, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 1,  0, 0,  {8016,   256,  1048,  3744, 0, 4,  0, 0, 0} },  \
-    { ADMODE_720p,                    { 960,  240,  1170, 0,  262,  128, 15,   54, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 2,  0, 0,  {5688,  1400,  1703,  1024, 0, 1,  0, 0, 0} },  \
-    { ADMODE_1280x1024,               {1280,  240,  1560, 0,  262,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4137,   228,  2620,   544, 0, 4,  0, 0, 0} },  \
-    { ADMODE_1080p_LB,                {1280,  240,  1560, 0,  262,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4138,  1050,  1703,   256, 0, 1,  0, 0, 0} },  \
-    { ADMODE_1080p_CR,                {1600,  240,  1950, 0,  262,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {3208,   840,  1703,   256, 0, 1,  0, 0, 0} },  \
-    { ADMODE_1600x1200,               {1600,  240,  1950, 0,  262,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2193,  1385,  1703,     0, 0, 1,  0, 0, 3} },  \
-    { ADMODE_1920x1200,               {1600,  240,  1950, 0,  262,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2062,   130,   393,     0, 0, 1,  0, 0, 3} },  \
-    { ADMODE_1920x1440,               {1920,  240,  2340, 0,  262,  256, 15,  108, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 5,  0, 0,  {2060,   700,  1179,     0, 0, 1,  0, 0, 3} },  \
+    { ADMODE_480p,                       { 720,  240,   60,   858, 0,  262,   57, 15,   62, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 1,  0, 0,  {8016,   256,  1048,  3744, 0, 4,  0, 0, 0} },  \
+    { ADMODE_720p_60,                    { 960,  240,   60,  1170, 0,  262,  128, 15,   54, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 2,  0, 0,  {5688,  1400,  1703,  1024, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1280x1024_60,               {1280,  240,   60,  1560, 0,  262,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4137,   228,  2620,   544, 0, 4,  0, 0, 0} },  \
+    { ADMODE_1080p_60_LB,                {1280,  240,   60,  1560, 0,  262,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4138,  1050,  1703,   256, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1080p_60_CR,                {1600,  240,   60,  1950, 0,  262,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {3208,   840,  1703,   256, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1600x1200_60,               {1600,  240,   60,  1950, 0,  262,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2193,  1385,  1703,     0, 0, 1,  0, 0, 3} },  \
+    { ADMODE_1920x1200_60,               {1600,  240,   60,  1950, 0,  262,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2062,   130,   393,     0, 0, 1,  0, 0, 3} },  \
+    { ADMODE_1920x1440_60,               {1920,  240,   60,  2340, 0,  262,  256, 15,  108, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 5,  0, 0,  {2060,   700,  1179,     0, 0, 1,  0, 0, 3} },  \
     /*{ STDMODE_1440p,                  { 960,  240,  1170, 0,  262,  128, 15,   54, 3},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  5,  0, 0,  {4534, 1234, 5109, 256, 0, 1, 0, 0, 0} },         */ \
 
     /* Generic 263-line modes */ \
-    { ADMODE_480p,                    { 720,  240,   858, 0,  263,   57, 15,   62, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 1,  0, 0,  {7983,   860,  1052,  3744, 0, 4,  0, 0, 0} },  \
-    { ADMODE_720p,                    { 960,  240,  1170, 0,  263,  128, 15,   54, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 2,  0, 0,  {5665,   837,  3419,  1024, 0, 1,  0, 0, 0} },  \
-    { ADMODE_1280x1024,               {1280,  240,  1560, 0,  263,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4119,  1078,  2630,   544, 0, 4,  0, 0, 0} },  \
-    { ADMODE_1080p_LB,                {1280,  240,  1560, 0,  263,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4120,  3192,  3419,   256, 0, 1,  0, 0, 0} },  \
-    { ADMODE_1080p_CR,                {1600,  240,  1950, 0,  263,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {3194,  1186,  3419,   256, 0, 1,  0, 0, 0} },  \
-    { ADMODE_1600x1200,               {1600,  240,  1950, 0,  263,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2183,  1795,  3419,     0, 0, 1,  0, 0, 3} },  \
-    { ADMODE_1920x1200,               {1600,  240,  1950, 0,  263,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2052,   428,   789,     0, 0, 1,  0, 0, 3} },  \
-    { ADMODE_1920x1440,               {1920,  240,  2340, 0,  263,  256, 15,  108, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 5,  0, 0,  {2050,  1922,  2367,     0, 0, 1,  0, 0, 3} },  \
+    { ADMODE_480p,                       { 720,  240,   60,   858, 0,  263,   57, 15,   62, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 1,  0, 0,  {7983,   860,  1052,  3744, 0, 4,  0, 0, 0} },  \
+    { ADMODE_720p_60,                    { 960,  240,   60,  1170, 0,  263,  128, 15,   54, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 2,  0, 0,  {5665,   837,  3419,  1024, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1280x1024_60,               {1280,  240,   60,  1560, 0,  263,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4119,  1078,  2630,   544, 0, 4,  0, 0, 0} },  \
+    { ADMODE_1080p_60_LB,                {1280,  240,   60,  1560, 0,  263,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4120,  3192,  3419,   256, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1080p_60_CR,                {1600,  240,   60,  1950, 0,  263,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {3194,  1186,  3419,   256, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1600x1200_60,               {1600,  240,   60,  1950, 0,  263,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2183,  1795,  3419,     0, 0, 1,  0, 0, 3} },  \
+    { ADMODE_1920x1200_60,               {1600,  240,   60,  1950, 0,  263,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2052,   428,   789,     0, 0, 1,  0, 0, 3} },  \
+    { ADMODE_1920x1440_60,               {1920,  240,   60,  2340, 0,  263,  256, 15,  108, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 5,  0, 0,  {2050,  1922,  2367,     0, 0, 1,  0, 0, 3} },  \
 
     /* Generic 264-line modes */ \
-    { ADMODE_480p,                    { 720,  240,   858, 0,  264,   57, 15,   62, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 1,  0, 0,  {8015,    48,   176,  3776, 0, 2,  0, 0, 0} },  \
-    { ADMODE_720p,                    { 960,  240,  1170, 0,  264,  128, 15,   54, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 2,  0, 0,  {5641,    11,    13,  1024, 0, 1,  0, 0, 0} },  \
-    { ADMODE_1280x1024,               {1280,  240,  1560, 0,  264,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4101,   208,   240,   544, 0, 4,  0, 0, 0} },  \
-    { ADMODE_1080p_LB,                {1280,  240,  1560, 0,  264,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4103,    20,    52,   256, 0, 1,  0, 0, 0} },  \
-    { ADMODE_1080p_CR,                {1600,  240,  1950, 0,  264,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {3180,     4,    13,   256, 0, 1,  0, 0, 0} },  \
-    { ADMODE_1600x1200,               {1600,  240,  1950, 0,  264,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2173,    45,   143,     0, 0, 1,  0, 0, 3} },  \
-    { ADMODE_1920x1200,               {1600,  240,  1950, 0,  264,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2042,    82,    99,     0, 0, 1,  0, 0, 3} },  \
-    { ADMODE_1920x1440,               {1920,  240,  2340, 0,  264,  256, 15,  108, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 5,  0, 0,  {2041,    31,   297,     0, 0, 1,  0, 0, 3} },  \
+    { ADMODE_480p,                       { 720,  240,   60,   858, 0,  264,   57, 15,   62, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 1,  0, 0,  {8015,    48,   176,  3776, 0, 2,  0, 0, 0} },  \
+    { ADMODE_720p_60,                    { 960,  240,   60,  1170, 0,  264,  128, 15,   54, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 2,  0, 0,  {5641,    11,    13,  1024, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1280x1024_60,               {1280,  240,   60,  1560, 0,  264,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4101,   208,   240,   544, 0, 4,  0, 0, 0} },  \
+    { ADMODE_1080p_60_LB,                {1280,  240,   60,  1560, 0,  264,  170, 15,   72, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 3,  0, 0,  {4103,    20,    52,   256, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1080p_60_CR,                {1600,  240,   60,  1950, 0,  264,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {3180,     4,    13,   256, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1600x1200_60,               {1600,  240,   60,  1950, 0,  264,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2173,    45,   143,     0, 0, 1,  0, 0, 3} },  \
+    { ADMODE_1920x1200_60,               {1600,  240,   60,  1950, 0,  264,  212, 15,   90, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 4,  0, 0,  {2042,    82,    99,     0, 0, 1,  0, 0, 3} },  \
+    { ADMODE_1920x1440_60,               {1920,  240,   60,  2340, 0,  264,  256, 15,  108, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_240P,  0, 5,  0, 0,  {2041,    31,   297,     0, 0, 1,  0, 0, 3} },  \
+
+    /* Generic 311-line modes */ \
+    { ADMODE_576p,                       { 720,  288,   50,   864, 0,  311,   69, 19,   63, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,  0, 1,  0, 0,  {7976,   232,   311,  3712, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1080p_50_CR,                {1536,  288,   50,  1872, 0,  311,  150, 19,  136, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,  0, 3,  0, 0,  {3405,  3569,  4043,   256, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1920x1440_60,               {1920,  288,   50,  2340, 0,  311,  187, 19,  171, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,  0, 4,  0, 0,  {1655,   743,  2799,     0, 0, 1,  0, 0, 3} },  \
+
+    /* Generic 312-line modes */ \
+    { ADMODE_576p,                       { 720,  288,   50,   864, 0,  312,   69, 19,   63, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,  0, 1,  0, 0,  {8013,   800,  1248,  3744, 0, 4,  0, 0, 0} },  \
+    { ADMODE_1080p_50_CR,                {1536,  288,   50,  1872, 0,  312,  150, 19,  136, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,  0, 3,  0, 0,  {3393,   220,   676,   256, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1920x1440_60,               {1920,  288,   50,  2340, 0,  312,  187, 19,  171, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,  0, 4,  0, 0,  {1648,   112,   351,     0, 0, 1,  0, 0, 3} },  \
+
+    /* Generic 313-line modes */ \
+    { ADMODE_576p,                       { 720,  288,   50,   864, 0,  313,   69, 19,   63, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,  0, 1,  0, 0,  {7986,   504,  1252,  3744, 0, 4,  0, 0, 0} },  \
+    { ADMODE_1080p_50_CR,                {1536,  288,   50,  1872, 0,  313,  150, 19,  136, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,  0, 3,  0, 0,  {3380,  3452,  4069,   256, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1920x1440_60,               {1920,  288,   50,  2340, 0,  313,  187, 19,  171, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,  0, 4,  0, 0,  {1641,  1175,  2817,     0, 0, 1,  0, 0, 3} },  \
+
+    /* Generic 314-line modes */ \
+    { ADMODE_576p,                       { 720,  288,   50,   864, 0,  314,   69, 19,   63, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,  0, 1,  0, 0,  {7959,   424,  1256,  3744, 0, 4,  0, 0, 0} },  \
+    { ADMODE_1080p_50_CR,                {1536,  288,   50,  1872, 0,  314,  150, 19,  136, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,  0, 3,  0, 0,  {3368,   920,  2041,   256, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1920x1440_60,               {1920,  288,   50,  2340, 0,  314,  187, 19,  171, 3,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_288P,  0, 4,  0, 0,  {1634,   790,  1413,     0, 0, 1,  0, 0, 3} },  \
 
     /* Generic 525-line interlace modes */ \
-    { ADMODE_1280x1024,               {1280,  240,  1560, 0,  525,  170, 15,   72, 3,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_480I,  0, 3,  0, 0,  {4128,   608,  2625,   544, 0, 4,  0, 0, 0} },  \
-    { ADMODE_1080p_LB,                {1280,  240,  1560, 0,  525,  170, 15,   72, 3,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_480I,  0, 3,  0, 0,  {4129,    69,    91,   256, 0, 1,  0, 0, 0} },  \
-    { ADMODE_1920x1440,               {1920,  240,  2340, 0,  525,  256, 15,  108, 3,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_480I,  0, 5,  0, 0,  {2055,  3277,  4725,     0, 0, 1,  0, 0, 3} },  \
+    { ADMODE_240p,                       { 720,  240,   60,   858, 0,  525,   57, 15,   62, 3,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_480I,  0, 0,  0, 0,  {8015,   127,   175,  8032, 0, 4,  0, 0, 0} },  \
+    { ADMODE_1280x1024_60,               {1280,  240,   60,  1560, 0,  525,  170, 15,   72, 3,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_480I,  0, 3,  0, 0,  {4128,   608,  2625,   544, 0, 4,  0, 0, 0} },  \
+    { ADMODE_1080p_60_LB,                {1280,  240,   60,  1560, 0,  525,  170, 15,   72, 3,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_480I,  0, 3,  0, 0,  {4129,    69,    91,   256, 0, 1,  0, 0, 0} },  \
+    { ADMODE_1920x1440_60,               {1920,  240,   60,  2340, 0,  525,  256, 15,  108, 3,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_480I,  0, 5,  0, 0,  {2055,  3277,  4725,     0, 0, 1,  0, 0, 3} },  \
+
+    /* Generic 625-line interlace modes */ \
+    { ADMODE_288p,                       { 720,  288,   50,   864, 0,  625,   69, 19,   63, 3,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_576I,  0, 0,  0, 0,  {8018,   206,   625,  8032, 0, 4,  0, 0, 0} },  \
+    { ADMODE_1080p_50_CR,                {1536,  288,   50,  1872, 0,  625,  150, 19,  136, 3,  1},  DEFAULT_SAMPLER_PHASE,  (VIDEO_SDTV | VIDEO_PC),  GROUP_576I,  0, 3,  0, 0,  {3387,     1,    13,   256, 0, 1,  0, 0, 0} },  \
 
     /* Generic 524-line modes */ \
-    { ADMODE_1280x1024,               {1280,  480,  1560, 0,  524,  170, 30,   72, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 1,  0, 0,  {4137,   228,  2620,   544, 0, 4,  1, 0, 0} },  \
-    { ADMODE_1080p_LB,                {1280,  480,  1560, 0,  524,  170, 30,   72, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 1,  0, 0,  {4138,  1050,  1703,   256, 0, 1,  1, 0, 0} },  \
-    { ADMODE_1920x1440,               {1920,  480,  2340, 0,  524,  256, 30,  108, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 2,  0, 0,  {2060,   700,  1179,     0, 0, 1,  1, 0, 3} },  \
+    { ADMODE_240p,                       { 720,  480,   60,   858, 0,  524,   60, 30,   62, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0,-1,  0, 0,  {3744,     0,     4,  8000, 0, 2,  0, 0, 0} },  \
+    { ADMODE_1280x1024_60,               {1280,  480,   60,  1560, 0,  524,  170, 30,   72, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 1,  0, 0,  {4137,   228,  2620,   544, 0, 4,  1, 0, 0} },  \
+    { ADMODE_1080p_60_LB,                {1280,  480,   60,  1560, 0,  524,  170, 30,   72, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 1,  0, 0,  {4138,  1050,  1703,   256, 0, 1,  1, 0, 0} },  \
+    { ADMODE_1920x1440_60,               {1920,  480,   60,  2340, 0,  524,  256, 30,  108, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 2,  0, 0,  {2060,   700,  1179,     0, 0, 1,  1, 0, 3} },  \
 
     /* Generic 525-line modes */ \
-    { ADMODE_1280x1024,               {1280,  480,  1560, 0,  525,  170, 30,   72, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 1,  0, 0,  {4128,   608,  2625,   544, 0, 4,  1, 0, 0} },  \
-    { ADMODE_1080p_LB,                {1280,  480,  1560, 0,  525,  170, 30,   72, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 1,  0, 0,  {4129,    69,    91,   256, 0, 1,  1, 0, 0} },  \
-    { ADMODE_1920x1440,               {1920,  480,  2340, 0,  525,  256, 30,  108, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 2,  0, 0,  {2055,  3277,  4725,     0, 0, 1,  1, 0, 3} },  \
+    { ADMODE_240p,                       { 720,  480,   60,   858, 0,  525,   60, 30,   62, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0,-1,  0, 0,  {3751,   302,   350,  8032, 0, 4,  0, 0, 0} },  \
+    { ADMODE_1280x1024_60,               {1280,  480,   60,  1560, 0,  525,  170, 30,   72, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 1,  0, 0,  {4128,   608,  2625,   544, 0, 4,  1, 0, 0} },  \
+    { ADMODE_1080p_60_LB,                {1280,  480,   60,  1560, 0,  525,  170, 30,   72, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 1,  0, 0,  {4129,    69,    91,   256, 0, 1,  1, 0, 0} },  \
+    { ADMODE_1920x1440_60,               {1920,  480,   60,  2340, 0,  525,  256, 30,  108, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 2,  0, 0,  {2055,  3277,  4725,     0, 0, 1,  1, 0, 3} },  \
 
     /* Generic 526-line modes */ \
-    { ADMODE_1280x1024,               {1280,  480,  1560, 0,  526,  170, 30,   72, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 1,  0, 0,  {4119,  1078,  2630,   544, 0, 4,  1, 0, 0} },  \
-    { ADMODE_1080p_LB,                {1280,  480,  1560, 0,  526,  170, 30,   72, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 1,  0, 0,  {4120,  3192,  3419,   256, 0, 1,  1, 0, 0} },  \
-    { ADMODE_1920x1440,               {1920,  480,  2340, 0,  526,  256, 30,  108, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 2,  0, 0,  {2050,  1922,  2367,     0, 0, 1,  1, 0, 3} },  \
+    { ADMODE_240p,                       { 720,  480,   60,   858, 0,  526,   60, 30,   62, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0,-1,  0, 0,  {3743,   796,  1052,  8032, 0, 4,  0, 0, 0} },  \
+    { ADMODE_1280x1024_60,               {1280,  480,   60,  1560, 0,  526,  170, 30,   72, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 1,  0, 0,  {4119,  1078,  2630,   544, 0, 4,  1, 0, 0} },  \
+    { ADMODE_1080p_60_LB,                {1280,  480,   60,  1560, 0,  526,  170, 30,   72, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 1,  0, 0,  {4120,  3192,  3419,   256, 0, 1,  1, 0, 0} },  \
+    { ADMODE_1920x1440_60,               {1920,  480,   60,  2340, 0,  526,  256, 30,  108, 6,  0},  DEFAULT_SAMPLER_PHASE,  (VIDEO_EDTV | VIDEO_PC),  GROUP_480P,  0, 2,  0, 0,  {2050,  1922,  2367,     0, 0, 1,  1, 0, 3} },  \
 };
 
-const stdmode_t ad_mode_id_map[] = {STDMODE_240p, STDMODE_480p, STDMODE_720p, STDMODE_1280x1024, STDMODE_1080p, STDMODE_1080p, STDMODE_1600x1200, STDMODE_1920x1200, STDMODE_1920x1440};
+const stdmode_t ad_mode_id_map[] = {STDMODE_240p,
+                                    STDMODE_288p,
+                                    STDMODE_480p,
+                                    STDMODE_576p,
+                                    STDMODE_720p_60,
+                                    STDMODE_1280x1024_60,
+                                    STDMODE_1080p_50,
+                                    STDMODE_1080p_60,
+                                    STDMODE_1080p_60,
+                                    STDMODE_1600x1200_60,
+                                    STDMODE_1920x1200_60,
+                                    STDMODE_1920x1440_60,
+                                    STDMODE_1920x1440_60};
 
-const stdmode_t stdmode_idx_arr[] = {STDMODE_240p, STDMODE_288p, STDMODE_480p, STDMODE_576p, STDMODE_720p, STDMODE_1280x1024, STDMODE_1080p, STDMODE_1600x1200, STDMODE_1920x1200, STDMODE_1920x1440};
+const stdmode_t stdmode_idx_arr[] = {STDMODE_240p,
+                                     STDMODE_288p,
+                                     STDMODE_480p,
+                                     STDMODE_576p,
+                                     STDMODE_720p_60,
+                                     STDMODE_1280x1024_60,
+                                     STDMODE_1080p_60,
+                                     STDMODE_1600x1200_60,
+                                     STDMODE_1920x1200_60,
+                                     STDMODE_1920x1440_60};
+
 const unsigned num_stdmodes = sizeof(stdmode_idx_arr)/sizeof(stdmode_t);
 
 mode_data_t video_modes[sizeof(video_modes_default)/sizeof(mode_data_t)];
@@ -191,8 +244,7 @@ void vmode_hv_mult(mode_data_t *vmode, uint8_t h_mult, uint8_t v_mult) {
 }
 
 uint32_t estimate_dotclk(mode_data_t *vm_in, uint32_t h_hz) {
-    if ((vm_in->type & VIDEO_LDTV) ||
-        (vm_in->type & VIDEO_SDTV) ||
+    if ((vm_in->type & VIDEO_SDTV) ||
         (vm_in->type & VIDEO_EDTV))
     {
         return h_hz * 858;
@@ -206,15 +258,19 @@ int get_adaptive_mode(uint16_t totlines, uint8_t interlaced, uint16_t hz_x100, v
     int i;
     ad_mode_id_t target_ad_id;
     int32_t v_linediff;
-    uint32_t interlace_mult;
+    uint32_t interlace_mult, vtotal_ref;
+    uint8_t target_v_hz = (hz_x100+50)/100;
     unsigned num_modes = sizeof(adaptive_modes)/sizeof(ad_mode_data_t);
     avconfig_t* cc = get_current_avconfig();
     memset(vm_in, 0, sizeof(mode_data_t));
     memset(vm_out, 0, sizeof(mode_data_t));
 
-    const ad_mode_id_t pm_ad_240p_map[] = {-1, ADMODE_480p, ADMODE_720p, ADMODE_1280x1024, ADMODE_1080p_LB, ADMODE_1080p_CR, ADMODE_1600x1200, ADMODE_1920x1200, ADMODE_1920x1440};
-    const ad_mode_id_t pm_ad_480i_map[] = {-1, ADMODE_1280x1024, ADMODE_1080p_LB, ADMODE_1920x1440};
-    const ad_mode_id_t pm_ad_480p_map[] = {-1, ADMODE_1280x1024, ADMODE_1080p_LB, ADMODE_1920x1440};
+    const ad_mode_id_t pm_ad_240p_map[] = {-1, ADMODE_480p, ADMODE_720p_60, ADMODE_1280x1024_60, ADMODE_1080p_60_LB, ADMODE_1080p_60_CR, ADMODE_1600x1200_60, ADMODE_1920x1200_60, ADMODE_1920x1440_60};
+    const ad_mode_id_t pm_ad_288p_map[] = {-1, ADMODE_576p, ADMODE_1080p_50_CR, ADMODE_1920x1440_60};
+    const ad_mode_id_t pm_ad_480i_map[] = {-1, ADMODE_240p, ADMODE_1280x1024_60, ADMODE_1080p_60_LB, ADMODE_1920x1440_60};
+    const ad_mode_id_t pm_ad_576i_map[] = {-1, ADMODE_288p, ADMODE_1080p_50_CR};
+    const ad_mode_id_t pm_ad_480p_map[] = {-1, ADMODE_240p, ADMODE_1280x1024_60, ADMODE_1080p_60_LB, ADMODE_1920x1440_60};
+    const ad_mode_id_t pm_ad_576p_map[] = {-1, ADMODE_288p, ADMODE_1080p_50_CR};
 
     if (!cc->adapt_lm)
         return -1;
@@ -222,14 +278,25 @@ int get_adaptive_mode(uint16_t totlines, uint8_t interlaced, uint16_t hz_x100, v
     for (i=0; i<num_modes; i++) {
         if (adaptive_modes[i].group == GROUP_240P)
             target_ad_id = pm_ad_240p_map[cc->pm_ad_240p];
+        else if (adaptive_modes[i].group == GROUP_288P)
+            target_ad_id = pm_ad_288p_map[cc->pm_ad_288p];
         else if (adaptive_modes[i].group == GROUP_480I)
             target_ad_id = pm_ad_480i_map[cc->pm_ad_480i];
+        else if (adaptive_modes[i].group == GROUP_576I)
+            target_ad_id = pm_ad_576i_map[cc->pm_ad_576i];
         else if (adaptive_modes[i].group == GROUP_480P)
             target_ad_id = pm_ad_480p_map[cc->pm_ad_480p];
+        else if (adaptive_modes[i].group == GROUP_576P)
+            target_ad_id = pm_ad_576p_map[cc->pm_ad_576p];
         else
             target_ad_id = -1;
 
-        if ((totlines == adaptive_modes[i].timings_i.v_total) && (interlaced == adaptive_modes[i].timings_i.interlaced) && (target_ad_id == adaptive_modes[i].id)) {
+        if ((totlines == adaptive_modes[i].timings_i.v_total) &&
+            (interlaced == adaptive_modes[i].timings_i.interlaced) &&
+            (target_ad_id == adaptive_modes[i].id) &&
+            (target_v_hz >= adaptive_modes[i].timings_i.v_hz-V_HZ_MAX_TOLERANCE) &&
+            (target_v_hz < adaptive_modes[i].timings_i.v_hz+V_HZ_MAX_TOLERANCE))
+        {
             vm_conf->x_rpt = 0;
             vm_conf->y_rpt = 0;
             vm_conf->x_skip = 0;
@@ -244,27 +311,35 @@ int get_adaptive_mode(uint16_t totlines, uint8_t interlaced, uint16_t hz_x100, v
 
             vm_conf->y_rpt = adaptive_modes[i].y_rpt;
             vm_conf->x_offset = ((vm_out->timings.h_active-vm_in->timings.h_active)/2) + adaptive_modes[i].x_offset_i;
+            vm_conf->x_start_lb = (vm_conf->x_offset >= 0) ? 0 : (-vm_conf->x_offset / (adaptive_modes[i].x_rpt+1));
             vm_conf->x_size = vm_in->timings.h_active;
-            vm_conf->linebuf_startline = ((vm_in->timings.v_active - (vm_out->timings.v_active/(adaptive_modes[i].y_rpt+1)))/2) + adaptive_modes[i].y_offset_i;
-            vm_conf->y_offset = -(adaptive_modes[i].y_rpt+1)*vm_conf->linebuf_startline;
-            vm_conf->y_size = vm_in->timings.v_active*(adaptive_modes[i].y_rpt+1);
+            if (adaptive_modes[i].y_rpt == (uint8_t)(-1)) {
+                vm_conf->y_start_lb = ((vm_in->timings.v_active - (vm_out->timings.v_active*2))/2) + adaptive_modes[i].y_offset_i*2;
+                vm_conf->y_offset = -vm_conf->y_start_lb/2;
+                vm_conf->y_size = vm_in->timings.v_active/2;
+            } else {
+                vm_conf->y_start_lb = ((vm_in->timings.v_active - (vm_out->timings.v_active/(adaptive_modes[i].y_rpt+1)))/2) + adaptive_modes[i].y_offset_i;
+                vm_conf->y_offset = -(adaptive_modes[i].y_rpt+1)*vm_conf->y_start_lb;
+                vm_conf->y_size = vm_in->timings.v_active*(adaptive_modes[i].y_rpt+1);
+            }
 
             vm_out->si_pclk_mult = 0;
             memcpy(&vm_out->si_ms_conf, &adaptive_modes[i].si_ms_conf, sizeof(si5351_ms_config_t));
 
             // calculate the time (in output lines, rounded up) from source frame start to the point where first to-be-visible line has been written into linebuf
-            v_linediff = (((vm_in->timings.v_synclen + vm_in->timings.v_backporch + ((vm_conf->linebuf_startline < 0) ? 0 : vm_conf->linebuf_startline) + 1) * vm_out->timings.v_total * interlace_mult) / vm_in->timings.v_total) + 1;
+            v_linediff = (((vm_in->timings.v_synclen + vm_in->timings.v_backporch + ((vm_conf->y_start_lb < 0) ? 0 : vm_conf->y_start_lb) + 1) * vm_out->timings.v_total * interlace_mult) / vm_in->timings.v_total) + 1;
 
             // subtract the previous value from the total number of output blanking/empty lines. Resulting value indicates how many lines output framestart must be offset
             v_linediff = (vm_out->timings.v_synclen + vm_out->timings.v_backporch + ((vm_conf->y_offset < 0) ? 0 : vm_conf->y_offset)) - v_linediff;
 
             // if linebuf is read faster than written, output framestart must be delayed accordingly to avoid read pointer catching write pointer
-            if (vm_out->timings.v_total * interlace_mult > vm_in->timings.v_total*(adaptive_modes[i].y_rpt+1))
+            vtotal_ref = (adaptive_modes[i].y_rpt == (uint8_t)(-1)) ? (vm_in->timings.v_total/2) : (vm_in->timings.v_total*(adaptive_modes[i].y_rpt+1));
+            if (vm_out->timings.v_total * interlace_mult > vtotal_ref)
                 v_linediff -= (((vm_in->timings.v_active * vm_out->timings.v_total * interlace_mult) / vm_in->timings.v_total) - vm_conf->y_size);
 
             vm_conf->framesync_line = (v_linediff < 0) ? vm_out->timings.v_total+v_linediff : v_linediff;
 
-            printf("framesync_line = %u (linebuf_startline: %d, y_offset: %d, y_size: %u)\n", vm_conf->framesync_line, vm_conf->linebuf_startline, vm_conf->y_offset, vm_conf->y_size);
+            printf("framesync_line = %u (y_start_lb: %d, y_offset: %d, y_size: %u)\n", vm_conf->framesync_line, vm_conf->y_start_lb, vm_conf->y_offset, vm_conf->y_size);
 
             return i;
         }
@@ -284,9 +359,10 @@ int get_mode_id(uint16_t totlines, uint8_t interlaced, uint16_t hz_x100, video_t
     mode_flags target_lm;
     uint8_t pt_only = 0;
     uint8_t upsample2x = 1;
+    uint8_t target_v_hz = (hz_x100+50)/100;
 
     // one for each video_group
-    uint8_t* group_ptr[] = { &pt_only, &cc->pm_240p, &cc->pm_384p, &cc->pm_480i, &cc->pm_480p, &cc->pm_1080i };
+    uint8_t* group_ptr[] = { &pt_only, &cc->pm_240p, &cc->pm_240p, &cc->pm_384p, &cc->pm_480i, &cc->pm_480i, &cc->pm_480p, &cc->pm_480p, &cc->pm_1080i };
 
     for (i=0; i<num_modes; i++) {
         mode_type = video_modes[i].type;
@@ -294,6 +370,7 @@ int get_mode_id(uint16_t totlines, uint8_t interlaced, uint16_t hz_x100, video_t
         switch (video_modes[i].group) {
             case GROUP_NONE:
             case GROUP_240P:
+            case GROUP_288P:
                 break;
             case GROUP_384P:
                 //fixed Line2x/3x mode for 240x360p
@@ -311,6 +388,7 @@ int get_mode_id(uint16_t totlines, uint8_t interlaced, uint16_t hz_x100, video_t
                 }
                 break;
             case GROUP_480I:
+            case GROUP_576I:
                 //fixed Line3x/4x mode for 480i
                 valid_lm[2] = MODE_L3_GEN_16_9;
                 valid_lm[3] = MODE_L4_GEN_4_3;
@@ -328,7 +406,10 @@ int get_mode_id(uint16_t totlines, uint8_t interlaced, uint16_t hz_x100, video_t
                         else if (cc->s480p_mode == 1) // DTV 480p
                             continue;
                     }
-                } else if (video_modes[i].timings.v_total == 625) { // hit "576p" on the list
+                }
+                break;
+            case GROUP_576P:
+                if (video_modes[i].timings.v_total == 625) { // hit "576p" on the list
                     if ((typemask & VIDEO_PC) && (hz_x100 >= 5500))
                         continue;
                 }
@@ -343,7 +424,13 @@ int get_mode_id(uint16_t totlines, uint8_t interlaced, uint16_t hz_x100, video_t
 
         target_lm = valid_lm[*group_ptr[video_modes[i].group]];
 
-        if ((typemask & mode_type) && (target_lm & video_modes[i].flags) && (interlaced == video_modes[i].timings.interlaced) && (totlines <= (video_modes[i].timings.v_total+LINECNT_MAX_TOLERANCE))) {
+        if ((typemask & mode_type) &&
+            (target_lm & video_modes[i].flags) &&
+            (interlaced == video_modes[i].timings.interlaced) &&
+            (totlines <= (video_modes[i].timings.v_total+LINECNT_MAX_TOLERANCE)) &&
+            (target_v_hz >= video_modes[i].timings.v_hz-V_HZ_MAX_TOLERANCE) &&
+            (target_v_hz < video_modes[i].timings.v_hz+V_HZ_MAX_TOLERANCE))
+        {
 
             // defaults
             memcpy(vm_in, &video_modes[i], sizeof(mode_data_t));
@@ -359,7 +446,8 @@ int get_mode_id(uint16_t totlines, uint8_t interlaced, uint16_t hz_x100, video_t
             vm_conf->y_offset = 0;
             vm_conf->x_size = 0;
             vm_conf->y_size = 0;
-            vm_conf->linebuf_startline = 0;
+            vm_conf->x_start_lb = 0;
+            vm_conf->y_start_lb = 0;
 
             vm_out->si_pclk_mult = 1;
             vm_out->tx_pixelrep = TX_1X;
@@ -371,7 +459,7 @@ int get_mode_id(uint16_t totlines, uint8_t interlaced, uint16_t hz_x100, video_t
                 case MODE_PT:
                     vm_out->vic = vm_in->vic;
                     // Upsample / pixel-repeat horizontal resolution of 240p/480i modes to fulfill min. 25MHz TMDS clock requirement
-                    if ((video_modes[i].group == GROUP_240P) || (video_modes[i].group == GROUP_480I)) {
+                    if ((video_modes[i].group == GROUP_240P) || (video_modes[i].group == GROUP_288P) || (video_modes[i].group == GROUP_480I) || (video_modes[i].group == GROUP_576I)) {
                         if (upsample2x) {
                             vmode_hv_mult(vm_in, 2, 1);
                             vmode_hv_mult(vm_out, 2, VM_OUT_YMULT);
@@ -386,7 +474,7 @@ int get_mode_id(uint16_t totlines, uint8_t interlaced, uint16_t hz_x100, video_t
                     vm_conf->y_rpt = 1;
 
                     // Upsample / pixel-repeat horizontal resolution of 384p/480p/960i modes
-                    if ((video_modes[i].group == GROUP_384P) || (video_modes[i].group == GROUP_480P) || ((video_modes[i].group == GROUP_1080I) && (video_modes[i].timings.h_total < 1200))) {
+                    if ((video_modes[i].group == GROUP_384P) || (video_modes[i].group == GROUP_480P) || (video_modes[i].group == GROUP_576P) || ((video_modes[i].group == GROUP_1080I) && (video_modes[i].timings.h_total < 1200))) {
                         if (upsample2x) {
                             vmode_hv_mult(vm_in, 2, 1);
                             vmode_hv_mult(vm_out, 2, VM_OUT_YMULT);
@@ -436,7 +524,7 @@ int get_mode_id(uint16_t totlines, uint8_t interlaced, uint16_t hz_x100, video_t
                     vm_conf->y_rpt = 2;
 
                     // Upsample / pixel-repeat horizontal resolution of 480i mode
-                    if (video_modes[i].group == GROUP_480I) {
+                    if ((video_modes[i].group == GROUP_480I) || (video_modes[i].group == GROUP_576I)) {
                         if (upsample2x) {
                             vmode_hv_mult(vm_in, 2, 1);
                             vmode_hv_mult(vm_out, 2, VM_OUT_YMULT);
@@ -506,7 +594,7 @@ int get_mode_id(uint16_t totlines, uint8_t interlaced, uint16_t hz_x100, video_t
                     vm_conf->y_rpt = 3;
 
                     // Upsample / pixel-repeat horizontal resolution of 480i mode
-                    if (video_modes[i].group == GROUP_480I) {
+                    if ((video_modes[i].group == GROUP_480I) || (video_modes[i].group == GROUP_576I)) {
                         if (upsample2x) {
                             vmode_hv_mult(vm_in, 2, 1);
                             vmode_hv_mult(vm_out, 2, VM_OUT_YMULT);
