@@ -1,1 +1,0 @@
-../../../../sw_common/sys_controller_bsp/Makefile

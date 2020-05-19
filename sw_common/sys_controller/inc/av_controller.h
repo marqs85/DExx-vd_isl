@@ -34,6 +34,7 @@
 #define SCTRL_ISL_VS_TYPE     (1<<7)
 #define SCTRL_AUDMUX_SEL      (1<<8)
 #define SCTRL_VGTP_ENABLE     (1<<9)
+#define SCTRL_CSC_ENABLE      (1<<10)
 
 // sys_status
 #define SSTAT_RC_MASK   0x0000ffff
@@ -42,6 +43,8 @@
 #define SSTAT_RRPT_OFFS 16
 #define SSTAT_BTN_MASK  0x03000000
 #define SSTAT_BTN_OFFS  24
+#define SSTAT_VS_MASK   0x04000000
+#define SSTAT_VS_OFFS   26
 
 typedef enum {
     AV_TESTPAT      = 0,

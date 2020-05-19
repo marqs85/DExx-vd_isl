@@ -6,8 +6,8 @@ create_clock -period 20 -name clk50 [get_ports FPGA_CLK1_50]
 create_clock -period 20 -name clk50_2 [get_ports FPGA_CLK2_50]
 create_clock -period 20 -name clk50_3 [get_ports FPGA_CLK3_50]
 
-create_clock -period 105MHz -name pclk_isl [get_ports GPIO_0[2]]
-create_clock -period 105MHz -name pclk_si [get_ports GPIO_0[0]]
+create_clock -period 75MHz -name pclk_isl [get_ports GPIO_0[2]]
+create_clock -period 165MHz -name pclk_si [get_ports GPIO_0[0]]
 
 #**************************************************************
 # Create Generated Clock
@@ -49,7 +49,7 @@ set hdmitx_data_outputs [get_ports {HDMI_TX_D* HDMI_TX_HS HDMI_TX_VS HDMI_TX_DE}
 set_output_delay -clock pclk_si_out -min $hdmitx_dmin $hdmitx_data_outputs -add_delay
 set_output_delay -clock pclk_si_out -max $hdmitx_dmax $hdmitx_data_outputs -add_delay
 
-set_false_path -from [get_ports {GPIO_0[34] KEY*}]
+set_false_path -from [get_ports {GPIO_0[34] KEY* ARDUINO_IO[7] ARDUINO_IO[6] ARDUINO_IO[5] ARDUINO_IO[4]}]
 set_false_path -to [get_ports {LED*}]
 
 # TODO: set I2C constraints
@@ -70,7 +70,7 @@ set_clock_groups -asynchronous -group \
                             {clk50_2} \
                             {clk50_3} \
                             {pclk_isl} \
-                            {pclk_si} \
+                            {pclk_si pclk_si_out} \
                             {pll_vco_clk} \
                             {clk27}
 

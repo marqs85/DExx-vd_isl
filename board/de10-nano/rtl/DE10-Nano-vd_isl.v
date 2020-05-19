@@ -29,11 +29,11 @@ module DE10_Nano_vd_isl (
       inout              HDMI_MCLK,
       inout              HDMI_SCLK,
       output             HDMI_TX_CLK,
-      output      [23:0] HDMI_TX_D,
-      output             HDMI_TX_DE,
-      output             HDMI_TX_HS,
+      output reg    [23:0] HDMI_TX_D,
+      output reg         HDMI_TX_DE,
+      output reg         HDMI_TX_HS,
       input              HDMI_TX_INT,
-      output             HDMI_TX_VS,
+      output reg         HDMI_TX_VS,
 
 `ifdef ENABLE_HPS
       ///////// HPS /////////
@@ -114,8 +114,9 @@ wire ISL_HSYNC_i = GPIO_0[31];
 wire ISL_VSYNC_i = GPIO_0[32];
 wire ISL_FID_i = GPIO_0[35];
 wire ISL_INT_N_i = GPIO_0[33];
-wire IR_RX_i = GPIO_0[34] & GPIO_1[8]; // backup pin from secondary GPIO block
+wire IR_RX_i = GPIO_0[34];
 wire pclk_capture = ISL_PCLK_i;
+wire SPDIF_EXT_i = ARDUINO_IO[4];
 
 wire [15:0] sys_ctrl;
 wire sys_extra = sys_ctrl[0];
@@ -128,6 +129,7 @@ wire isl_vs_pol = sys_ctrl[6];
 wire isl_vs_type = sys_ctrl[7];
 wire audmux_sel = sys_ctrl[8];
 wire testpattern_enable = sys_ctrl[9];
+wire csc_enable = sys_ctrl[10];
 
 //reg [1:0] clk_osc_div = 2'h0;
 //wire [31:0] h_in_config, h_in_config2, v_in_config, h_out_config, h_out_config2, v_out_config, v_out_config2;
@@ -148,7 +150,9 @@ wire scl_oe, sda_oe;
 wire pll_lock;
 wire nios_reset_req;
 
-wire [31:0] sys_status = {6'h0, btn_sync2_reg, ir_code_cnt, ir_code};
+wire vs_flag = testpattern_enable ? 1'b0 : ~ISL_VSYNC_post;
+
+wire [31:0] sys_status = {5'h0, vs_flag, btn_sync2_reg, ir_code_cnt, ir_code};
 
 wire [31:0] hv_in_config, hv_in_config2, hv_in_config3, hv_out_config, hv_out_config2, hv_out_config3, xy_out_config, xy_out_config2;
 wire [31:0] misc_config, sl_config, sl_config2;
@@ -202,6 +206,8 @@ isl51002_frontend u_isl_frontend (
     .FID_i(ISL_FID),
     .vs_type(isl_vs_type),
     .vs_polarity(isl_vs_pol),
+    .csc_enable(csc_enable),
+    .csc_cs(misc_config[13]),
     .hv_in_config(hv_in_config),
     .hv_in_config2(hv_in_config2),
     .hv_in_config3(hv_in_config3),
@@ -224,23 +230,30 @@ isl51002_frontend u_isl_frontend (
 assign pclk_out = PCLK_sc;
 assign HDMI_TX_CLK = pclk_out;
 
-// output data assignment
+// output data assignment (2 stages and launch on negedge for timing closure)
+reg [7:0] R_out, G_out, B_out;
+reg HSYNC_out, VSYNC_out, DE_out;
 wire [7:0] R_sc, G_sc, B_sc;
 wire HSYNC_sc, VSYNC_sc, DE_sc;
-always @(posedge pclk_out) begin
-    HDMI_TX_D[23:16] <= R_sc;
-    HDMI_TX_D[15:8] <= G_sc;
-    HDMI_TX_D[7:0] <= B_sc;
-    HDMI_TX_HS <= HSYNC_sc;
-    HDMI_TX_VS <= VSYNC_sc;
-    HDMI_TX_DE <= DE_sc;
+always @(negedge pclk_out) begin
+    R_out <= R_sc;
+    G_out <= G_sc;
+    B_out <= B_sc;
+    HSYNC_out <= HSYNC_sc;
+    VSYNC_out <= VSYNC_sc;
+    DE_out <= DE_sc;
+    HDMI_TX_D[23:16] <= R_out;
+    HDMI_TX_D[15:8] <= G_out;
+    HDMI_TX_D[7:0] <= B_out;
+    HDMI_TX_HS <= HSYNC_out;
+    HDMI_TX_VS <= VSYNC_out;
+    HDMI_TX_DE <= DE_out;
 end
 
 //audio
-assign HDMI_SCLK = GPIO_1[2];
-assign HDMI_LRCLK = GPIO_1[6];
-assign HDMI_I2S = GPIO_1[4];
-//assign HDMI_SPDIF = SPDIF_EXT_i;
+assign HDMI_SCLK = ARDUINO_IO[5];
+assign HDMI_LRCLK = ARDUINO_IO[7];
+assign HDMI_I2S = ARDUINO_IO[6];
 
 always @(posedge clk27) begin
     if (~resync_strobe_prev & resync_strobe) begin

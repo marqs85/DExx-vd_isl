@@ -78,7 +78,8 @@ status_t update_avconfig() {
     if ((tc.mask_br != cc.mask_br) ||
         (tc.mask_color != cc.mask_color) ||
         (tc.reverse_lpf != cc.reverse_lpf) ||
-        (tc.lm_deint_mode != cc.lm_deint_mode))
+        (tc.lm_deint_mode != cc.lm_deint_mode) ||
+        (tc.ypbpr_cs != cc.ypbpr_cs))
         status = (status < SC_CONFIG_CHANGE) ? SC_CONFIG_CHANGE : status;
 
     if ((tc.pm_240p != cc.pm_240p) ||
