@@ -118,6 +118,10 @@ wire IR_RX_i = GPIO_0[34];
 wire pclk_capture = ISL_PCLK_i;
 wire SPDIF_EXT_i = ARDUINO_IO[4];
 
+// Minimize impendance to GND on FPGA end
+assign GPIO_0[1] = 1'b0;
+assign GPIO_0[3] = 1'b0;
+
 wire [15:0] sys_ctrl;
 wire sys_extra = sys_ctrl[0];
 wire isl_reset_n = sys_ctrl[1];
