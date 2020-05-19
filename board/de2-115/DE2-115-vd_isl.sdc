@@ -1,0 +1,95 @@
+#**************************************************************
+# Create Clock
+#**************************************************************
+
+create_clock -period 20 -name clk50 [get_ports CLOCK_50]
+create_clock -period 20 -name clk50_2 [get_ports CLOCK2_50]
+create_clock -period 20 -name clk50_3 [get_ports CLOCK3_50]
+
+create_clock -period 75MHz -name pclk_isl [get_ports GPIO[2]]
+create_clock -period 165MHz -name pclk_si [get_ports GPIO[0]]
+
+#**************************************************************
+# Create Generated Clock
+#**************************************************************
+#derive_pll_clocks
+create_generated_clock -source {pll_sys|altpll_component|auto_generated|pll1|inclk[0]} -divide_by 50 -multiply_by 27 -duty_cycle 50.00 -name clk27 {pll_sys|altpll_component|auto_generated|pll1|clk[0]}
+
+#create_generated_clock -name pclk_si_out -master_clock pclk_si -source [get_ports GPIO[0]] -multiply_by 1 [get_ports HDMI_TX_CLK]
+create_generated_clock -name pclk_si_out -master_clock pclk_si -source [get_ports GPIO[0]] -multiply_by 1 [get_ports VGA_CLK]
+
+#**************************************************************
+# Set Clock Latency
+#**************************************************************
+
+
+
+#**************************************************************
+# Set Clock Uncertainty
+#**************************************************************
+derive_clock_uncertainty
+
+
+
+#**************************************************************
+# Set IO Delay
+#**************************************************************
+
+# ISL51002
+set ISL_dmin [expr 3.4-0.5*(1000/165)]
+set ISL_dmax [expr 0.5*(1000/165)-1.8]
+set ISL_inputs [get_ports {GPIO[32] GPIO[31] GPIO[30] GPIO[29] GPIO[28] GPIO[27] GPIO[26] GPIO[25] GPIO[24] GPIO[23] GPIO[22] GPIO[21] GPIO[20] GPIO[19] GPIO[18] GPIO[17] GPIO[16] GPIO[15] GPIO[14] GPIO[13] GPIO[12] GPIO[11] GPIO[10] GPIO[9] GPIO[8] GPIO[7] GPIO[6] GPIO[35]}]
+set_input_delay -clock pclk_isl -clock_fall -min $ISL_dmin $ISL_inputs -add_delay
+set_input_delay -clock pclk_isl -clock_fall -max $ISL_dmax $ISL_inputs -add_delay
+
+# ADV7513
+#set hdmitx_dmin -0.7
+#set hdmitx_dmax 1
+#set hdmitx_data_outputs [get_ports {HDMI_TX_D* HDMI_TX_HS HDMI_TX_VS HDMI_TX_DE}]
+#set_output_delay -clock pclk_si_out -min $hdmitx_dmin $hdmitx_data_outputs -add_delay
+#set_output_delay -clock pclk_si_out -max $hdmitx_dmax $hdmitx_data_outputs -add_delay
+
+# VGA
+set vga_dmin -1.5
+set vga_dmax 0.2
+set vga_data_outputs [get_ports {VGA_R[*] VGA_G[*] VGA_B[*] VGA_HS VGA_VS VGA_SYNC_N VGA_BLANK_N}]
+set_output_delay -clock pclk_si_out -min $vga_dmin $vga_data_outputs -add_delay
+set_output_delay -clock pclk_si_out -max $vga_dmax $vga_data_outputs -add_delay
+
+set_false_path -from [get_ports {GPIO[34] KEY* EX_IO[0] EX_IO[1] EX_IO[2] EX_IO[3]}]
+set_false_path -to [get_ports {LED*}]
+
+# TODO: set I2C constraints
+#set_false_path -from [get_ports {HDMI_I2C_SCL HDMI_I2C_SDA}]
+#set_false_path -to [get_ports {HDMI_I2C_SCL HDMI_I2C_SDA}]
+set_false_path -from [get_ports {GPIO[4] GPIO[5] IRDA_RXD}]
+set_false_path -to [get_ports {GPIO[4] GPIO[5]}]
+
+# LCD
+set_input_delay -clock clk27 0 [get_ports LCD_DATA*]
+set_output_delay -clock clk27 0 [get_ports {LCD_DATA* LCD_BLON LCD_EN LCD_ON LCD_RS LCD_RW}]
+
+#**************************************************************
+# Set Output Delay
+#**************************************************************
+
+
+
+#**************************************************************
+# Set Clock Groups
+#**************************************************************
+set_clock_groups -asynchronous -group \
+                            {clk50} \
+                            {clk50_2} \
+                            {clk50_3} \
+                            {pclk_isl} \
+                            {pclk_si pclk_si_out} \
+                            {clk27}
+
+# max 10MHz JTAG clock
+remove_clock altera_reserved_tck
+create_clock -name altera_reserved_tck -period "10MHz" [get_ports altera_reserved_tck]
+set_clock_groups -exclusive -group [get_clocks altera_reserved_tck]
+set_input_delay -clock altera_reserved_tck 20 [get_ports altera_reserved_tdi]
+set_input_delay -clock altera_reserved_tck 20 [get_ports altera_reserved_tms]
+set_output_delay -clock altera_reserved_tck 20 [get_ports altera_reserved_tdo]

@@ -37,6 +37,9 @@
 extern avconfig_t tc;
 extern isl51002_dev isl_dev;
 extern us2066_dev chardisp_dev;
+#ifdef DE2_115
+extern alt_up_character_lcd_dev charlcd_dev;
+#endif
 
 char menu_row1[US2066_ROW_LEN+1];
 char menu_row2[US2066_ROW_LEN+1];
@@ -47,7 +50,7 @@ uint8_t vm_sel, vm_edit;
 
 static const char *off_on_desc[] = { LNG("Off","ｵﾌ"), LNG("On","ｵﾝ") };
 static const char *video_lpf_desc[] = { LNG("Auto","ｵｰﾄ"), LNG("Off","ｵﾌ"), "95MHz (HDTV II)", "35MHz (HDTV I)", "16MHz (EDTV)", "9MHz (SDTV)" };
-static const char *ypbpr_cs_desc[] = { "Rec. 601", "Rec. 709", "Auto" };
+static const char *ypbpr_cs_desc[] = { "Rec. 601", "Rec. 709" };
 static const char *s480p_mode_desc[] = { LNG("Auto","ｵｰﾄ"), "DTV 480p", "VESA 640x480@60" };
 static const char *s400p_mode_desc[] = { "VGA 640x400@70", "VGA 720x400@70" };
 static const char *sync_lpf_desc[] = { LNG("2.5MHz (max)","2.5MHz (ｻｲﾀﾞｲ)"), LNG("10MHz (med)","10MHz (ﾁｭｳｲ)"), LNG("33MHz (min)","33MHz (ｻｲｼｮｳ)"), LNG("Off","ｵﾌ") };
@@ -56,16 +59,16 @@ static const char *l3_mode_desc[] = { LNG("Generic 16:9","ｼﾞｪﾈﾘｯｸ 
 static const char *l2l4l5_mode_desc[] = { LNG("Generic 4:3","ｼﾞｪﾈﾘｯｸ 4:3"), LNG("512x240 optim.","512x240 ｻｲﾃｷｶ."), LNG("384x240 optim.","384x240 ｻｲﾃｷｶ."), LNG("320x240 optim.","320x240 ｻｲﾃｷｶ."), LNG("256x240 optim.","256x240 ｻｲﾃｷｶ.") };
 static const char *l5_fmt_desc[] = { "1920x1080", "1600x1200", "1920x1200" };
 static const char *pm_240p_desc[] = { LNG("Passthru","ﾊﾟｽｽﾙｰ"), "Line2x", "Line3x", "Line4x", "Line5x" };
-static const char *pm_480i_desc[] = { LNG("Passthru","ﾊﾟｽｽﾙｰ"), "Line2x (bob)", "Line3x (laced)", "Line4x (bob)" };
+static const char *pm_480i_desc[] = { LNG("Passthru","ﾊﾟｽｽﾙｰ"), "Deint + Line2x", "Line3x (laced)", "Deint + Line4x" };
 static const char *pm_384p_desc[] = { LNG("Passthru","ﾊﾟｽｽﾙｰ"), "Line2x", "Line2x 240x360", "Line3x 240x360", "Line3x Generic" };
 static const char *pm_480p_desc[] = { LNG("Passthru","ﾊﾟｽｽﾙｰ"), "Line2x" };
-static const char *pm_1080i_desc[] = { LNG("Passthru","ﾊﾟｽｽﾙｰ"), "Line2x (bob)" };
+static const char *pm_1080i_desc[] = { LNG("Passthru","ﾊﾟｽｽﾙｰ"), "Deint + Line2x" };
 static const char *pm_ad_240p_desc[] = { "Skip", "720x480 (Line2x)", "1280x720 (Line3x)", "1280x1024 (Line4x)", "1920x1080 (Line4x)", "1920x1080 (Line5x)", "1600x1200 (Line5x)", "1920x1200 (Line5x)", "1920x1440 (Line6x)" };
 static const char *pm_ad_288p_desc[] = { "Skip", "720x576 (Line2x)", "1920x1080 (Line4x)", "1920x1440 (Line5x)" };
-static const char *pm_ad_480i_desc[] = { "Skip", "720x240 (240p rest.)", "1280x1024 (Line4x)", "1920x1080 (Line4x)", "1920x1440 (Line6x)" };
-static const char *pm_ad_576i_desc[] = { "Skip", "720x288 (288p rest.)", "1920x1080 (Line4x)" };
-static const char *pm_ad_480p_desc[] = { "Skip", "720x240 (line drop)", "1280x1024 (Line2x)", "1920x1080 (Line2x)", "1920x1440 (Line3x)" };
-static const char *pm_ad_576p_desc[] = { "Skip", "720x288 (line drop)", "1920x1080 (Line2x)" };
+static const char *pm_ad_480i_desc[] = { "Skip", "720x240 (240p rest.)", "1280x1024 (Dint+L4x)", "1920x1080 (Dint+L4x)", "1920x1440 (Dint+L6x)" };
+static const char *pm_ad_576i_desc[] = { "Skip", "720x288 (288p rest.)", "1920x1080 (Dint+L4x)" };
+static const char *pm_ad_480p_desc[] = { "Skip", "720x240 (Line drop)", "1280x1024 (Line2x)", "1920x1080 (Line2x)", "1920x1440 (Line3x)" };
+static const char *pm_ad_576p_desc[] = { "Skip", "720x288 (Line drop)", "1920x1080 (Line2x)" };
 static const char *lm_deint_mode_desc[] = { "Bob", "Noninterlace restore" };
 static const char *ar_256col_desc[] = { "4:3", "8:7" };
 static const char *tx_mode_desc[] = { "HDMI (RGB Full)", "HDMI (RGB Limited)", "HDMI (YCbCr444)", "DVI" };
@@ -142,7 +145,7 @@ MENU(menu_cust_sl, P99_PROTECT({ \
 
 MENU(menu_vinputproc, P99_PROTECT({ \
     { LNG("Video LPF","ﾋﾞﾃﾞｵ LPF"),             OPT_AVCONFIG_NUMVALUE, { .num = { &tc.isl_cfg.afe_bw,     OPT_WRAP, 0, 16,  afe_bw_disp } } },
-    //{ LNG("YPbPr in ColSpa","ｲﾛｸｳｶﾝﾆYPbPr"),    OPT_AVCONFIG_SELECTION, { .sel = { &tc.ypbpr_cs,      OPT_WRAP,   SETTING_ITEM(ypbpr_cs_desc) } } },
+    { LNG("YPbPr in ColSpa","ｲﾛｸｳｶﾝﾆYPbPr"),    OPT_AVCONFIG_SELECTION, { .sel = { &tc.ypbpr_cs,          OPT_WRAP,   SETTING_ITEM(ypbpr_cs_desc) } } },
     { LNG("R/Pr offset","R/Pr ｵﾌｾｯﾄ"),          OPT_AVCONFIG_NUMVAL_U16,  { .num_u16 = { &tc.isl_cfg.col.r_offs, 0, 0x3FF, value16_disp } } },
     { LNG("G/Y offset","G/Y ｵﾌｾｯﾄ"),            OPT_AVCONFIG_NUMVAL_U16,  { .num_u16 = { &tc.isl_cfg.col.g_offs, 0, 0x3FF, value16_disp } } },
     { LNG("B/Pb offset","B/Pb ｵﾌｾｯﾄ"),          OPT_AVCONFIG_NUMVAL_U16,  { .num_u16 = { &tc.isl_cfg.col.b_offs, 0, 0x3FF, value16_disp } } },
@@ -284,6 +287,13 @@ int is_menu_active() {
 
 void chardisp_write_menu() {
     us2066_write(&chardisp_dev, menu_row1, menu_row2);
+
+#ifdef DE2_115
+    alt_up_character_lcd_init(&charlcd_dev);
+    alt_up_character_lcd_string(&charlcd_dev, menu_row1);
+    alt_up_character_lcd_set_cursor_pos(&charlcd_dev, 0, 1);
+    alt_up_character_lcd_string(&charlcd_dev, menu_row2);
+#endif
 }
 
 void display_menu(rc_code_t remote_code)

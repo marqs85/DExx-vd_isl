@@ -3,7 +3,8 @@
 #include <string.h>
 #include "i2c_opencores.h"
 #include "altera_avalon_pio_regs.h"
-//#include "altera_avalon_i2c.h"
+#include "altera_avalon_timer.h"
+#include <sys/alt_timestamp.h>
 #include "system.h"
 #include "isl51002.h"
 #include "adv7513.h"
@@ -43,6 +44,10 @@ adv7513_dev advtx_dev = {.i2cm_base = I2C_OPENCORES_1_BASE,
 us2066_dev chardisp_dev = {.i2cm_base = I2C_OPENCORES_0_BASE,
                            .i2c_addr = US2066_BASE};
 
+#ifdef DE2_115
+alt_up_character_lcd_dev charlcd_dev = {.base = CHARACTER_LCD_0_BASE};
+#endif
+
 volatile sc_regs *sc = (volatile sc_regs*)SC_CONFIG_0_BASE;
 
 extern mode_data_t video_modes[], video_modes_default[];
@@ -59,8 +64,16 @@ char row2[US2066_ROW_LEN+1];
 static const char *avinput_str[] = { "Test pattern", "AV1_RGBS", "AV1_RGsB", "AV1_YPbPr", "AV1_RGBHV", "AV1_RGBCS", "AV2_YPbPr", "AV2_RGsB", "AV3_RGBHV", "AV3_RGBCS", "AV3_RGBS", "AV3_RGsB", "AV3_YPbPr", "AV4", "Last used" };
 
 void chardisp_write_status() {
-    if (!is_menu_active())
+    if (!is_menu_active()) {
         us2066_write(&chardisp_dev, row1, row2);
+
+#ifdef DE2_115
+        alt_up_character_lcd_init(&charlcd_dev);
+        alt_up_character_lcd_string(&charlcd_dev, row1);
+        alt_up_character_lcd_set_cursor_pos(&charlcd_dev, 0, 1);
+        alt_up_character_lcd_string(&charlcd_dev, row2);
+#endif
+    }
 }
 
 void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t *vm_conf, avconfig_t *avconfig)
@@ -113,6 +126,7 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t 
     misc_config.mask_color = avconfig->mask_color;
     misc_config.reverse_lpf = avconfig->reverse_lpf;
     misc_config.lm_deint_mode = avconfig->lm_deint_mode;
+    misc_config.ypbpr_cs = avconfig->ypbpr_cs;
 
     sc->hv_in_config = hv_in_config;
     sc->hv_in_config2 = hv_in_config2;
@@ -343,7 +357,7 @@ int main() {
             isl_enable_power(&isl_dev, 0);
             isl_enable_outputs(&isl_dev, 0);
 
-            sys_ctrl &= ~(SCTRL_CAPTURE_SEL|SCTRL_ISL_VS_POL|SCTRL_ISL_VS_TYPE|SCTRL_VGTP_ENABLE);
+            sys_ctrl &= ~(SCTRL_CAPTURE_SEL|SCTRL_ISL_VS_POL|SCTRL_ISL_VS_TYPE|SCTRL_VGTP_ENABLE|SCTRL_CSC_ENABLE);
 
             if (enable_isl) {
                 isl_source_sel(&isl_dev, target_isl_input, target_isl_sync, target_format);
@@ -355,6 +369,8 @@ int main() {
                 // set some defaults
                 if (target_isl_sync == SYNC_HV)
                     sys_ctrl |= SCTRL_ISL_VS_TYPE;
+                if (target_format == FORMAT_YPbPr)
+                    sys_ctrl |= SCTRL_CSC_ENABLE;
             } else if (enable_tp) {
                 sys_ctrl |= SCTRL_VGTP_ENABLE;
             }
@@ -367,6 +383,12 @@ int main() {
         }
 
         status = update_avconfig();
+
+        alt_timestamp_start();
+        while (1) {
+            if ((IORD_ALTERA_AVALON_PIO_DATA(PIO_1_BASE) & SSTAT_VS_MASK) || (alt_timestamp() > 25*(ALT_CPU_FREQ/1000)))
+                break;
+        }
 
         if (enable_tp) {
             if (tp_stdmode_idx != target_tp_stdmode_idx) {
@@ -403,7 +425,7 @@ int main() {
             if (isl_dev.sync_active) {
                 if (isl_get_sync_stats(&isl_dev, sc->fe_status.vtotal, sc->fe_status.interlace_flag, sc->fe_status2.pcnt_frame) || (status == MODE_CHANGE)) {
 
-#ifdef ISL_MEAS_HZ
+#ifdef ISL_SYNC_MEAS
                     if (isl_dev.sm.h_period_x16 > 0)
                         h_hz = (16*isl_dev.xtal_freq)/isl_dev.sm.h_period_x16;
                     else
@@ -486,7 +508,7 @@ int main() {
         adv7513_check_hpd_power(&advtx_dev);
         adv7513_update_config(&advtx_dev, &cur_avconfig->adv7513_cfg);
 
-        usleep(20000);
+        usleep(300);    // Avoid executing mainloop multiple times per vsync
     }
 
     return 0;
