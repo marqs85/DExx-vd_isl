@@ -1,0 +1,29 @@
+v1.0 (09/2017)
+
+* initial version
+
+
+v1.1 (12/2018)
+
+* route clocks to GPIO instead of SMA
+* add audio support (ADC + SPDIF input)
+* add new signals to ISL pin header
+
+
+v1.2 (02/2020)
+
+* change XTAL to 24.576MHz and route buffered output directly to audio ADC
+* add optional support for IR receiver and character display
+* add Si5351C Xin voltage divider
+* fix SCART mount hole
+* fix SPDIF connector pin connections
+
+
+v1.3 (08/2020)
+
+* change IR receiver position
+* change PCB to 4-layer
+* swap pclk to different gpio to minimize crosstalk
+* revert v1.2 XTAL change
+* update regulators and power routing
+* csync/sog switch added
