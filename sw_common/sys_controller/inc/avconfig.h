@@ -22,9 +22,11 @@
 
 #include <stdint.h>
 #include "sysconfig.h"
+#include "av_controller.h"
 #include "isl51002.h"
 #include "adv7513.h"
 #ifndef DExx_FW
+#include "adv7611.h"
 #include "pcm186x.h"
 #endif
 
@@ -93,6 +95,10 @@ typedef struct {
     uint8_t pm_ad_576i;
     uint8_t pm_ad_480p;
     uint8_t pm_ad_576p;
+    uint8_t sm_ad_240p_288p;
+    uint8_t sm_ad_480i_576i;
+    uint8_t sm_ad_480p;
+    uint8_t sm_ad_576p;
     uint8_t adapt_lm;
     uint8_t lm_deint_mode;
     uint8_t ar_256col;
@@ -108,11 +114,13 @@ typedef struct {
     uint8_t stc_lpf;
     uint8_t full_tx_setup;
     uint8_t audmux_sel;
+    audinput_t audio_src_map[4];
     uint8_t reverse_lpf;
     uint8_t default_vic;
     isl51002_config isl_cfg __attribute__ ((aligned (4)));
     adv7513_config adv7513_cfg __attribute__ ((aligned (4)));
 #ifndef DExx_FW
+    adv7611_config adv7611_cfg __attribute__ ((aligned (4)));
     pcm186x_config pcm_cfg __attribute__ ((aligned (4)));
 #endif
 } __attribute__((packed)) avconfig_t;

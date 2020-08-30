@@ -110,13 +110,48 @@ typedef enum {
     STDMODE_720p_50      = 30,
     STDMODE_720p_60      = 31,
     STDMODE_1280x1024_60 = 34,
-    STDMODE_1080i_60     = 36,
-    STDMODE_1080p_50     = 37,
-    STDMODE_1080p_60     = 38,
-    STDMODE_1600x1200_60 = 39,
-    STDMODE_1920x1200_60 = 40,
-    STDMODE_1920x1440_60 = 41
+    STDMODE_1080i_50     = 36,
+    STDMODE_1080i_60     = 37,
+    STDMODE_1080p_50     = 38,
+    STDMODE_1080p_60     = 39,
+    STDMODE_1600x1200_60 = 40,
+    STDMODE_1920x1200_50 = 41,
+    STDMODE_1920x1200_60 = 42,
+    STDMODE_1920x1440_50 = 43,
+    STDMODE_1920x1440_60 = 44
 } stdmode_t;
+
+typedef enum {
+    ADPRESET_GEN_720x240    = 0,
+    ADPRESET_GEN_960x240,
+    ADPRESET_GEN_1280x240,
+    ADPRESET_GEN_1600x240,
+    ADPRESET_GEN_1920x240,
+    ADPRESET_GEN_720x288,
+    ADPRESET_GEN_1536x288,
+    ADPRESET_GEN_1920x288,
+    ADPRESET_GEN_720x480i,
+    ADPRESET_GEN_1280x480i,
+    ADPRESET_GEN_1920x480i,
+    ADPRESET_GEN_720x576i,
+    ADPRESET_GEN_1536x576i,
+    ADPRESET_GEN_720x480,
+    ADPRESET_GEN_1280x480,
+    ADPRESET_GEN_1920x480,
+    ADPRESET_GEN_720x576,
+    ADPRESET_GEN_1536x576,
+    ADPRESET_OPT_VGA480P60,
+    ADPRESET_OPT_DTV480P,
+    ADPRESET_SNES_256_240,
+    ADPRESET_SNES_512_240,
+    ADPRESET_MD_256_224,
+    ADPRESET_MD_320_224,
+    ADPRESET_PSX_256_240,
+    ADPRESET_PSX_320_240,
+    ADPRESET_PSX_384_240,
+    ADPRESET_PSX_512_240,
+    ADPRESET_PSX_640_240,
+} ad_preset_id_t;
 
 typedef enum {
     ADMODE_240p      = 0,
@@ -125,19 +160,41 @@ typedef enum {
     ADMODE_576p,
     ADMODE_720p_60,
     ADMODE_1280x1024_60,
+    ADMODE_1080i_50_CR,
+    ADMODE_1080i_60_LB,
     ADMODE_1080p_50_CR,
     ADMODE_1080p_60_LB,
     ADMODE_1080p_60_CR,
     ADMODE_1600x1200_60,
+    ADMODE_1920x1200_50,
     ADMODE_1920x1200_60,
     ADMODE_1920x1440_50,
     ADMODE_1920x1440_60,
 } ad_mode_id_t;
 
+typedef enum {
+    SM_GEN_4_3      = 0,
+    SM_GEN_16_9,
+    SM_OPT_DTV480P,
+    SM_OPT_VGA480P60,
+    SM_OPT_SNES_256COL,
+    SM_OPT_SNES_512COL,
+    SM_OPT_MD_256COL,
+    SM_OPT_MD_320COL,
+    SM_OPT_PSX_256COL,
+    SM_OPT_PSX_320COL,
+    SM_OPT_PSX_384COL,
+    SM_OPT_PSX_512COL,
+    SM_OPT_PSX_640COL,
+    SM_OPT_SAT_320COL,
+    SM_OPT_SAT_352COL,
+    SM_OPT_SAT_704COL,
+} ad_sampling_mode_t;
+
 typedef struct {
     uint16_t h_active:13;
     uint16_t v_active:11;
-    uint8_t v_hz;
+    uint8_t v_hz_max;
     uint16_t h_total;
     uint8_t  h_total_adj:5;
     uint16_t v_total:11;
@@ -164,11 +221,19 @@ typedef struct {
 } mode_data_t;
 
 typedef struct {
-    ad_mode_id_t id;
+    char name[14];
     sync_timings_t timings_i;
+    uint8_t h_skip;
     uint8_t sampler_phase;
     video_type type:4;
     video_group group:4;
+    ad_sampling_mode_t sm;
+} ad_preset_t;
+
+typedef struct {
+    ad_mode_id_t id;
+    ad_preset_id_t preset_id;
+    uint16_t v_total_override;
     uint8_t x_rpt;
     uint8_t y_rpt;
     int16_t x_offset_i;
@@ -179,7 +244,7 @@ typedef struct {
 typedef struct {
     uint8_t x_rpt;
     uint8_t y_rpt;
-    uint8_t x_skip;
+    uint8_t h_skip;
     int16_t x_offset;
     int16_t y_offset;
     uint16_t x_size;
@@ -194,9 +259,9 @@ void set_default_vm_table();
 
 uint32_t estimate_dotclk(mode_data_t *vm_in, uint32_t h_hz);
 
-int get_adaptive_mode(uint16_t totlines, uint8_t interlaced, uint16_t hz_x100, vm_mult_config_t *vm_conf, mode_data_t *vm_in, mode_data_t *vm_out);
+int get_adaptive_lm_mode(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t *vm_conf);
 
-int get_mode_id(uint16_t totlines, uint8_t interlaced, uint16_t hz_x100, video_type typemask, vm_mult_config_t *vm_conf, mode_data_t *vm_in, mode_data_t *vm_out);
+int get_pure_lm_mode(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t *vm_conf);
 
 int get_standard_mode(unsigned stdmode_idx_arr_idx, vm_mult_config_t *vm_conf, mode_data_t *vm_in, mode_data_t *vm_out);
 

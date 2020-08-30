@@ -25,6 +25,7 @@
 #include "video_modes.h"
 
 // sys_ctrl
+#define SCTRL_POWER_ON        (1<<0)
 #define SCTRL_ISL_RESET_N     (1<<1)
 #define SCTRL_HDMIRX_RESET_N  (1<<2)
 #define SCTRL_EMIF_HWRESET_N  (1<<3)
@@ -43,8 +44,6 @@
 #define SSTAT_RRPT_OFFS 16
 #define SSTAT_BTN_MASK  0x03000000
 #define SSTAT_BTN_OFFS  24
-#define SSTAT_VS_MASK   0x04000000
-#define SSTAT_VS_OFFS   26
 
 typedef enum {
     AV_TESTPAT      = 0,
@@ -64,12 +63,26 @@ typedef enum {
     AV_LAST         = 14
 } avinput_t;
 
+typedef enum {
+    AUD_AV1_ANALOG  = 0,
+    AUD_AV2_ANALOG  = 1,
+    AUD_AV3_ANALOG  = 2,
+    AUD_SPDIF       = 3,
+    AUD_AV4_DIGITAL = 4,
+} audinput_t;
+
 void chardisp_write_status();
 
 void switch_input(rc_code_t code, btn_vec_t pb_vec);
 
 void switch_audmux(uint8_t audmux_sel);
 
+void switch_audsrc(audinput_t *audsrc_map, adv7513_audio_fmt_t *aud_tx_fmt);
+
 void switch_tp_mode(rc_code_t code);
+
+int sys_is_powered_on();
+
+void sys_toggle_power();
 
 #endif

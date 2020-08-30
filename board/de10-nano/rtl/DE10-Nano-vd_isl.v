@@ -223,8 +223,8 @@ isl51002_frontend u_isl_frontend (
     .DE_o(ISL_DE_post),
     .FID_o(ISL_FID_post),
     .interlace_flag(ISL_fe_interlace),
-    .xpos(ISL_fe_xpos),
-    .ypos(ISL_fe_ypos),
+    .xpos_o(ISL_fe_xpos),
+    .ypos_o(ISL_fe_ypos),
     .vtotal(ISL_fe_vtotal),
     .frame_change(ISL_fe_frame_change),
     .pcnt_frame(ISL_fe_pcnt_frame)

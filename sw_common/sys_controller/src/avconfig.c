@@ -36,13 +36,14 @@ const avconfig_t tc_default = {
     .pm_480i = 1,
     .pm_1080i = 1,
     .pm_ad_240p = 2,
-    .pm_ad_288p = 2,
-    .pm_ad_480i = 3,
-    .pm_ad_576i = 2,
-    .pm_ad_480p = 3,
-    .pm_ad_576p = 2,
+    .pm_ad_288p = 3,
+    .pm_ad_480i = 4,
+    .pm_ad_576i = 3,
+    .pm_ad_480p = 4,
+    .pm_ad_576p = 0,
     .sl_altern = 1,
     .adapt_lm = 1,
+    .audio_src_map = {AUD_AV1_ANALOG, AUD_AV2_ANALOG, AUD_AV3_ANALOG, AUD_AV4_DIGITAL},
 };
 
 int reset_target_avconfig() {
@@ -98,6 +99,10 @@ status_t update_avconfig() {
         (tc.pm_ad_576i != cc.pm_ad_576i) ||
         (tc.pm_ad_480p != cc.pm_ad_480p) ||
         (tc.pm_ad_576p != cc.pm_ad_576p) ||
+        (tc.sm_ad_240p_288p != cc.sm_ad_240p_288p) ||
+        (tc.sm_ad_480i_576i != cc.sm_ad_480i_576i) ||
+        (tc.sm_ad_480p != cc.sm_ad_480p) ||
+        (tc.sm_ad_576p != cc.sm_ad_576p) ||
         (tc.adapt_lm != cc.adapt_lm) ||
         (tc.upsample2x != cc.upsample2x) ||
         (tc.default_vic != cc.default_vic))
@@ -106,6 +111,8 @@ status_t update_avconfig() {
 #ifndef DExx_FW
     if (tc.audmux_sel != cc.audmux_sel)
         switch_audmux(tc.audmux_sel);
+    if (memcmp(tc.audio_src_map, cc.audio_src_map, 4*sizeof(audinput_t)))
+        switch_audsrc(tc.audio_src_map, &tc.adv7513_cfg.audio_fmt);
 #endif
 
     memcpy(&cc, &tc, sizeof(avconfig_t));
