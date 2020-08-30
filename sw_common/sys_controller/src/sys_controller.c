@@ -63,6 +63,8 @@ char row2[US2066_ROW_LEN+1];
 
 static const char *avinput_str[] = { "Test pattern", "AV1_RGBS", "AV1_RGsB", "AV1_YPbPr", "AV1_RGBHV", "AV1_RGBCS", "AV2_YPbPr", "AV2_RGsB", "AV3_RGBHV", "AV3_RGBCS", "AV3_RGBS", "AV3_RGsB", "AV3_YPbPr", "AV4", "Last used" };
 
+si5351_ms_config_t si_audio_mclk_conf = {3740, 628, 1125, 4160, 0, 2, 0, 0, 0};
+
 void chardisp_write_status() {
     if (!is_menu_active()) {
         us2066_write(&chardisp_dev, row1, row2);
@@ -248,6 +250,8 @@ int main() {
     }
 
     cur_avconfig = get_current_avconfig();
+
+    si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, &si_audio_mclk_conf);
 
     while (1) {
 

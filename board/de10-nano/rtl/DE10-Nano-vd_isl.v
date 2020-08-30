@@ -104,7 +104,7 @@ module DE10_Nano_vd_isl (
 
 wire clk27, PCLK_sc, pclk_out;
 wire SI_PCLK_i = GPIO_0[0];
-wire ISL_PCLK_i = GPIO_0[2];
+wire ISL_PCLK_i = GPIO_0[1];
 wire sys_reset_n = 1'b1;
 wire [7:0] ISL_R_i = {GPIO_0[22], GPIO_0[23], GPIO_0[24], GPIO_0[25], GPIO_0[26], GPIO_0[27], GPIO_0[28], GPIO_0[29]};
 wire [7:0] ISL_G_i = {GPIO_0[14], GPIO_0[15], GPIO_0[16], GPIO_0[17], GPIO_0[18], GPIO_0[19], GPIO_0[20], GPIO_0[21]};
@@ -119,7 +119,7 @@ wire pclk_capture = ISL_PCLK_i;
 wire SPDIF_EXT_i = ARDUINO_IO[4];
 
 // Minimize impendance to GND on FPGA end
-assign GPIO_0[1] = 1'b0;
+assign GPIO_0[2] = 1'b0;
 assign GPIO_0[3] = 1'b0;
 
 wire [15:0] sys_ctrl;

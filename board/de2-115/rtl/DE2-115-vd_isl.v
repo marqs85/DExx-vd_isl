@@ -64,7 +64,7 @@ module DE2_115_vd_isl (
 
 wire clk27, PCLK_sc, pclk_out;
 wire SI_PCLK_i = GPIO[0];
-wire ISL_PCLK_i = GPIO[2];
+wire ISL_PCLK_i = GPIO[1];
 wire sys_reset_n = 1'b1;
 wire [7:0] ISL_R_i = {GPIO[22], GPIO[23], GPIO[24], GPIO[25], GPIO[26], GPIO[27], GPIO[28], GPIO[29]};
 wire [7:0] ISL_G_i = {GPIO[14], GPIO[15], GPIO[16], GPIO[17], GPIO[18], GPIO[19], GPIO[20], GPIO[21]};
@@ -78,7 +78,7 @@ wire pclk_capture = ISL_PCLK_i;
 wire SPDIF_EXT_i = EX_IO[0];
 
 // Minimize impendance to GND on FPGA end
-assign GPIO[1] = 1'b0;
+assign GPIO[2] = 1'b0;
 assign GPIO[3] = 1'b0;
 
 wire [15:0] sys_ctrl;

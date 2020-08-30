@@ -6,7 +6,7 @@ create_clock -period 20 -name clk50 [get_ports CLOCK_50]
 create_clock -period 20 -name clk50_2 [get_ports CLOCK2_50]
 create_clock -period 20 -name clk50_3 [get_ports CLOCK3_50]
 
-create_clock -period 75MHz -name pclk_isl [get_ports GPIO[2]]
+create_clock -period 108MHz -name pclk_isl [get_ports GPIO[1]]
 create_clock -period 165MHz -name pclk_si [get_ports GPIO[0]]
 
 #**************************************************************

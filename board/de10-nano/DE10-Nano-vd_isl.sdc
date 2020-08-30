@@ -6,7 +6,7 @@ create_clock -period 20 -name clk50 [get_ports FPGA_CLK1_50]
 create_clock -period 20 -name clk50_2 [get_ports FPGA_CLK2_50]
 create_clock -period 20 -name clk50_3 [get_ports FPGA_CLK3_50]
 
-create_clock -period 75MHz -name pclk_isl [get_ports GPIO_0[2]]
+create_clock -period 108MHz -name pclk_isl [get_ports GPIO_0[1]]
 create_clock -period 165MHz -name pclk_si [get_ports GPIO_0[0]]
 
 #**************************************************************
@@ -42,9 +42,9 @@ set ISL_inputs [get_ports {GPIO_0[32] GPIO_0[31] GPIO_0[30] GPIO_0[29] GPIO_0[28
 set_input_delay -clock pclk_isl -clock_fall -min $ISL_dmin $ISL_inputs -add_delay
 set_input_delay -clock pclk_isl -clock_fall -max $ISL_dmax $ISL_inputs -add_delay
 
-# ADV7513
-set hdmitx_dmin -0.7
-set hdmitx_dmax 1
+# ADV7513 (0ns video clock delay adjustment)
+set hdmitx_dmin -1.9
+set hdmitx_dmax -0.2
 set hdmitx_data_outputs [get_ports {HDMI_TX_D* HDMI_TX_HS HDMI_TX_VS HDMI_TX_DE}]
 set_output_delay -clock pclk_si_out -min $hdmitx_dmin $hdmitx_data_outputs -add_delay
 set_output_delay -clock pclk_si_out -max $hdmitx_dmax $hdmitx_data_outputs -add_delay
