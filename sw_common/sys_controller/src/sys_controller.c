@@ -18,7 +18,7 @@
 #include "video_modes.h"
 
 #define FW_VER_MAJOR 0
-#define FW_VER_MINOR 39
+#define FW_VER_MINOR 40
 
 //fix PD and cec
 #define ADV7513_MAIN_BASE 0x72
@@ -52,8 +52,8 @@ alt_up_character_lcd_dev charlcd_dev = {.base = CHARACTER_LCD_0_BASE};
 #endif
 
 volatile sc_regs *sc = (volatile sc_regs*)SC_CONFIG_0_BASE;
+volatile osd_regs *osd = (volatile osd_regs*)OSD_GENERATOR_0_BASE;
 
-extern mode_data_t video_modes[], video_modes_default[];
 extern avconfig_t tc;
 
 uint16_t sys_ctrl;
@@ -63,19 +63,56 @@ uint8_t sys_powered_on;
 uint8_t btn_vec, btn_vec_prev;
 uint8_t remote_rpt, remote_rpt_prev;
 
+extern uint8_t osd_enable;
+
 avinput_t avinput = AV_TESTPAT, target_avinput;
 unsigned tp_stdmode_idx=-1, target_tp_stdmode_idx=2; // STDMODE_480p
 
-char row1[US2066_ROW_LEN+1];
-char row2[US2066_ROW_LEN+1];
+char row1[US2066_ROW_LEN+1], row2[US2066_ROW_LEN+1];
+extern char menu_row1[US2066_ROW_LEN+1], menu_row2[US2066_ROW_LEN+1];
 
 static const char *avinput_str[] = { "Test pattern", "AV1_RGBS", "AV1_RGsB", "AV1_YPbPr", "AV1_RGBHV", "AV1_RGBCS", "AV2_YPbPr", "AV2_RGsB", "AV3_RGBHV", "AV3_RGBCS", "AV3_RGBS", "AV3_RGsB", "AV3_YPbPr", "AV4", "Last used" };
 
 si5351_ms_config_t si_audio_mclk_conf = {3740, 628, 1125, 4160, 0, 2, 0, 0, 0};
 
-void chardisp_write_status() {
+void ui_disp_menu(uint8_t osd_mode)
+{
+    uint8_t menu_page;
+
+    if ((osd_mode == 1) || (osd_enable == 2)) {
+        strncpy((char*)osd->osd_array.data[0][0], menu_row1, OSD_CHAR_COLS);
+        strncpy((char*)osd->osd_array.data[1][0], menu_row2, OSD_CHAR_COLS);
+        osd->osd_row_color.mask = 0;
+        osd->osd_sec_enable[0].mask = 3;
+        osd->osd_sec_enable[1].mask = 0;
+    } else if (osd_mode == 2) {
+        menu_page = get_current_menunavi()->mp;
+        strncpy((char*)osd->osd_array.data[menu_page][1], menu_row2, OSD_CHAR_COLS);
+        osd->osd_sec_enable[1].mask |= (1<<menu_page);
+    }
+
+    us2066_write(&chardisp_dev, (char*)&menu_row1, (char*)&menu_row2);
+
+#ifdef DE2_115
+    alt_up_character_lcd_init(&charlcd_dev);
+    alt_up_character_lcd_string(&charlcd_dev, menu_row1);
+    alt_up_character_lcd_set_cursor_pos(&charlcd_dev, 0, 1);
+    alt_up_character_lcd_string(&charlcd_dev, menu_row2);
+#endif
+}
+
+void ui_disp_status(uint8_t refresh_osd_timer) {
     if (!is_menu_active()) {
-        us2066_write(&chardisp_dev, row1, row2);
+        if (refresh_osd_timer)
+            osd->osd_config.status_refresh = 1;
+
+        strncpy((char*)osd->osd_array.data[0][0], row1, OSD_CHAR_COLS);
+        strncpy((char*)osd->osd_array.data[1][0], row2, OSD_CHAR_COLS);
+        osd->osd_row_color.mask = 0;
+        osd->osd_sec_enable[0].mask = 3;
+        osd->osd_sec_enable[1].mask = 0;
+
+        us2066_write(&chardisp_dev, (char*)&row1, (char*)&row2);
 
 #ifdef DE2_115
         alt_up_character_lcd_init(&charlcd_dev);
@@ -171,7 +208,7 @@ int init_hw() {
 
     // Init ISL51002
     sniprintf(row1, US2066_ROW_LEN+1, "Init ISL51002");
-    chardisp_write_status();
+    ui_disp_status(1);
     ret = isl_init(&isl_dev);
     if (ret != 0) {
         printf("ISL51002 init fail\n");
@@ -186,7 +223,7 @@ int init_hw() {
 
     // Init Si5351C
     sniprintf(row1, US2066_ROW_LEN+1, "Init Si5351C");
-    chardisp_write_status();
+    ui_disp_status(1);
     si5351_init(&si_dev);
 
     set_default_avconfig(1);
@@ -382,9 +419,10 @@ void mainloop()
 
             strncpy(row1, avinput_str[avinput], US2066_ROW_LEN+1);
             strncpy(row2, "    NO SYNC", US2066_ROW_LEN+1);
-            chardisp_write_status();
+            ui_disp_status(1);
         }
 
+        update_settings();
         status = update_avconfig();
 
         if (enable_tp) {
@@ -395,12 +433,13 @@ void mainloop()
                 else
                     si5351_set_frac_mult(&si_dev, SI_PLLA, SI_CLK4, SI_XTAL, &vmode_out.si_ms_conf);
 
+                update_osd_size(&vmode_out);
                 update_sc_config(&vmode_in, &vmode_out, &vm_conf, cur_avconfig);
                 adv7513_set_pixelrep_vic(&advtx_dev, vmode_out.tx_pixelrep, vmode_out.hdmitx_pixr_ifr, vmode_out.vic);
 
                 //sniprintf(row2, US2066_ROW_LEN+1, "%ux%u%c @ %uHz", vmode_out.timings.h_active, vmode_out.timings.v_active<<vmode_out.timings.interlaced, vmode_out.timings.interlaced ? 'i' : ' ', vmode_out.timings.v_hz_max);
                 sniprintf(row2, US2066_ROW_LEN+1, "Test: %s", vmode_out.name);
-                chardisp_write_status();
+                ui_disp_status(1);
 
                 tp_stdmode_idx = target_tp_stdmode_idx;
             }
@@ -415,7 +454,7 @@ void mainloop()
                     isl_enable_outputs(&isl_dev, 0);
                     strncpy(row1, avinput_str[avinput], US2066_ROW_LEN+1);
                     strncpy(row2, "    NO SYNC", US2066_ROW_LEN+1);
-                    chardisp_write_status();
+                    ui_disp_status(1);
                     printf("ISL51002 sync lost\n");
                 }
             }
@@ -465,7 +504,7 @@ void mainloop()
                                                                                             (v_hz_x100%100),
                                                                                             isl_dev.ss.h_polarity ? '-' : '+',
                                                                                             (target_isl_sync == SYNC_HV) ? (isl_dev.ss.v_polarity ? '-' : '+') : (isl_dev.ss.sog_trilevel ? '3' : ' '));
-                        chardisp_write_status();
+                        ui_disp_status(1);
 
                         pll_h_total = (vm_conf.h_skip+1) * vmode_in.timings.h_total + (((vm_conf.h_skip+1) * vmode_in.timings.h_total_adj * 5 + 50) / 100);
 
@@ -496,6 +535,7 @@ void mainloop()
                             sys_ctrl |= SCTRL_ISL_VS_POL;
                         IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);
 
+                        update_osd_size(&vmode_out);
                         update_sc_config(&vmode_in, &vmode_out, &vm_conf, cur_avconfig);
 
                         // Setup VIC and pixel repetition
@@ -527,7 +567,7 @@ int main()
         if (ret != 0) {
             sniprintf(row2, US2066_ROW_LEN+1, "failed (%d)", ret);
             us2066_display_on(&chardisp_dev);
-            chardisp_write_status();
+            ui_disp_status(1);
             while (1) {}
         }
 
@@ -536,7 +576,7 @@ int main()
         sys_powered_on = 1;
 
         sniprintf(row1, US2066_ROW_LEN+1, "DExx-vd fw. %u.%.2u", FW_VER_MAJOR, FW_VER_MINOR);
-        chardisp_write_status();
+        ui_disp_status(1);
 
         // ADVRX powerup
         // pcm powerup

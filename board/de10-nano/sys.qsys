@@ -45,7 +45,7 @@
    {
       datum baseAddress
       {
-         value = "135264";
+         value = "136320";
          type = "String";
       }
    }
@@ -61,7 +61,7 @@
    {
       datum baseAddress
       {
-         value = "135232";
+         value = "136288";
          type = "String";
       }
    }
@@ -77,7 +77,7 @@
    {
       datum baseAddress
       {
-         value = "135336";
+         value = "136392";
          type = "String";
       }
    }
@@ -113,6 +113,22 @@
          type = "String";
       }
    }
+   element osd_generator_0
+   {
+      datum _sortIndex
+      {
+         value = "12";
+         type = "int";
+      }
+   }
+   element osd_generator_0.avalon_s
+   {
+      datum baseAddress
+      {
+         value = "135168";
+         type = "String";
+      }
+   }
    element pio_0
    {
       datum _sortIndex
@@ -125,7 +141,7 @@
    {
       datum baseAddress
       {
-         value = "135312";
+         value = "136368";
          type = "String";
       }
    }
@@ -141,7 +157,7 @@
    {
       datum baseAddress
       {
-         value = "135296";
+         value = "136352";
          type = "String";
       }
    }
@@ -157,7 +173,7 @@
    {
       datum baseAddress
       {
-         value = "135168";
+         value = "136192";
          type = "String";
       }
    }
@@ -173,7 +189,7 @@
    {
       datum baseAddress
       {
-         value = "135328";
+         value = "136384";
          type = "String";
       }
    }
@@ -183,6 +199,14 @@
       {
          value = "11";
          type = "int";
+      }
+   }
+   element timer_0.s1
+   {
+      datum baseAddress
+      {
+         value = "136256";
+         type = "String";
       }
    }
 }
@@ -216,6 +240,11 @@
  <interface
    name="i2c_opencores_1_export"
    internal="i2c_opencores_1.export"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="osd_generator_0_osd_if"
+   internal="osd_generator_0.osd_if"
    type="conduit"
    dir="end" />
  <interface
@@ -302,7 +331,7 @@
   <parameter name="dataAddrWidth" value="18" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='timer_0.s1' start='0x0' end='0x20' type='altera_avalon_timer.s1' /><slave name='onchip_memory2_0.s1' start='0x10000' end='0x20000' type='altera_avalon_onchip_memory2.s1' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x20800' end='0x21000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='sc_config_0.avalon_s' start='0x21000' end='0x21040' type='sc_config.avalon_s' /><slave name='i2c_opencores_1.avalon_slave_0' start='0x21040' end='0x21060' type='i2c_opencores.avalon_slave_0' /><slave name='i2c_opencores_0.avalon_slave_0' start='0x21060' end='0x21080' type='i2c_opencores.avalon_slave_0' /><slave name='pio_1.s1' start='0x21080' end='0x21090' type='altera_avalon_pio.s1' /><slave name='pio_0.s1' start='0x21090' end='0x210A0' type='altera_avalon_pio.s1' /><slave name='sysid_qsys_0.control_slave' start='0x210A0' end='0x210A8' type='altera_avalon_sysid_qsys.control_slave' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x210A8' end='0x210B0' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory2_0.s1' start='0x10000' end='0x20000' type='altera_avalon_onchip_memory2.s1' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x20800' end='0x21000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='osd_generator_0.avalon_s' start='0x21000' end='0x21400' type='osd_generator.avalon_s' /><slave name='sc_config_0.avalon_s' start='0x21400' end='0x21440' type='sc_config.avalon_s' /><slave name='timer_0.s1' start='0x21440' end='0x21460' type='altera_avalon_timer.s1' /><slave name='i2c_opencores_1.avalon_slave_0' start='0x21460' end='0x21480' type='i2c_opencores.avalon_slave_0' /><slave name='i2c_opencores_0.avalon_slave_0' start='0x21480' end='0x214A0' type='i2c_opencores.avalon_slave_0' /><slave name='pio_1.s1' start='0x214A0' end='0x214B0' type='altera_avalon_pio.s1' /><slave name='pio_0.s1' start='0x214B0' end='0x214C0' type='altera_avalon_pio.s1' /><slave name='sysid_qsys_0.control_slave' start='0x214C0' end='0x214C8' type='altera_avalon_sysid_qsys.control_slave' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x214C8' end='0x214D0' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -492,6 +521,7 @@
   <parameter name="useShallowMemBlocks" value="false" />
   <parameter name="writable" value="true" />
  </module>
+ <module name="osd_generator_0" kind="osd_generator" version="1.0" enabled="1" />
  <module name="pio_0" kind="altera_avalon_pio" version="19.1" enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
@@ -546,7 +576,7 @@
    start="nios2_gen2_0.data_master"
    end="jtag_uart_0.avalon_jtag_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x000210a8" />
+  <parameter name="baseAddress" value="0x000214c8" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -554,6 +584,15 @@
    version="19.1"
    start="nios2_gen2_0.data_master"
    end="sc_config_0.avalon_s">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00021400" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="19.1"
+   start="nios2_gen2_0.data_master"
+   end="osd_generator_0.avalon_s">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x00021000" />
   <parameter name="defaultConnection" value="false" />
@@ -564,7 +603,7 @@
    start="nios2_gen2_0.data_master"
    end="i2c_opencores_0.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00021060" />
+  <parameter name="baseAddress" value="0x00021480" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -573,7 +612,7 @@
    start="nios2_gen2_0.data_master"
    end="i2c_opencores_1.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00021040" />
+  <parameter name="baseAddress" value="0x00021460" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -582,7 +621,7 @@
    start="nios2_gen2_0.data_master"
    end="sysid_qsys_0.control_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x000210a0" />
+  <parameter name="baseAddress" value="0x000214c0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -618,7 +657,7 @@
    start="nios2_gen2_0.data_master"
    end="pio_0.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00021090" />
+  <parameter name="baseAddress" value="0x000214b0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -627,7 +666,7 @@
    start="nios2_gen2_0.data_master"
    end="pio_1.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00021080" />
+  <parameter name="baseAddress" value="0x000214a0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -636,7 +675,7 @@
    start="nios2_gen2_0.data_master"
    end="timer_0.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="baseAddress" value="0x00021440" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -684,6 +723,11 @@
    version="19.1"
    start="clk_0.clk"
    end="sc_config_0.clock_sink" />
+ <connection
+   kind="clock"
+   version="19.1"
+   start="clk_0.clk"
+   end="osd_generator_0.clock_sink" />
  <connection
    kind="interrupt"
    version="19.1"
@@ -759,6 +803,11 @@
    version="19.1"
    start="clk_0.clk_reset"
    end="i2c_0.reset_sink" />
+ <connection
+   kind="reset"
+   version="19.1"
+   start="clk_0.clk_reset"
+   end="osd_generator_0.reset_sink" />
  <connection
    kind="reset"
    version="19.1"

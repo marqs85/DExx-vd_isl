@@ -21,6 +21,7 @@
 #define CONTROLS_H_
 
 #include <stdint.h>
+#include "sysconfig.h"
 
 typedef enum {
     RC_BTN1                 = 0,

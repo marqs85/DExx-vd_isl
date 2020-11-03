@@ -168,6 +168,9 @@ wire resync_strobe = resync_strobe_sync2_reg;
 
 assign LED = {pll_lock, 5'h0, (ir_code == 0), (resync_led_ctr != 0)};
 
+wire [10:0] xpos, ypos;
+wire osd_enable;
+wire [1:0] osd_color;
 
 
 // ISL51002 RGB digitizer
@@ -239,13 +242,28 @@ reg [7:0] R_out, G_out, B_out;
 reg HSYNC_out, VSYNC_out, DE_out;
 wire [7:0] R_sc, G_sc, B_sc;
 wire HSYNC_sc, VSYNC_sc, DE_sc;
-always @(negedge pclk_out) begin
-    R_out <= R_sc;
-    G_out <= G_sc;
-    B_out <= B_sc;
+
+always @(posedge pclk_out) begin
+    if (osd_enable) begin
+        if (osd_color == 2'h0) begin
+            {R_out, G_out, B_out} <= 24'h000000;
+        end else if (osd_color == 2'h1) begin
+            {R_out, G_out, B_out} <= 24'h0000ff;
+        end else if (osd_color == 2'h2) begin
+            {R_out, G_out, B_out} <= 24'hffff00;
+        end else begin
+            {R_out, G_out, B_out} <= 24'hffffff;
+        end
+    end else begin
+        {R_out, G_out, B_out} <= {R_sc, G_sc, B_sc};
+    end
+
     HSYNC_out <= HSYNC_sc;
     VSYNC_out <= VSYNC_sc;
     DE_out <= DE_sc;
+end
+
+always @(negedge pclk_out) begin
     HDMI_TX_D[23:16] <= R_out;
     HDMI_TX_D[15:8] <= G_out;
     HDMI_TX_D[7:0] <= B_out;
@@ -321,7 +339,12 @@ sys u0 (
     .sc_config_0_sc_if_xy_out_config2_o     (xy_out_config2),
     .sc_config_0_sc_if_misc_config_o        (misc_config),
     .sc_config_0_sc_if_sl_config_o          (sl_config),
-    .sc_config_0_sc_if_sl_config2_o         (sl_config2)
+    .sc_config_0_sc_if_sl_config2_o         (sl_config2),
+    .osd_generator_0_osd_if_vclk            (SI_PCLK_i),
+    .osd_generator_0_osd_if_xpos            (xpos),
+    .osd_generator_0_osd_if_ypos            (ypos),
+    .osd_generator_0_osd_if_osd_enable      (osd_enable),
+    .osd_generator_0_osd_if_osd_color       (osd_color)
 );
 
 scanconverter scanconverter_inst (
@@ -355,8 +378,8 @@ scanconverter scanconverter_inst (
     .HSYNC_o(HSYNC_sc),
     .VSYNC_o(VSYNC_sc),
     .DE_o(DE_sc),
-    .xpos_o(),
-    .ypos_o(),
+    .xpos_o(xpos),
+    .ypos_o(ypos),
     .resync_strobe(resync_strobe_i)
 );
 

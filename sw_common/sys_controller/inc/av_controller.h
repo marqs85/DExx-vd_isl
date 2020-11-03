@@ -23,6 +23,7 @@
 #include "sysconfig.h"
 #include "controls.h"
 #include "video_modes.h"
+#include "osd_generator_regs.h"
 
 // sys_ctrl
 #define SCTRL_POWER_ON        (1<<0)
@@ -71,7 +72,8 @@ typedef enum {
     AUD_AV4_DIGITAL = 4,
 } audinput_t;
 
-void chardisp_write_status();
+void ui_disp_menu(uint8_t osd_mode);
+void ui_disp_status(uint8_t refresh_osd_timer);
 
 void switch_input(rc_code_t code, btn_vec_t pb_vec);
 
