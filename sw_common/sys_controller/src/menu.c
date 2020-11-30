@@ -71,9 +71,9 @@ static const char *pm_ad_480i_desc[] = { "Skip", "720x240 (240p rest.)", "1280x1
 static const char *pm_ad_576i_desc[] = { "Skip", "720x288 (288p rest.)", "1080i (288p rest+L2x)", "1920x1080 (Dint+L4x)" };
 static const char *pm_ad_480p_desc[] = { "Skip", "720x240 (Line drop)", "1280x1024 (Line2x)", "1920x1080i (Line1x)", "1920x1080 (Line2x)", "1920x1440 (Line3x)" };
 static const char *pm_ad_576p_desc[] = { "Skip", "720x288 (Line drop)", "1920x1200 (Line2x)" };
-static const char *sm_ad_240p_288p_desc[] = { "Generic 4:3", "SNES 256col", "SNES 512col", "MD 256col", "MD 320col", "PSX 256col", "PSX 320col", "PSX 384col", "PSX 512col", "PSX 640col" };
-static const char *sm_ad_480i_576i_desc[] = { "Generic 4:3" };
-static const char *sm_ad_480p_desc[] = { "Generic 4:3", "DTV 480p", "VESA 640x480@60" };
+static const char *sm_ad_240p_288p_desc[] = { "Generic 4:3", "SNES 256col", "SNES 512col", "MD 256col", "MD 320col", "PSX 256col", "PSX 320col", "PSX 384col", "PSX 512col", "PSX 640col", "N64 320col", "N64 640col" };
+static const char *sm_ad_480i_576i_desc[] = { "Generic 4:3", "Generic 16:9" };
+static const char *sm_ad_480p_desc[] = { "Generic 4:3", "Generic 16:9", "DTV 480p 4:3", "DTV 480p 16:9", "VESA 640x480@60" };
 static const char *sm_ad_576p_desc[] = { "Generic 4:3" };
 static const char *lm_deint_mode_desc[] = { "Bob", "Noninterlace restore" };
 static const char *ar_256col_desc[] = { "4:3", "8:7" };
@@ -94,7 +94,7 @@ static const char *rgsb_ypbpr_desc[] = { "RGsB", "YPbPr" };
 static const char *auto_input_desc[] = { "Off", "Current input", "All inputs" };
 static const char *mask_color_desc[] = { "Black", "Blue", "Green", "Cyan", "Red", "Magenta", "Yellow", "White" };
 static const char *av3_alt_rgb_desc[] = { "Off", "AV1", "AV2" };
-static const char *adv7611_rgb_range_desc[] = { "Limited", "Full" };
+static const char *adv761x_rgb_range_desc[] = { "Limited", "Full" };
 
 static void afe_bw_disp(uint8_t v) { sniprintf(menu_row2, US2066_ROW_LEN+1, "%s%uMHz%s", (v==0 ? "Auto (" : ""), isl_get_afe_bw(&isl_dev, v), (v==0 ? ")" : "")); }
 static void sog_vth_disp(uint8_t v) { sniprintf(menu_row2, US2066_ROW_LEN+1, "%u mV", (v*20)); }
@@ -181,7 +181,7 @@ MENU(menu_isl_sync_opt, P99_PROTECT({ \
 
 #ifndef DExx_FW
 MENU(menu_adv_video_opt, P99_PROTECT({ \
-    { "Default RGB range",                      OPT_AVCONFIG_SELECTION, { .sel = { &tc.adv7611_cfg.default_rgb_range,    OPT_WRAP,   SETTING_ITEM(adv7611_rgb_range_desc) } } },
+    { "Default RGB range",                      OPT_AVCONFIG_SELECTION, { .sel = { &tc.adv761x_cfg.default_rgb_range,    OPT_WRAP,   SETTING_ITEM(adv761x_rgb_range_desc) } } },
 }))
 #endif
 

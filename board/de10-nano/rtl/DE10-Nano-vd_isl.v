@@ -123,20 +123,23 @@ assign GPIO_0[2] = 1'b0;
 assign GPIO_0[3] = 1'b0;
 
 wire [15:0] sys_ctrl;
-wire sys_extra = sys_ctrl[0];
+/*wire sys_poweron = sys_ctrl[0];
 wire isl_reset_n = sys_ctrl[1];
 wire hdmirx_reset_n = sys_ctrl[2];
 wire emif_hwreset_n = sys_ctrl[3];
 wire emif_swreset_n = sys_ctrl[4];
-wire capture_sel = sys_ctrl[5];
-wire isl_vs_pol = sys_ctrl[6];
-wire isl_vs_type = sys_ctrl[7];
-wire audmux_sel = sys_ctrl[8];
-wire testpattern_enable = sys_ctrl[9];
-wire csc_enable = sys_ctrl[10];
+wire emif_powerdn_req = sys_ctrl[5];
+wire emif_powerdn_mask = sys_ctrl[6];
+wire capture_sel = sys_ctrl[7];*/
+wire isl_hsync_pol = sys_ctrl[8];
+wire isl_vsync_pol = sys_ctrl[9];
+wire isl_vsync_type = sys_ctrl[10];
+//wire audmux_sel = sys_ctrl[11];
+wire testpattern_enable = sys_ctrl[12];
+wire csc_enable = sys_ctrl[13];
+wire adap_lm = sys_ctrl[14];
 
 //reg [1:0] clk_osc_div = 2'h0;
-//wire [31:0] h_in_config, h_in_config2, v_in_config, h_out_config, h_out_config2, v_out_config, v_out_config2;
 /*wire SCL = GPIO_0[5] & HDMI_I2C_SCL;
 wire SDA = GPIO_0[4] & HDMI_I2C_SDA;*/
 /*assign GPIO_0[5] = scl_oe ? 1'b0 : 1'bz;
@@ -156,7 +159,8 @@ wire nios_reset_req;
 
 wire vs_flag = testpattern_enable ? 1'b0 : ~ISL_VSYNC_post;
 
-wire [31:0] sys_status = {5'h0, vs_flag, btn_sync2_reg, ir_code_cnt, ir_code};
+wire [31:0] controls = {6'h0, btn_sync2_reg, ir_code_cnt, ir_code};
+wire [31:0] sys_status = {32'h0};
 
 wire [31:0] hv_in_config, hv_in_config2, hv_in_config3, hv_out_config, hv_out_config2, hv_out_config3, xy_out_config, xy_out_config2;
 wire [31:0] misc_config, sl_config, sl_config2;
@@ -166,7 +170,7 @@ reg resync_strobe_sync1_reg, resync_strobe_sync2_reg, resync_strobe_prev;
 wire resync_strobe_i;
 wire resync_strobe = resync_strobe_sync2_reg;
 
-assign LED = {pll_lock, 5'h0, (ir_code == 0), (resync_led_ctr != 0)};
+assign LED = {{4{adap_lm}}, (ir_code == 0), {3{(resync_led_ctr != 0)}}};
 
 wire [10:0] xpos, ypos;
 wire osd_enable;
@@ -176,22 +180,29 @@ wire [1:0] osd_color;
 // ISL51002 RGB digitizer
 reg [7:0] ISL_R, ISL_G, ISL_B;
 reg ISL_HS;
-reg ISL_DE;
-reg ISL_FID;
+reg ISL_VS_sync1_reg, ISL_VS_sync2_reg;
 reg ISL_HSYNC_sync1_reg, ISL_HSYNC_sync2_reg;
 reg ISL_VSYNC_sync1_reg, ISL_VSYNC_sync2_reg;
+reg ISL_FID_sync1_reg, ISL_FID_sync2_reg;
+reg ISL_DE;
 always @(posedge ISL_PCLK_i) begin
     ISL_R <= ISL_R_i;
     ISL_G <= ISL_G_i;
     ISL_B <= ISL_B_i;
     ISL_HS <= ISL_HS_i;
-    ISL_FID <= ISL_FID_i;
 
     // sync to pclk
+    ISL_VS_sync1_reg <= ISL_VSYNC_i;
+    ISL_VS_sync2_reg <= ISL_VS_sync1_reg;
+end
+always @(posedge clk27) begin
+    // sync to always-running fixed meas clk
     ISL_HSYNC_sync1_reg <= ISL_HSYNC_i;
     ISL_HSYNC_sync2_reg <= ISL_HSYNC_sync1_reg;
     ISL_VSYNC_sync1_reg <= ISL_VSYNC_i;
     ISL_VSYNC_sync2_reg <= ISL_VSYNC_sync1_reg;
+    ISL_FID_sync1_reg <= ISL_FID_i;
+    ISL_FID_sync2_reg <= ISL_FID_sync1_reg;
 end
 
 wire [7:0] ISL_R_post, ISL_G_post, ISL_B_post;
@@ -207,12 +218,14 @@ isl51002_frontend u_isl_frontend (
     .G_i(ISL_G),
     .B_i(ISL_B),
     .HS_i(ISL_HS),
+    .VS_i(ISL_VS_sync2_reg),
     .HSYNC_i(ISL_HSYNC_sync2_reg),
     .VSYNC_i(ISL_VSYNC_sync2_reg),
     .DE_i(ISL_DE),
-    .FID_i(ISL_FID),
-    .vs_type(isl_vs_type),
-    .vs_polarity(isl_vs_pol),
+    .FID_i(ISL_FID_sync2_reg),
+    .hsync_i_polarity(isl_hsync_pol),
+    .vsync_i_polarity(isl_vsync_pol),
+    .vsync_i_type(isl_vsync_type),
     .csc_enable(csc_enable),
     .csc_cs(misc_config[13]),
     .hv_in_config(hv_in_config),
@@ -325,7 +338,7 @@ sys u0 (
     .i2c_opencores_1_export_sda_pad_io      (HDMI_I2C_SDA),
     .i2c_opencores_1_export_spi_miso_pad_i  (1'b0),
     .pio_0_sys_ctrl_out_export              (sys_ctrl),
-    .pio_1_controls_in_export               (sys_status),
+    .pio_1_controls_in_export               (controls),
     .sc_config_0_sc_if_fe_status_i          ({20'h0, ISL_fe_interlace, ISL_fe_vtotal}),
     .sc_config_0_sc_if_fe_status2_i         ({12'h0, ISL_fe_pcnt_frame}),
     .sc_config_0_sc_if_lt_status_i          (32'h00000000),

@@ -18,7 +18,7 @@
 #include "video_modes.h"
 
 #define FW_VER_MAJOR 0
-#define FW_VER_MINOR 40
+#define FW_VER_MINOR 41
 
 //fix PD and cec
 #define ADV7513_MAIN_BASE 0x72
@@ -32,11 +32,12 @@
 
 isl51002_dev isl_dev = {.i2cm_base = I2C_OPENCORES_0_BASE,
                         .i2c_addr = ISL51002_BASE,
-                        .xtal_freq = 24576000LU};
+                        .xclk_out_en = 1,
+                        .xtal_freq = 27000000LU};
 
 si5351_dev si_dev = {.i2cm_base = I2C_OPENCORES_0_BASE,
                      .i2c_addr = SI5351_BASE,
-                     .xtal_freq = 24576000LU};
+                     .xtal_freq = 27000000LU};
 
 adv7513_dev advtx_dev = {.i2cm_base = I2C_OPENCORES_1_BASE,
                          .main_base = ADV7513_MAIN_BASE,
@@ -58,15 +59,16 @@ extern avconfig_t tc;
 
 uint16_t sys_ctrl;
 uint32_t sys_status;
-uint16_t remote_code;
 uint8_t sys_powered_on;
-uint8_t btn_vec, btn_vec_prev;
-uint8_t remote_rpt, remote_rpt_prev;
+
+int enable_isl, enable_tp;
 
 extern uint8_t osd_enable;
 
 avinput_t avinput = AV_TESTPAT, target_avinput;
 unsigned tp_stdmode_idx=-1, target_tp_stdmode_idx=2; // STDMODE_480p
+
+mode_data_t vmode_in, vmode_out;
 
 char row1[US2066_ROW_LEN+1], row2[US2066_ROW_LEN+1];
 extern char menu_row1[US2066_ROW_LEN+1], menu_row2[US2066_ROW_LEN+1];
@@ -194,8 +196,8 @@ int init_hw() {
 
     // unreset hw
     usleep(400000);
-    sys_ctrl = SCTRL_ISL_RESET_N|SCTRL_HDMIRX_RESET_N;
-    IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);
+    /*sys_ctrl = SCTRL_ISL_RESET_N|SCTRL_HDMIRX_RESET_N;
+    IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);*/
 
     I2C_init(I2C_OPENCORES_0_BASE,ALT_CPU_FREQ,400000);
     I2C_init(I2C_OPENCORES_1_BASE,ALT_CPU_FREQ,400000);
@@ -274,43 +276,67 @@ void sys_toggle_power() {
     return;
 }
 
+void print_vm_stats() {
+    int row = 0;
+    memset((void*)osd->osd_array.data, 0, sizeof(osd_char_array));
+
+    if (enable_tp || (enable_isl && isl_dev.sync_active)) {
+        if (!enable_tp) {
+            sniprintf((char*)osd->osd_array.data[row][0], OSD_CHAR_COLS, "Input preset:");
+            sniprintf((char*)osd->osd_array.data[row][1], OSD_CHAR_COLS, "%s", vmode_in.name);
+            sniprintf((char*)osd->osd_array.data[++row][0], OSD_CHAR_COLS, "H/V synclen:");
+            sniprintf((char*)osd->osd_array.data[row][1], OSD_CHAR_COLS, "%.5u %.5u", vmode_in.timings.h_synclen, vmode_in.timings.v_synclen);
+            sniprintf((char*)osd->osd_array.data[++row][0], OSD_CHAR_COLS, "H/V backporch:");
+            sniprintf((char*)osd->osd_array.data[row][1], OSD_CHAR_COLS, "%.5u %.5u", vmode_in.timings.h_backporch, vmode_in.timings.v_backporch);
+            sniprintf((char*)osd->osd_array.data[++row][0], OSD_CHAR_COLS, "H/V active:");
+            sniprintf((char*)osd->osd_array.data[row][1], OSD_CHAR_COLS, "%.5u %.5u", vmode_in.timings.h_active, vmode_in.timings.v_active);
+            sniprintf((char*)osd->osd_array.data[++row][0], OSD_CHAR_COLS, "H/V total:");
+            sniprintf((char*)osd->osd_array.data[row][1], OSD_CHAR_COLS, "%.5u %.5u", vmode_in.timings.h_total, vmode_in.timings.v_total);
+            row++;
+            row++;
+        }
+
+        sniprintf((char*)osd->osd_array.data[row][0], OSD_CHAR_COLS, "Output mode:");
+        sniprintf((char*)osd->osd_array.data[row][1], OSD_CHAR_COLS, "%s", vmode_out.name);
+        sniprintf((char*)osd->osd_array.data[++row][0], OSD_CHAR_COLS, "H/V synclen:");
+        sniprintf((char*)osd->osd_array.data[row][1], OSD_CHAR_COLS, "%.5u %.5u", vmode_out.timings.h_synclen, vmode_out.timings.v_synclen);
+        sniprintf((char*)osd->osd_array.data[++row][0], OSD_CHAR_COLS, "H/V backporch:");
+        sniprintf((char*)osd->osd_array.data[row][1], OSD_CHAR_COLS, "%.5u %.5u", vmode_out.timings.h_backporch, vmode_out.timings.v_backporch);
+        sniprintf((char*)osd->osd_array.data[++row][0], OSD_CHAR_COLS, "H/V active:");
+        sniprintf((char*)osd->osd_array.data[row][1], OSD_CHAR_COLS, "%.5u %.5u", vmode_out.timings.h_active, vmode_out.timings.v_active);
+        sniprintf((char*)osd->osd_array.data[++row][0], OSD_CHAR_COLS, "H/V total:");
+        sniprintf((char*)osd->osd_array.data[row][1], OSD_CHAR_COLS, "%.5u %.5u", vmode_out.timings.h_total, vmode_out.timings.v_total);
+        row++;
+    }
+    sniprintf((char*)osd->osd_array.data[++row][0], OSD_CHAR_COLS, "Firmware:");
+    sniprintf((char*)osd->osd_array.data[row][1], OSD_CHAR_COLS, "v%u.%.2u @ " __DATE__, FW_VER_MAJOR, FW_VER_MINOR);
+    osd->osd_config.status_refresh = 1;
+    osd->osd_row_color.mask = 0;
+    osd->osd_sec_enable[0].mask = (1<<(row+1))-1;
+    osd->osd_sec_enable[1].mask = (1<<(row+1))-1;
+}
+
 void mainloop()
 {
     int i, man_input_change;
     int mode, amode_match;
-    uint32_t pclk_hz, dotclk_hz, h_hz, v_hz_x100, pll_h_total;
-    isl_input_t target_isl_input;
+    uint32_t pclk_hz, dotclk_hz, h_hz, v_hz_x100, pll_h_total, pll_h_total_prev=0;
+    isl_input_t target_isl_input=0;
     video_sync target_isl_sync=0;
-    video_format target_format;
-    mode_data_t vmode_in, vmode_out;
+    video_format target_format=0;
     vm_mult_config_t vm_conf;
     status_t status;
     avconfig_t *cur_avconfig;
-    int enable_isl=0, enable_hdmirx=0, enable_tp=1;
+
+    enable_isl=0;
+    enable_tp=1;
 
     cur_avconfig = get_current_avconfig();
 
     while (1) {
-        // Read remote control and PCB button status
-        sys_status = IORD_ALTERA_AVALON_PIO_DATA(PIO_1_BASE);
-        remote_code = (sys_status & SSTAT_RC_MASK) >> SSTAT_RC_OFFS;
-        remote_rpt = (sys_status & SSTAT_RRPT_MASK) >> SSTAT_RRPT_OFFS;
-        btn_vec = (~sys_status & SSTAT_BTN_MASK) >> SSTAT_BTN_OFFS;
-
-        if ((remote_rpt == 0) || ((remote_rpt > 1) && (remote_rpt < 6)) || (remote_rpt == remote_rpt_prev))
-            remote_code = 0;
-
-        remote_rpt_prev = remote_rpt;
-
-        if (btn_vec_prev == 0) {
-            btn_vec_prev = btn_vec;
-        } else {
-            btn_vec_prev = btn_vec;
-            btn_vec = 0;
-        }
-
         target_avinput = avinput;
-        parse_control(remote_code, btn_vec);
+        read_controls();
+        parse_control();
 
         if (!sys_powered_on)
             break;
@@ -319,7 +345,6 @@ void mainloop()
 
             // defaults
             enable_isl = 1;
-            enable_hdmirx = 0;
             enable_tp = 0;
             target_isl_sync = SYNC_SOG;
 
@@ -383,7 +408,6 @@ void mainloop()
                 break;
             case AV4:
                 enable_isl = 0;
-                enable_hdmirx = 1;
                 target_format = FORMAT_YPbPr;
                 break;
             default:
@@ -402,6 +426,7 @@ void mainloop()
             if (enable_isl) {
                 isl_source_sel(&isl_dev, target_isl_input, target_isl_sync, target_format);
                 isl_dev.sync_active = 0;
+                pll_h_total_prev = 0;
 
                 // send current PLL h_total to isl_frontend for mode detection
                 sc->hv_in_config.h_total = isl_get_pll_htotal(&isl_dev);
@@ -476,9 +501,6 @@ void mainloop()
                     h_hz = (100*27000000UL)/((100*isl_dev.ss.pcnt_frame)/isl_dev.ss.v_total);
 #endif
 
-                    if (isl_dev.ss.interlace_flag)
-                        v_hz_x100 *= 2;
-
                     memset(&vmode_in, 0, sizeof(mode_data_t));
                     vmode_in.timings.h_synclen = isl_dev.sm.h_synclen_x16 / 16;
                     vmode_in.timings.v_hz_max = (v_hz_x100+50)/100;
@@ -517,20 +539,25 @@ void mainloop()
                         isl_source_setup(&isl_dev, pll_h_total);
 
                         isl_set_afe_bw(&isl_dev, dotclk_hz);
-                        isl_set_sampler_phase(&isl_dev, vmode_in.sampler_phase);
+
+                        if (pll_h_total != pll_h_total_prev)
+                            isl_set_sampler_phase(&isl_dev, vmode_in.sampler_phase);
+
+                        pll_h_total_prev = pll_h_total;
 
                         // Setup Si5351
-                        if (amode_match)
+                        if (amode_match) {
                             si5351_set_frac_mult(&si_dev, SI_PLLA, SI_CLK4, SI_CLKIN, &vmode_out.si_ms_conf);
-                        else
+                            sys_ctrl |= SCTRL_ADAPT_LM;
+                        } else {
                             si5351_set_integer_mult(&si_dev, SI_PLLA, SI_CLK4, SI_CLKIN, pclk_hz, vmode_out.si_pclk_mult, 0);
-
-                        // Wait a couple frames so that next sync measurements from FPGA are stable
-                        // TODO: don't use pclk for the sync meas
-                        usleep(40000);
+                            sys_ctrl &= ~SCTRL_ADAPT_LM;
+                        }
 
                         // TODO: dont read polarity from ISL51002
-                        sys_ctrl &= ~(SCTRL_ISL_VS_POL);
+                        sys_ctrl &= ~(SCTRL_ISL_HS_POL|SCTRL_ISL_VS_POL);
+                        if ((target_isl_sync != SYNC_HV) || isl_dev.ss.h_polarity)
+                            sys_ctrl |= SCTRL_ISL_HS_POL;
                         if ((target_isl_sync == SYNC_HV) && isl_dev.ss.v_polarity)
                             sys_ctrl |= SCTRL_ISL_VS_POL;
                         IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);
