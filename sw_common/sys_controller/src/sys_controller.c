@@ -1,3 +1,22 @@
+//
+// Copyright (C) 2019-2020  Markus Hiienkari <mhiienka@niksula.hut.fi>
+//
+// This file is part of Open Source Scan Converter project.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -18,7 +37,7 @@
 #include "video_modes.h"
 
 #define FW_VER_MAJOR 0
-#define FW_VER_MINOR 41
+#define FW_VER_MINOR 42
 
 //fix PD and cec
 #define ADV7513_MAIN_BASE 0x72
@@ -75,7 +94,8 @@ extern char menu_row1[US2066_ROW_LEN+1], menu_row2[US2066_ROW_LEN+1];
 
 static const char *avinput_str[] = { "Test pattern", "AV1_RGBS", "AV1_RGsB", "AV1_YPbPr", "AV1_RGBHV", "AV1_RGBCS", "AV2_YPbPr", "AV2_RGsB", "AV3_RGBHV", "AV3_RGBCS", "AV3_RGBS", "AV3_RGsB", "AV3_YPbPr", "AV4", "Last used" };
 
-si5351_ms_config_t si_audio_mclk_conf = {3740, 628, 1125, 4160, 0, 2, 0, 0, 0};
+si5351_ms_config_t si_audio_mclk_48k_conf = {3740, 628, 1125, 8832, 0, 1, 0, 0, 0};
+si5351_ms_config_t si_audio_mclk_96k_conf = {3740, 628, 1125, 4160, 0, 2, 0, 0, 0};
 
 void ui_disp_menu(uint8_t osd_mode)
 {
@@ -228,10 +248,11 @@ int init_hw() {
     ui_disp_status(1);
     si5351_init(&si_dev);
 
+    si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, &si_audio_mclk_96k_conf);
+
     set_default_avconfig(1);
     set_default_keymap();
     init_menu();
-    tc.adv7513_cfg.i2s_fs = ADV_96KHZ;
 
     //memcpy(video_modes, video_modes_default, VIDEO_MODES_SIZE);
 
@@ -579,6 +600,8 @@ void mainloop()
         }
 
         adv7513_check_hpd_power(&advtx_dev);
+        if (advtx_dev.powered_on && (cur_avconfig->adv7513_cfg.i2s_fs != advtx_dev.cfg.i2s_fs))
+            si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, (cur_avconfig->adv7513_cfg.i2s_fs == ADV_96KHZ) ? &si_audio_mclk_96k_conf : &si_audio_mclk_48k_conf);
         adv7513_update_config(&advtx_dev, &cur_avconfig->adv7513_cfg);
 
         usleep(20000);
@@ -616,8 +639,6 @@ int main()
         target_tp_stdmode_idx=3; // STDMODE_480p
 
         us2066_display_on(&chardisp_dev);
-
-        si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, &si_audio_mclk_conf);
 
         mainloop();
     }
