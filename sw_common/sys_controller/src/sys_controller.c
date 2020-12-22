@@ -196,6 +196,7 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t 
     misc_config.mask_color = avconfig->mask_color;
     misc_config.reverse_lpf = avconfig->reverse_lpf;
     misc_config.lm_deint_mode = avconfig->lm_deint_mode;
+    misc_config.nir_even_offset = avconfig->nir_even_offset;
     misc_config.ypbpr_cs = avconfig->ypbpr_cs;
 
     sc->hv_in_config = hv_in_config;
