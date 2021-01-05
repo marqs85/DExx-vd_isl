@@ -6,6 +6,7 @@
 
 #define DExx_FW
 #define DE2_115
+#define INC_SII1136
 
 #ifndef DEBUG
 #define OS_PRINTF(...)

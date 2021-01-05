@@ -28,7 +28,7 @@
 // sys_ctrl
 #define SCTRL_POWER_ON          (1<<0)
 #define SCTRL_ISL_RESET_N       (1<<1)
-#define SCTRL_HDMIRX_RESET_N    (1<<2)
+#define SCTRL_HDMITX_RESET_N    (1<<2)
 #define SCTRL_EMIF_HWRESET_N    (1<<3)
 #define SCTRL_EMIF_SWRESET_N    (1<<4)
 #define SCTRL_EMIF_POWERDN_REQ  (1<<5)
@@ -82,7 +82,7 @@ void switch_input(rc_code_t code, btn_vec_t pb_vec);
 
 void switch_audmux(uint8_t audmux_sel);
 
-void switch_audsrc(audinput_t *audsrc_map, adv7513_audio_fmt_t *aud_tx_fmt);
+void switch_audsrc(audinput_t *audsrc_map, HDMI_audio_fmt_t *aud_tx_fmt);
 
 void switch_tp_mode(rc_code_t code);
 

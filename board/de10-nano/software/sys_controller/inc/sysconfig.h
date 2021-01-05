@@ -4,6 +4,7 @@
 #include "system.h"
 
 #define DExx_FW
+#define INC_ADV7513
 
 #ifndef DEBUG
 #define OS_PRINTF(...)

@@ -26,7 +26,12 @@
 #include <sys/alt_timestamp.h>
 #include "system.h"
 #include "isl51002.h"
+#ifdef INC_ADV7513
 #include "adv7513.h"
+#endif
+#ifdef INC_SII1136
+#include "sii1136.h"
+#endif
 #include "si5351.h"
 #include "us2066.h"
 #include "sc_config_regs.h"
@@ -45,6 +50,8 @@
 #define ADV7513_PKTMEM_BASE 0x70
 #define ADV7513_CEC_BASE 0x78
 
+#define SII1136_BASE (0x72>>1)
+
 #define ISL51002_BASE (0x98>>1)
 #define SI5351_BASE (0xC0>>1)
 #define US2066_BASE (0x7a>>1)
@@ -58,11 +65,18 @@ si5351_dev si_dev = {.i2cm_base = I2C_OPENCORES_0_BASE,
                      .i2c_addr = SI5351_BASE,
                      .xtal_freq = 27000000LU};
 
+#ifdef INC_ADV7513
 adv7513_dev advtx_dev = {.i2cm_base = I2C_OPENCORES_1_BASE,
                          .main_base = ADV7513_MAIN_BASE,
                          .edid_base = ADV7513_EDID_BASE,
                          .pktmem_base = ADV7513_PKTMEM_BASE,
                          .cec_base = ADV7513_CEC_BASE};
+#endif
+
+#ifdef INC_SII1136
+sii1136_dev siitx_dev = {.i2cm_base = I2C_OPENCORES_1_BASE,
+                         .i2c_addr = SII1136_BASE};
+#endif
 
 us2066_dev chardisp_dev = {.i2cm_base = I2C_OPENCORES_0_BASE,
                            .i2c_addr = US2066_BASE};
@@ -85,7 +99,7 @@ int enable_isl, enable_tp;
 extern uint8_t osd_enable;
 
 avinput_t avinput = AV_TESTPAT, target_avinput;
-unsigned tp_stdmode_idx=-1, target_tp_stdmode_idx=2; // STDMODE_480p
+unsigned tp_stdmode_idx, target_tp_stdmode_idx;
 
 mode_data_t vmode_in, vmode_out;
 
@@ -215,6 +229,9 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t 
 int init_hw() {
     int ret;
 
+    // reset sysctrl (in case just Nios2 is restarted)
+    IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, 0x00);
+
     // unreset hw
     usleep(400000);
     /*sys_ctrl = SCTRL_ISL_RESET_N|SCTRL_HDMIRX_RESET_N;
@@ -224,7 +241,15 @@ int init_hw() {
     I2C_init(I2C_OPENCORES_1_BASE,ALT_CPU_FREQ,400000);
 
     // init HDMI TX
+#ifdef INC_ADV7513
     adv7513_init(&advtx_dev);
+#endif
+#ifdef INC_SII1136
+    sys_ctrl |= SCTRL_HDMITX_RESET_N;
+    IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);
+    usleep(20000);
+    sii1136_init(&siitx_dev);
+#endif
 
     // Init character OLED
     us2066_init(&chardisp_dev);
@@ -482,7 +507,12 @@ void mainloop()
 
                 update_osd_size(&vmode_out);
                 update_sc_config(&vmode_in, &vmode_out, &vm_conf, cur_avconfig);
+#ifdef INC_ADV7513
                 adv7513_set_pixelrep_vic(&advtx_dev, vmode_out.tx_pixelrep, vmode_out.hdmitx_pixr_ifr, vmode_out.vic);
+#endif
+#ifdef INC_SII1136
+                sii1136_init_mode(&siitx_dev, 148000000);
+#endif
 
                 //sniprintf(row2, US2066_ROW_LEN+1, "%ux%u%c @ %uHz", vmode_out.timings.h_active, vmode_out.timings.v_active<<vmode_out.timings.interlaced, vmode_out.timings.interlaced ? 'i' : ' ', vmode_out.timings.v_hz_max);
                 sniprintf(row2, US2066_ROW_LEN+1, "Test: %s", vmode_out.name);
@@ -520,7 +550,7 @@ void mainloop()
                         v_hz_x100 = 0;
 #else
                     v_hz_x100 = (100*27000000UL)/isl_dev.ss.pcnt_frame;
-                    h_hz = (100*27000000UL)/((100*isl_dev.ss.pcnt_frame)/isl_dev.ss.v_total);
+                    h_hz = (100*27000000UL)/((100*isl_dev.ss.pcnt_frame*(1+isl_dev.ss.interlace_flag))/isl_dev.ss.v_total);
 #endif
 
                     memset(&vmode_in, 0, sizeof(mode_data_t));
@@ -554,8 +584,8 @@ void mainloop()
 
                         pclk_hz = h_hz * pll_h_total;
                         dotclk_hz = estimate_dotclk(&vmode_in, h_hz);
-                        printf("H: %u.%.2ukHz V: %u.%.2uHz\n", (h_hz+5)/1000, ((h_hz+5)%1000)/10, (v_hz_x100/100), (v_hz_x100%100));
-                        printf("Estimated source dot clock: %lu.%.2uMHz\n", (dotclk_hz+5000)/1000000, ((dotclk_hz+5000)%1000000)/10000);
+                        printf("H: %lu.%.2lukHz V: %lu.%.2luHz\n", (h_hz+5)/1000, ((h_hz+5)%1000)/10, (v_hz_x100/100), (v_hz_x100%100));
+                        printf("Estimated source dot clock: %lu.%.2luMHz\n", (dotclk_hz+5000)/1000000, ((dotclk_hz+5000)%1000000)/10000);
                         printf("PCLK_IN: %luHz PCLK_OUT: %luHz\n", pclk_hz, vmode_out.si_pclk_mult*pclk_hz);
 
                         isl_source_setup(&isl_dev, pll_h_total);
@@ -588,7 +618,9 @@ void mainloop()
                         update_sc_config(&vmode_in, &vmode_out, &vm_conf, cur_avconfig);
 
                         // Setup VIC and pixel repetition
+#ifdef INC_ADV7513
                         adv7513_set_pixelrep_vic(&advtx_dev, vmode_out.tx_pixelrep, vmode_out.hdmitx_pixr_ifr, vmode_out.vic);
+#endif
                     }
                 } else if (status == SC_CONFIG_CHANGE) {
                     update_sc_config(&vmode_in, &vmode_out, &vm_conf, cur_avconfig);
@@ -600,10 +632,15 @@ void mainloop()
             isl_update_config(&isl_dev, &cur_avconfig->isl_cfg);
         }
 
+#ifdef INC_ADV7513
         adv7513_check_hpd_power(&advtx_dev);
         if (advtx_dev.powered_on && (cur_avconfig->adv7513_cfg.i2s_fs != advtx_dev.cfg.i2s_fs))
-            si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, (cur_avconfig->adv7513_cfg.i2s_fs == ADV_96KHZ) ? &si_audio_mclk_96k_conf : &si_audio_mclk_48k_conf);
+            si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, (cur_avconfig->adv7513_cfg.i2s_fs == FS_96KHZ) ? &si_audio_mclk_96k_conf : &si_audio_mclk_48k_conf);
         adv7513_update_config(&advtx_dev, &cur_avconfig->adv7513_cfg);
+#endif
+#ifdef INC_SII1136
+        //sii1136_update_config(&siitx_dev, &cur_avconfig->adv7513_cfg);
+#endif
 
         usleep(20000);
     }

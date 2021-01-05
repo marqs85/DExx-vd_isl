@@ -185,7 +185,7 @@ MENU(menu_isl_sync_opt, P99_PROTECT({
     { "H-PLL Loop Gain",                        OPT_AVCONFIG_NUMVALUE,  { .num = { &tc.isl_cfg.pll_loop_gain, OPT_NOWRAP, 0, PLL_LOOP_GAIN_MAX, value_disp } } },
 }))
 
-#ifndef DExx_FW
+#ifdef INC_ADV761X
 MENU(menu_adv_video_opt, P99_PROTECT({
     { "Default RGB range",                      OPT_AVCONFIG_SELECTION, { .sel = { &tc.adv761x_cfg.default_rgb_range,    OPT_WRAP,   SETTING_ITEM(adv761x_rgb_range_desc) } } },
 }))
@@ -226,7 +226,9 @@ MENU(menu_output, P99_PROTECT({
     { "Adaptive LM priority",                  OPT_AVCONFIG_SELECTION, { .sel = { &tc.adapt_lm,        OPT_WRAP, SETTING_ITEM(off_on_desc) } } },
     { "LM deinterlace mode",                   OPT_AVCONFIG_SELECTION, { .sel = { &tc.lm_deint_mode,   OPT_WRAP, SETTING_ITEM(lm_deint_mode_desc) } } },
     { "NI restore Y offset",                   OPT_AVCONFIG_NUMVALUE,  { .num = { &tc.nir_even_offset, OPT_NOWRAP, 0, 1, value_disp } } },
+#ifdef INC_ADV7513
     { LNG("TX mode","TXﾓｰﾄﾞ"),                  OPT_AVCONFIG_SELECTION, { .sel = { &tc.adv7513_cfg.tx_mode,  OPT_WRAP, SETTING_ITEM(tx_mode_desc) } } },
+#endif
     //{ "HDMI ITC",                              OPT_AVCONFIG_SELECTION, { .sel = { &tc.hdmi_itc,        OPT_WRAP, SETTING_ITEM(off_on_desc) } } },
 }))
 
@@ -257,12 +259,14 @@ MENU(menu_compatibility, P99_PROTECT({
 }))
 
 MENU(menu_audio, P99_PROTECT({
-#ifdef DExx_FW
+#ifdef INC_ADV7513
     { "Sampling format",                        OPT_AVCONFIG_SELECTION, { .sel = { &tc.adv7513_cfg.i2s_fs,  OPT_WRAP, SETTING_ITEM(audio_fs_desc) } } },
-#else
-    { "Sampling format",                        OPT_AVCONFIG_SELECTION, { .sel = { &tc.pcm_cfg.fs,      OPT_WRAP, SETTING_ITEM(audio_fs_desc) } } },
-    { "Quad stereo",                            OPT_AVCONFIG_SELECTION,  { .sel = { &tc.adv7513_cfg.i2s_chcfg, OPT_WRAP, SETTING_ITEM(audio_sr_desc) } } },
+    { "Quad stereo",                            OPT_AVCONFIG_SELECTION, { .sel = { &tc.adv7513_cfg.i2s_chcfg, OPT_WRAP, SETTING_ITEM(audio_sr_desc) } } },
+#endif
+#ifdef INC_PCM186X
     { "Pre-ADC gain",                           OPT_AVCONFIG_NUMVALUE,  { .num = { &tc.pcm_cfg.gain,    OPT_NOWRAP, PCM_GAIN_M12DB, PCM_GAIN_12DB, aud_db_disp } } },
+#endif
+#ifndef DExx_FW
     { "AV1 audio source",                       OPT_AVCONFIG_NUMVALUE,  { .num = { &tc.audio_src_map[0], OPT_NOWRAP, 0, 3, audio_src_disp } } },
     { "AV2 audio source",                       OPT_AVCONFIG_NUMVALUE,  { .num = { &tc.audio_src_map[1], OPT_NOWRAP, 1, 3, audio_src_disp } } },
     { "AV3 audio source",                       OPT_AVCONFIG_NUMVALUE,  { .num = { &tc.audio_src_map[2], OPT_NOWRAP, 1, 3, audio_src_disp } } },
@@ -293,7 +297,7 @@ MENU(menu_settings, P99_PROTECT({
 MENU(menu_main, P99_PROTECT({
     { "AV1-3 video in opt.>",                   OPT_SUBMENU,            { .sub = { &menu_isl_video_opt, NULL, NULL } } },
     { "AV1-3 sync opt.    >",                   OPT_SUBMENU,            { .sub = { &menu_isl_sync_opt, NULL, NULL } } },
-#ifndef DExx_FW
+#ifdef INC_ADV761X
     { "AV4 video in opt.  >",                   OPT_SUBMENU,            { .sub = { &menu_adv_video_opt, NULL, NULL } } },
 #endif
     { "Pure LM opt.       >",                   OPT_SUBMENU,            { .sub = { &menu_pure_lm, NULL, NULL } } },

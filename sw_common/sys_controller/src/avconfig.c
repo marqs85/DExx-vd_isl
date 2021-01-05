@@ -60,11 +60,16 @@ int set_default_avconfig(int update_cc)
 {
     memcpy(&tc, &tc_default, sizeof(avconfig_t));
     isl_get_default_cfg(&tc.isl_cfg);
+#ifdef INC_ADV7513
     adv7513_get_default_cfg(&tc.adv7513_cfg);
-#ifndef DExx_FW
+#endif
+#ifdef INC_PCM186X
     pcm186x_get_default_cfg(&tc.pcm_cfg);
-#else
-    tc.adv7513_cfg.i2s_fs = ADV_96KHZ;
+#endif
+#ifdef INC_ADV7513
+#ifdef DExx_FW
+    tc.adv7513_cfg.i2s_fs = FS_96KHZ;
+#endif
 #endif
 
     if (update_cc)
@@ -121,7 +126,7 @@ status_t update_avconfig() {
     memcpy(&cc, &tc, sizeof(avconfig_t));
 
 #ifndef DExx_FW
-    cc.adv7513_cfg.i2s_fs = cc.pcm_cfg.fs;
+     cc.pcm_cfg.fs = cc.adv7513_cfg.i2s_fs;
 #endif
 
     return status;

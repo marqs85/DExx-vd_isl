@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 #include "si5351.h"
-#include "adv7513.h"
+#include "hdmi.h"
 #include "sysconfig.h"
 
 #define H_TOTAL_MIN 300
@@ -215,7 +215,7 @@ typedef struct {
 
 typedef struct {
     char name[14];
-    HDMI_Video_Type vic:8;
+    HDMI_vic_t vic:8;
     sync_timings_t timings;
     uint8_t sampler_phase;
     video_type type:4;

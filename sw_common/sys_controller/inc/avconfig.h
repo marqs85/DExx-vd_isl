@@ -24,9 +24,13 @@
 #include "sysconfig.h"
 #include "av_controller.h"
 #include "isl51002.h"
+#ifdef INC_ADV7513
 #include "adv7513.h"
-#ifndef DExx_FW
+#endif
+#ifdef INC_ADV761X
 #include "adv761x.h"
+#endif
+#ifdef INC_PCM186X
 #include "pcm186x.h"
 #endif
 
@@ -121,9 +125,13 @@ typedef struct {
     uint8_t reverse_lpf;
     uint8_t default_vic;
     isl51002_config isl_cfg __attribute__ ((aligned (4)));
+#ifdef INC_ADV7513
     adv7513_config adv7513_cfg __attribute__ ((aligned (4)));
-#ifndef DExx_FW
+#endif
+#ifdef INC_ADV761X
     adv761x_config adv761x_cfg __attribute__ ((aligned (4)));
+#endif
+#ifdef INC_PCM186X
     pcm186x_config pcm_cfg __attribute__ ((aligned (4)));
 #endif
 } __attribute__((packed)) avconfig_t;

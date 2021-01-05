@@ -24,10 +24,10 @@ module DE10_Nano_vd_isl (
       ///////// HDMI /////////
       inout              HDMI_I2C_SCL,
       inout              HDMI_I2C_SDA,
-      inout              HDMI_I2S,
-      inout              HDMI_LRCLK,
-      inout              HDMI_MCLK,
-      inout              HDMI_SCLK,
+      output             HDMI_I2S,
+      output             HDMI_LRCLK,
+      output             HDMI_MCLK,
+      output             HDMI_SCLK,
       output             HDMI_TX_CLK,
       output reg    [23:0] HDMI_TX_D,
       output reg         HDMI_TX_DE,
@@ -256,7 +256,7 @@ reg HSYNC_out, VSYNC_out, DE_out;
 wire [7:0] R_sc, G_sc, B_sc;
 wire HSYNC_sc, VSYNC_sc, DE_sc;
 
-always @(posedge pclk_out) begin
+always @(negedge pclk_out) begin
     if (osd_enable) begin
         if (osd_color == 2'h0) begin
             {R_out, G_out, B_out} <= 24'h000000;
@@ -353,7 +353,7 @@ sys u0 (
     .sc_config_0_sc_if_misc_config_o        (misc_config),
     .sc_config_0_sc_if_sl_config_o          (sl_config),
     .sc_config_0_sc_if_sl_config2_o         (sl_config2),
-    .osd_generator_0_osd_if_vclk            (SI_PCLK_i),
+    .osd_generator_0_osd_if_vclk            (PCLK_sc),
     .osd_generator_0_osd_if_xpos            (xpos),
     .osd_generator_0_osd_if_ypos            (ypos),
     .osd_generator_0_osd_if_osd_enable      (osd_enable),

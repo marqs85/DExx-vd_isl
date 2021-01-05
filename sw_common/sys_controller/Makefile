@@ -147,10 +147,11 @@ C_SRCS += ../../../../sw_common/sys_controller/src/video_modes.c
 C_SRCS += ../../../../sw_common/sys_controller/src/avconfig.c
 C_SRCS += ../../../../sw_common/sys_controller/src/menu.c
 C_SRCS += ../../../../sw_common/sys_controller/src/controls.c
-C_SRCS += ../../../../sw_common/sys_controller/ic_drivers/isl51002/isl51002.c
-C_SRCS += ../../../../sw_common/sys_controller/ic_drivers/adv7513/adv7513.c
 C_SRCS += ../../../../sw_common/sys_controller/ic_drivers/si5351/si5351.c
+C_SRCS += ../../../../sw_common/sys_controller/ic_drivers/isl51002/isl51002.c
 C_SRCS += ../../../../sw_common/sys_controller/ic_drivers/us2066/us2066.c
+C_SRCS += ../../../../sw_common/sys_controller/ic_drivers/adv7513/adv7513.c
+C_SRCS += ../../../../sw_common/sys_controller/ic_drivers/sii1136/sii1136.c
 CXX_SRCS :=
 ASM_SRCS :=
 
@@ -194,10 +195,13 @@ BSP_ROOT_DIR := ../sys_controller_bsp/
 APP_INCLUDE_DIRS += ./
 APP_INCLUDE_DIRS += inc
 APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/inc
+APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/ic_drivers/common
 APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/ic_drivers/si5351
-APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/ic_drivers/adv7513
 APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/ic_drivers/isl51002
 APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/ic_drivers/us2066
+APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/ic_drivers/adv7513
+APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/ic_drivers/sii1136
+
 APP_LIBRARY_DIRS :=
 APP_LIBRARY_NAMES :=
 
