@@ -118,7 +118,8 @@ typedef enum {
     STDMODE_1920x1200_50 = 41,
     STDMODE_1920x1200_60 = 42,
     STDMODE_1920x1440_50 = 43,
-    STDMODE_1920x1440_60 = 44
+    STDMODE_1920x1440_60 = 44,
+    STDMODE_2560x1440_60 = 45
 } stdmode_t;
 
 typedef enum {

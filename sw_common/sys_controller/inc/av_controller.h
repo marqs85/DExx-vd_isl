@@ -69,10 +69,7 @@ typedef enum {
 
 typedef enum {
     AUD_AV1_ANALOG  = 0,
-    AUD_AV2_ANALOG  = 1,
-    AUD_AV3_ANALOG  = 2,
-    AUD_SPDIF       = 3,
-    AUD_AV4_DIGITAL = 4,
+    AUD_SPDIF       = 1,
 } audinput_t;
 
 void ui_disp_menu(uint8_t osd_mode);

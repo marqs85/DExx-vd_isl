@@ -308,6 +308,12 @@ void switch_input(rc_code_t code, btn_vec_t pb_vec) {
         avinput = next_input;
 }
 
+void switch_audsrc(audinput_t *audsrc_map, HDMI_audio_fmt_t *aud_tx_fmt) {
+    uint8_t audsrc = audsrc_map[0];
+
+    *aud_tx_fmt = (audsrc == AUD_SPDIF) ? AUDIO_SPDIF : AUDIO_I2S;
+}
+
 void switch_tp_mode(rc_code_t code) {
     if (code == RC_LEFT)
         target_tp_stdmode_idx--;
@@ -367,7 +373,7 @@ void mainloop()
 {
     int i, man_input_change;
     int mode, amode_match;
-    uint32_t pclk_hz, dotclk_hz, h_hz, v_hz_x100, pll_h_total, pll_h_total_prev=0;
+    uint32_t pclk_i_hz, pclk_o_hz, dotclk_hz, h_hz, v_hz_x100, pll_h_total, pll_h_total_prev=0;
     isl_input_t target_isl_input=0;
     video_sync target_isl_sync=0;
     video_format target_format=0;
@@ -500,10 +506,15 @@ void mainloop()
         if (enable_tp) {
             if (tp_stdmode_idx != target_tp_stdmode_idx) {
                 get_standard_mode((unsigned)target_tp_stdmode_idx, &vm_conf, &vmode_in, &vmode_out);
-                if (vmode_out.si_pclk_mult > 0)
+                if (vmode_out.si_pclk_mult > 0) {
                     si5351_set_integer_mult(&si_dev, SI_PLLA, SI_CLK4, SI_XTAL, si_dev.xtal_freq, vmode_out.si_pclk_mult, vmode_out.si_ms_conf.outdiv);
-                else
+                    pclk_o_hz = vmode_out.si_pclk_mult*si_dev.xtal_freq;
+                } else {
                     si5351_set_frac_mult(&si_dev, SI_PLLA, SI_CLK4, SI_XTAL, &vmode_out.si_ms_conf);
+                    pclk_o_hz = (vmode_out.timings.h_total*vmode_out.timings.v_total*(vmode_out.timings.v_hz_max ? vmode_out.timings.v_hz_max : 60))/(1+vmode_out.timings.interlaced);
+                }
+
+                printf("PCLK_OUT: %luHz\n", pclk_o_hz);
 
                 update_osd_size(&vmode_out);
                 update_sc_config(&vmode_in, &vmode_out, &vm_conf, cur_avconfig);
@@ -511,7 +522,7 @@ void mainloop()
                 adv7513_set_pixelrep_vic(&advtx_dev, vmode_out.tx_pixelrep, vmode_out.hdmitx_pixr_ifr, vmode_out.vic);
 #endif
 #ifdef INC_SII1136
-                sii1136_init_mode(&siitx_dev, 148000000);
+                sii1136_init_mode(&siitx_dev, vmode_out.tx_pixelrep, vmode_out.hdmitx_pixr_ifr, vmode_out.vic, pclk_o_hz);
 #endif
 
                 //sniprintf(row2, US2066_ROW_LEN+1, "%ux%u%c @ %uHz", vmode_out.timings.h_active, vmode_out.timings.v_active<<vmode_out.timings.interlaced, vmode_out.timings.interlaced ? 'i' : ' ', vmode_out.timings.v_hz_max);
@@ -582,11 +593,12 @@ void mainloop()
 
                         pll_h_total = (vm_conf.h_skip+1) * vmode_in.timings.h_total + (((vm_conf.h_skip+1) * vmode_in.timings.h_total_adj * 5 + 50) / 100);
 
-                        pclk_hz = h_hz * pll_h_total;
+                        pclk_i_hz = h_hz * pll_h_total;
                         dotclk_hz = estimate_dotclk(&vmode_in, h_hz);
+                        pclk_o_hz = vmode_out.si_pclk_mult ? vmode_out.si_pclk_mult*pclk_i_hz : (vmode_out.timings.h_total*vmode_out.timings.v_total*(vmode_out.timings.v_hz_max ? vmode_out.timings.v_hz_max : 60))/(1+vmode_out.timings.interlaced);
                         printf("H: %lu.%.2lukHz V: %lu.%.2luHz\n", (h_hz+5)/1000, ((h_hz+5)%1000)/10, (v_hz_x100/100), (v_hz_x100%100));
                         printf("Estimated source dot clock: %lu.%.2luMHz\n", (dotclk_hz+5000)/1000000, ((dotclk_hz+5000)%1000000)/10000);
-                        printf("PCLK_IN: %luHz PCLK_OUT: %luHz\n", pclk_hz, vmode_out.si_pclk_mult*pclk_hz);
+                        printf("PCLK_IN: %luHz PCLK_OUT: %luHz\n", pclk_i_hz, pclk_o_hz);
 
                         isl_source_setup(&isl_dev, pll_h_total);
 
@@ -602,7 +614,7 @@ void mainloop()
                             si5351_set_frac_mult(&si_dev, SI_PLLA, SI_CLK4, SI_CLKIN, &vmode_out.si_ms_conf);
                             sys_ctrl |= SCTRL_ADAPT_LM;
                         } else {
-                            si5351_set_integer_mult(&si_dev, SI_PLLA, SI_CLK4, SI_CLKIN, pclk_hz, vmode_out.si_pclk_mult, 0);
+                            si5351_set_integer_mult(&si_dev, SI_PLLA, SI_CLK4, SI_CLKIN, pclk_i_hz, vmode_out.si_pclk_mult, 0);
                             sys_ctrl &= ~SCTRL_ADAPT_LM;
                         }
 
@@ -621,6 +633,9 @@ void mainloop()
 #ifdef INC_ADV7513
                         adv7513_set_pixelrep_vic(&advtx_dev, vmode_out.tx_pixelrep, vmode_out.hdmitx_pixr_ifr, vmode_out.vic);
 #endif
+#ifdef INC_SII1136
+                        sii1136_init_mode(&siitx_dev, vmode_out.tx_pixelrep, vmode_out.hdmitx_pixr_ifr, vmode_out.vic, pclk_o_hz);
+#endif
                     }
                 } else if (status == SC_CONFIG_CHANGE) {
                     update_sc_config(&vmode_in, &vmode_out, &vm_conf, cur_avconfig);
@@ -634,12 +649,12 @@ void mainloop()
 
 #ifdef INC_ADV7513
         adv7513_check_hpd_power(&advtx_dev);
-        if (advtx_dev.powered_on && (cur_avconfig->adv7513_cfg.i2s_fs != advtx_dev.cfg.i2s_fs))
-            si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, (cur_avconfig->adv7513_cfg.i2s_fs == FS_96KHZ) ? &si_audio_mclk_96k_conf : &si_audio_mclk_48k_conf);
-        adv7513_update_config(&advtx_dev, &cur_avconfig->adv7513_cfg);
+        if (advtx_dev.powered_on && (cur_avconfig->hdmitx_cfg.i2s_fs != advtx_dev.cfg.i2s_fs))
+            si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, (cur_avconfig->hdmitx_cfg.i2s_fs == FS_96KHZ) ? &si_audio_mclk_96k_conf : &si_audio_mclk_48k_conf);
+        adv7513_update_config(&advtx_dev, &cur_avconfig->hdmitx_cfg);
 #endif
 #ifdef INC_SII1136
-        //sii1136_update_config(&siitx_dev, &cur_avconfig->adv7513_cfg);
+        sii1136_update_config(&siitx_dev, &cur_avconfig->hdmitx_cfg);
 #endif
 
         usleep(20000);
@@ -677,6 +692,8 @@ int main()
         target_tp_stdmode_idx=3; // STDMODE_480p
 
         us2066_display_on(&chardisp_dev);
+
+        sii1136_enable_power(&siitx_dev, 1);
 
         mainloop();
     }
