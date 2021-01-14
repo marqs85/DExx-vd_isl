@@ -213,7 +213,7 @@ isl51002_frontend u_isl_frontend (
 
 // output clock assignment
 assign pclk_out = PCLK_sc;
-assign HDMI_TX_CLK = pclk_out;
+assign HDMI_TX_CLK = ~pclk_out;
 assign VGA_CLK = pclk_out;
 
 // output data assignment (2 stages for timing closure)
@@ -242,7 +242,7 @@ always @(posedge pclk_out) begin
     DE_out <= DE_sc;
 end
 
-always @(negedge pclk_out) begin
+always @(posedge pclk_out) begin
     HDMI_TX_D[35:28] <= R_out;
     HDMI_TX_D[23:16] <= G_out;
     HDMI_TX_D[11:4] <= B_out;
