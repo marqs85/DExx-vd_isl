@@ -65,11 +65,11 @@ static const char *pm_480i_desc[] = { LNG("Passthru","ﾊﾟｽｽﾙｰ"), "Dei
 static const char *pm_384p_desc[] = { LNG("Passthru","ﾊﾟｽｽﾙｰ"), "Line2x", "Line2x 240x360", "Line3x 240x360", "Line3x Generic" };
 static const char *pm_480p_desc[] = { LNG("Passthru","ﾊﾟｽｽﾙｰ"), "Line2x" };
 static const char *pm_1080i_desc[] = { LNG("Passthru","ﾊﾟｽｽﾙｰ"), "Deint + Line2x" };
-static const char *pm_ad_240p_desc[] = { "Skip", "720x480 (Line2x)", "1280x720 (Line3x)", "1280x1024 (Line4x)", "1920x1080i (Line2x)", "1920x1080 (Line4x)", "1920x1080 (Line5x)", "1600x1200 (Line5x)", "1920x1200 (Line5x)", "1920x1440 (Line6x)" };
-static const char *pm_ad_288p_desc[] = { "Skip", "720x576 (Line2x)", "1920x1080i (Line2x)", "1920x1080 (Line4x)", "1920x1200 (Line4x)", "1920x1440 (Line5x)" };
-static const char *pm_ad_480i_desc[] = { "Skip", "720x240 (240p rest.)", "1280x1024 (Dint+L4x)", "1080i (240p rest+L2x)", "1920x1080 (Dint+L4x)", "1920x1440 (Dint+L6x)" };
+static const char *pm_ad_240p_desc[] = { "Skip", "720x480 (Line2x)", "1280x720 (Line3x)", "1280x1024 (Line4x)", "1920x1080i (Line2x)", "1920x1080 (Line4x)", "1920x1080 (Line5x)", "1600x1200 (Line5x)", "1920x1200 (Line5x)", "1920x1440 (Line6x)", "2560x1440 (Line6x)" };
+static const char *pm_ad_288p_desc[] = { "Skip", "720x576 (Line2x)", "1920x1080i (Line2x)", "1920x1080 (Line4x)", "1920x1200 (Line4x)", "1920x1440 (Line5x)", "2560x1440 (Line5x)" };
+static const char *pm_ad_480i_desc[] = { "Skip", "720x240 (240p rest.)", "1280x1024 (Dint+L4x)", "1080i (240p rest+L2x)", "1920x1080 (Dint+L4x)", "1920x1440 (Dint+L6x)", "2560x1440 (Dint+L6x)" };
 static const char *pm_ad_576i_desc[] = { "Skip", "720x288 (288p rest.)", "1080i (288p rest+L2x)", "1920x1080 (Dint+L4x)" };
-static const char *pm_ad_480p_desc[] = { "Skip", "720x240 (Line drop)", "1280x1024 (Line2x)", "1920x1080i (Line1x)", "1920x1080 (Line2x)", "1920x1440 (Line3x)" };
+static const char *pm_ad_480p_desc[] = { "Skip", "720x240 (Line drop)", "1280x1024 (Line2x)", "1920x1080i (Line1x)", "1920x1080 (Line2x)", "1920x1440 (Line3x)", "2560x1440 (Line3x)" };
 static const char *pm_ad_576p_desc[] = { "Skip", "720x288 (Line drop)", "1920x1200 (Line2x)" };
 static const char *sm_ad_240p_288p_desc[] = { "Generic 4:3", "SNES 256col", "SNES 512col", "MD 256col", "MD 320col", "PSX 256col", "PSX 320col", "PSX 384col", "PSX 512col", "PSX 640col", "N64 320col", "N64 640col" };
 static const char *sm_ad_480i_576i_desc[] = { "Generic 4:3", "Generic 16:9" };
@@ -83,10 +83,10 @@ static const char *sl_method_desc[] = { LNG("Multiplication","Multiplication"), 
 static const char *sl_type_desc[] = { LNG("Horizontal","ﾖｺ"), LNG("Vertical","ﾀﾃ"), "Horiz. + Vert.", "Custom" };
 static const char *sl_id_desc[] = { LNG("Top","ｳｴ"), LNG("Bottom","ｼﾀ") };
 #ifdef DExx_FW
-static const char *audio_fs_desc[] = { "24bit/48kHz", "24bit/96kHz" };
+static const char *audio_fmt_desc[] = { "24bit/48kHz", "24bit/96kHz" };
 static const char *audio_src_desc[] = { "AV1 (analog)", "SPDIF" };
 #else
-static const char *audio_fs_desc[] = { "24bit/48kHz", "24bit/96kHz", "24bit/192kHz" };
+static const char *audio_fmt_desc[] = { "24bit/48kHz", "24bit/96kHz", "24bit/192kHz" };
 static const char *audio_src_desc[] = { "AV1 (analog)", "AV2 (analog)", "AV3 (analog)", "SPDIF", "AV4 (digital)" };
 #endif
 static const char *audio_sr_desc[] = { "Off", "On (4.0)", "On (5.1)", "On (7.1)" };
@@ -258,8 +258,8 @@ MENU(menu_compatibility, P99_PROTECT({
 }))
 
 MENU(menu_audio, P99_PROTECT({
-    { "Sampling format",                        OPT_AVCONFIG_SELECTION, { .sel = { &tc.hdmitx_cfg.i2s_fs,  OPT_WRAP, SETTING_ITEM(audio_fs_desc) } } },
-    { "Quad stereo",                            OPT_AVCONFIG_SELECTION, { .sel = { &tc.hdmitx_cfg.i2s_chcfg, OPT_WRAP, SETTING_ITEM(audio_sr_desc) } } },
+    { "Sampling format",                        OPT_AVCONFIG_SELECTION, { .sel = { &tc.audio_fmt,  OPT_WRAP, SETTING_ITEM(audio_fmt_desc) } } },
+    { "Quad stereo",                            OPT_AVCONFIG_SELECTION, { .sel = { &tc.hdmitx_cfg.i2s_stereo_cfg, OPT_WRAP, SETTING_ITEM(audio_sr_desc) } } },
 #ifdef INC_PCM186X
     { "Pre-ADC gain",                           OPT_AVCONFIG_NUMVALUE,  { .num = { &tc.pcm_cfg.gain,    OPT_NOWRAP, PCM_GAIN_M12DB, PCM_GAIN_12DB, aud_db_disp } } },
 #endif

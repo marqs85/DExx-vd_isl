@@ -139,6 +139,7 @@ assign LEDG = {adap_lm, 7'h0, (ir_code == 0)};
 assign LEDR = {18{(resync_led_ctr != 0)}};
 
 wire [10:0] xpos, ypos;
+wire osd_enable;
 wire [1:0] osd_color;
 
 
@@ -175,7 +176,7 @@ wire ISL_HSYNC_post, ISL_VSYNC_post, ISL_DE_post, ISL_FID_post;
 wire ISL_fe_interlace, ISL_fe_frame_change;
 wire [19:0] ISL_fe_pcnt_frame;
 wire [10:0] ISL_fe_vtotal, ISL_fe_xpos, ISL_fe_ypos;
-isl51002_frontend u_isl_frontend ( 
+isl51002_frontend u_isl_frontend (
     .PCLK_i(ISL_PCLK_i),
     .CLK_MEAS_i(clk27),
     .reset_n(sys_reset_n),

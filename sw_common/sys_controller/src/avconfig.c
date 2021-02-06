@@ -50,6 +50,8 @@ const avconfig_t tc_default = {
 #endif
 };
 
+const HDMI_i2s_fs_t audio_fmt_iec_map[] = {IEC60958_FS_48KHZ, IEC60958_FS_96KHZ, IEC60958_FS_192KHZ};
+
 int reset_target_avconfig() {
     set_default_avconfig(0);
 
@@ -75,7 +77,7 @@ int set_default_avconfig(int update_cc)
 #endif
 
 #ifdef DExx_FW
-    tc.hdmitx_cfg.i2s_fs = FS_96KHZ;
+    tc.hdmitx_cfg.i2s_fs = IEC60958_FS_96KHZ;
 #endif
 
     if (update_cc)
@@ -131,9 +133,12 @@ status_t update_avconfig() {
 
     memcpy(&cc, &tc, sizeof(avconfig_t));
 
-#ifndef DExx_FW
-     cc.pcm_cfg.fs = cc.hdmitx_cfg_cfg.i2s_fs;
+#ifdef INC_PCM186X
+    cc.pcm_cfg.fs = cc.audio_fmt;
 #endif
+    cc.hdmitx_cfg.i2s_fs = audio_fmt_iec_map[cc.audio_fmt];
+    cc.hdmitx_cfg.audio_cc_val = CC_2CH;
+    cc.hdmitx_cfg.audio_ca_val = CA_2p0;
 
     return status;
 }

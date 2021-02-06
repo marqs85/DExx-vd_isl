@@ -172,7 +172,8 @@ wire resync_strobe = resync_strobe_sync2_reg;
 
 assign LED = {{4{adap_lm}}, (ir_code == 0), {3{(resync_led_ctr != 0)}}};
 
-wire [10:0] xpos, ypos;
+wire [11:0] xpos;
+wire [10:0] ypos;
 wire osd_enable;
 wire [1:0] osd_color;
 

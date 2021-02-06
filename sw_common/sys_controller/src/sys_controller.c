@@ -42,7 +42,7 @@
 #include "video_modes.h"
 
 #define FW_VER_MAJOR 0
-#define FW_VER_MINOR 42
+#define FW_VER_MINOR 43
 
 //fix PD and cec
 #define ADV7513_MAIN_BASE 0x72
@@ -74,7 +74,12 @@ adv7513_dev advtx_dev = {.i2cm_base = I2C_OPENCORES_1_BASE,
 #endif
 
 #ifdef INC_SII1136
-sii1136_dev siitx_dev = {.i2cm_base = I2C_OPENCORES_1_BASE,
+sii1136_dev siitx_dev = {
+#ifdef C5G
+                         .i2cm_base = I2C_OPENCORES_2_BASE,
+#else
+                         .i2cm_base = I2C_OPENCORES_1_BASE,
+#endif
                          .i2c_addr = SII1136_BASE};
 #endif
 
@@ -176,11 +181,11 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t 
     // Set input params
     hv_in_config.h_total = vm_in->timings.h_total;
     hv_in_config.h_active = vm_in->timings.h_active;
-    hv_in_config.h_backporch = vm_in->timings.h_backporch;
-    hv_in_config2.h_synclen = vm_in->timings.h_synclen;
+    hv_in_config.h_synclen = vm_in->timings.h_synclen;
+    hv_in_config2.h_backporch = vm_in->timings.h_backporch;
     hv_in_config2.v_active = vm_in->timings.v_active;
-    hv_in_config3.v_backporch = vm_in->timings.v_backporch;
     hv_in_config3.v_synclen = vm_in->timings.v_synclen;
+    hv_in_config3.v_backporch = vm_in->timings.v_backporch;
     hv_in_config2.interlaced = vm_in->timings.interlaced;
     hv_in_config3.h_skip = vm_conf->h_skip;
     hv_in_config3.h_sample_sel = vm_conf->h_skip / 2; // TODO: fix
@@ -188,19 +193,19 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t 
     // Set output params
     hv_out_config.h_total = vm_out->timings.h_total;
     hv_out_config.h_active = vm_out->timings.h_active;
-    hv_out_config.h_backporch = vm_out->timings.h_backporch;
-    hv_out_config2.h_synclen = vm_out->timings.h_synclen;
+    hv_out_config.h_synclen = vm_out->timings.h_synclen;
+    hv_out_config2.h_backporch = vm_out->timings.h_backporch;
     hv_out_config2.v_total = vm_out->timings.v_total;
     hv_out_config2.v_active = vm_out->timings.v_active;
-    hv_out_config3.v_backporch = vm_out->timings.v_backporch;
     hv_out_config3.v_synclen = vm_out->timings.v_synclen;
+    hv_out_config3.v_backporch = vm_out->timings.v_backporch;
     hv_out_config2.interlaced = vm_out->timings.interlaced;
     hv_out_config3.v_startline = vm_conf->framesync_line;
 
     xy_out_config.x_size = vm_conf->x_size;
     xy_out_config.y_size = vm_conf->y_size;
-    xy_out_config.x_offset = vm_conf->x_offset;
-    xy_out_config2.y_offset = vm_conf->y_offset;
+    xy_out_config.y_offset = vm_conf->y_offset;
+    xy_out_config2.x_offset = vm_conf->x_offset;
     xy_out_config2.x_start_lb = vm_conf->x_start_lb;
     xy_out_config2.y_start_lb = vm_conf->y_start_lb;
     xy_out_config2.x_rpt = vm_conf->x_rpt;
@@ -239,27 +244,38 @@ int init_hw() {
 
     I2C_init(I2C_OPENCORES_0_BASE,ALT_CPU_FREQ,400000);
     I2C_init(I2C_OPENCORES_1_BASE,ALT_CPU_FREQ,400000);
+#ifdef C5G
+    I2C_init(I2C_OPENCORES_2_BASE,ALT_CPU_FREQ,400000);
+#endif
+
+    // Init character OLED
+    us2066_init(&chardisp_dev);
 
     // init HDMI TX
 #ifdef INC_ADV7513
-    adv7513_init(&advtx_dev);
+    ret = adv7513_init(&advtx_dev);
+    if (ret != 0) {
+        sniprintf(row1, US2066_ROW_LEN+1, "ADV7513 init fail");
+        return ret;
+    }
 #endif
 #ifdef INC_SII1136
     sys_ctrl |= SCTRL_HDMITX_RESET_N;
     IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);
     usleep(20000);
-    sii1136_init(&siitx_dev);
+    ret = sii1136_init(&siitx_dev);
+    if (ret != 0) {
+        sniprintf(row1, US2066_ROW_LEN+1, "SII1136 init fail");
+        return ret;
+    }
 #endif
-
-    // Init character OLED
-    us2066_init(&chardisp_dev);
 
     // Init ISL51002
     sniprintf(row1, US2066_ROW_LEN+1, "Init ISL51002");
     ui_disp_status(1);
     ret = isl_init(&isl_dev);
     if (ret != 0) {
-        printf("ISL51002 init fail\n");
+        sniprintf(row1, US2066_ROW_LEN+1, "ISL51002 init fail");
         return ret;
     }
     // force reconfig (needed anymore?)
@@ -650,7 +666,7 @@ void mainloop()
 #ifdef INC_ADV7513
         adv7513_check_hpd_power(&advtx_dev);
         if (advtx_dev.powered_on && (cur_avconfig->hdmitx_cfg.i2s_fs != advtx_dev.cfg.i2s_fs))
-            si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, (cur_avconfig->hdmitx_cfg.i2s_fs == FS_96KHZ) ? &si_audio_mclk_96k_conf : &si_audio_mclk_48k_conf);
+            si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, (cur_avconfig->hdmitx_cfg.i2s_fs == IEC60958_FS_96KHZ) ? &si_audio_mclk_96k_conf : &si_audio_mclk_48k_conf);
         adv7513_update_config(&advtx_dev, &cur_avconfig->hdmitx_cfg);
 #endif
 #ifdef INC_SII1136
@@ -668,7 +684,8 @@ int main()
     while (1) {
         ret = init_hw();
         if (ret != 0) {
-            sniprintf(row2, US2066_ROW_LEN+1, "failed (%d)", ret);
+            sniprintf(row2, US2066_ROW_LEN+1, "Error code: %d", ret);
+            printf("%s\n%s\n", row1, row2);
             us2066_display_on(&chardisp_dev);
             ui_disp_status(1);
             while (1) {}
@@ -693,7 +710,9 @@ int main()
 
         us2066_display_on(&chardisp_dev);
 
+#ifdef INC_SII1136
         sii1136_enable_power(&siitx_dev, 1);
+#endif
 
         mainloop();
     }
