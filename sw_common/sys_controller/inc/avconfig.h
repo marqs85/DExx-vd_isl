@@ -57,8 +57,10 @@
 #define ALC_H_FILTER_MAX    3
 #define ALC_V_FILTER_MAX    7
 #define CLAMP_STR_MAX       7
-#define CLAMP_POS_MIN       0
-#define CLAMP_POS_MAX       0x3fff
+#define CLAMP_POS_MIN       1
+#define CLAMP_POS_MAX       250
+#define CLAMP_WIDTH_MIN     1
+#define CLAMP_WIDTH_MAX     100
 
 #define SL_MODE_MAX         2
 #define SL_TYPE_MAX         2
@@ -75,6 +77,19 @@ typedef enum {
     TX_MODE_CHANGE      = 3,
     ACTIVITY_CHANGE     = 4
 } status_t;
+
+typedef enum {
+    OPERMODE_PURE_LM      = 0,
+    OPERMODE_ADAPT_LM     = 1,
+    OPERMODE_SCALER       = 2,
+    OPERMODE_INVALID      = 255,
+} oper_mode_t;
+
+typedef enum {
+    SCL_FL_ON           = 0,
+    SCL_FL_OFF_50HZ     = 1,
+    SCL_FL_OFF_60HZ     = 2,
+} scl_fl_mode_t;
 
 typedef struct {
     uint8_t sl_mode;
@@ -108,7 +123,7 @@ typedef struct {
     uint8_t sm_ad_480i_576i;
     uint8_t sm_ad_480p;
     uint8_t sm_ad_576p;
-    uint8_t adapt_lm;
+    uint8_t oper_mode;
     uint8_t lm_deint_mode;
     uint8_t nir_even_offset;
     uint8_t ar_256col;
@@ -128,6 +143,15 @@ typedef struct {
     uint8_t reverse_lpf;
     uint8_t default_vic;
     uint8_t audio_fmt;
+    uint8_t scl_out_mode;
+    uint8_t scl_framelock;
+    uint8_t scl_aspect;
+    uint8_t scl_alg;
+    uint8_t scl_dil_alg;
+    uint8_t sm_scl_240p_288p;
+    uint8_t sm_scl_480i_576i;
+    uint8_t sm_scl_480p;
+    uint8_t sm_scl_576p;
     isl51002_config isl_cfg __attribute__ ((aligned (4)));
 #ifdef INC_ADV7513
     adv7513_config hdmitx_cfg __attribute__ ((aligned (4)));

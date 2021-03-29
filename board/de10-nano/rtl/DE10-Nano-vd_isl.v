@@ -1,4 +1,6 @@
-//`define ENABLE_HPS
+`define ENABLE_HPS
+//`define VIP
+`define PIXPAR2
 
 module DE10_Nano_vd_isl (
 
@@ -37,7 +39,7 @@ module DE10_Nano_vd_isl (
 
 `ifdef ENABLE_HPS
       ///////// HPS /////////
-      inout              HPS_CONV_USB_N,
+      //inout              HPS_CONV_USB_N,
       output      [14:0] HPS_DDR3_ADDR,
       output      [2:0]  HPS_DDR3_BA,
       output             HPS_DDR3_CAS_N,
@@ -54,7 +56,7 @@ module DE10_Nano_vd_isl (
       output             HPS_DDR3_RESET_N,
       input              HPS_DDR3_RZQ,
       output             HPS_DDR3_WE_N,
-      output             HPS_ENET_GTX_CLK,
+      /*output             HPS_ENET_GTX_CLK,
       inout              HPS_ENET_INT_N,
       output             HPS_ENET_MDC,
       inout              HPS_ENET_MDIO,
@@ -84,7 +86,7 @@ module DE10_Nano_vd_isl (
       inout       [7:0]  HPS_USB_DATA,
       input              HPS_USB_DIR,
       input              HPS_USB_NXT,
-      output             HPS_USB_STP,
+      output             HPS_USB_STP,*/
 `endif /*ENABLE_HPS*/
 
       ///////// KEY /////////
@@ -137,7 +139,7 @@ wire isl_vsync_type = sys_ctrl[10];
 //wire audmux_sel = sys_ctrl[11];
 wire testpattern_enable = sys_ctrl[12];
 wire csc_enable = sys_ctrl[13];
-wire adap_lm = sys_ctrl[14];
+wire framelock = sys_ctrl[14];
 
 //reg [1:0] clk_osc_div = 2'h0;
 /*wire SCL = GPIO_0[5] & HDMI_I2C_SCL;
@@ -153,9 +155,13 @@ reg [1:0] btn_sync1_reg, btn_sync2_reg;
 wire [15:0] ir_code;
 wire [7:0] ir_code_cnt;
 
+reg pclk_capture_div2, pclk_out_div2;
+
 wire scl_oe, sda_oe;
 wire pll_lock;
 wire nios_reset_req;
+
+wire cvi_overflow, cvo_underflow;
 
 wire vs_flag = testpattern_enable ? 1'b0 : ~ISL_VSYNC_post;
 
@@ -170,10 +176,10 @@ reg resync_strobe_sync1_reg, resync_strobe_sync2_reg, resync_strobe_prev;
 wire resync_strobe_i;
 wire resync_strobe = resync_strobe_sync2_reg;
 
-assign LED = {{4{adap_lm}}, (ir_code == 0), {3{(resync_led_ctr != 0)}}};
+assign LED = {{4{framelock}}, (ir_code == 0), {3{(resync_led_ctr != 0)}}};
 
-wire [11:0] xpos;
-wire [10:0] ypos;
+wire [11:0] xpos_sc;
+wire [10:0] ypos_sc;
 wire osd_enable;
 wire [1:0] osd_color;
 
@@ -250,6 +256,98 @@ isl51002_frontend u_isl_frontend (
 // output clock assignment
 assign pclk_out = PCLK_sc;
 assign HDMI_TX_CLK = pclk_out;
+
+
+// VIP
+wire vip_select = misc_config[15];
+
+always @(posedge pclk_capture) begin
+    pclk_capture_div2 <= pclk_capture_div2 ^ 1'b1;
+end
+
+always @(posedge pclk_out) begin
+    pclk_out_div2 <= pclk_out_div2 ^ 1'b1;
+end
+
+`ifdef VIP
+`ifdef PIXPAR2
+wire [47:0] VIP_DATA_o;
+wire [1:0] VIP_HSYNC_o, VIP_VSYNC_o, VIP_DE_o;
+
+`ifdef DIV2_SYNC
+reg [47:0] VIP_DATA_i;
+reg [1:0] VIP_HSYNC_i, VIP_VSYNC_i, VIP_DE_i, VIP_FID_i;
+reg [7:0] R_vip, G_vip, B_vip;
+reg HSYNC_vip, VSYNC_vip, DE_vip;
+
+always @(posedge pclk_capture) begin
+    if (pclk_capture_div2 == 0) begin
+        VIP_DATA_i[47:24] <= {R_capt, G_capt, B_capt};
+        {VIP_HSYNC_i[1], VIP_VSYNC_i[1], VIP_DE_i[1], VIP_FID_i[1]} <= {~HSYNC_capt, ~VSYNC_capt, DE_capt, ~FID_capt};
+    end else begin
+        VIP_DATA_i[23:0] <= {R_capt, G_capt, B_capt};
+        {VIP_HSYNC_i[0], VIP_VSYNC_i[0], VIP_DE_i[0], VIP_FID_i[0]} <= {~HSYNC_capt, ~VSYNC_capt, DE_capt, ~FID_capt};
+    end
+end
+
+always @(posedge pclk_out) begin
+    if (pclk_out_div2 == 0) begin
+        {R_vip, G_vip, B_vip} <= VIP_DATA_o[23:0];
+        {HSYNC_vip, VSYNC_vip, DE_vip} <= {~VIP_HSYNC_o[0], ~VIP_VSYNC_o[0], VIP_DE_o[0]};
+    end else begin
+        {R_vip, G_vip, B_vip} <= VIP_DATA_o[47:24];
+        {HSYNC_vip, VSYNC_vip, DE_vip} <= {~VIP_HSYNC_o[1], ~VIP_VSYNC_o[1], VIP_DE_o[1]};
+    end
+end
+`else // DIV2_SYNC
+wire [47:0] VIP_DATA_i;
+wire [1:0] VIP_HSYNC_i, VIP_VSYNC_i, VIP_DE_i, VIP_FID_i;
+wire [7:0] R_vip, G_vip, B_vip;
+wire HSYNC_vip, VSYNC_vip, DE_vip;
+wire [3:0] unused1, unused0;
+wire [4:0] unused_out;
+
+dc_fifo_in  dc_fifo_in_inst (
+    .data({R_capt, G_capt, B_capt, ~HSYNC_capt, ~VSYNC_capt, DE_capt, ~FID_capt, 4'h0}),
+    .rdclk(pclk_capture_div2),
+    .rdreq(1),
+    .wrclk(pclk_capture),
+    .wrreq(1),
+    .q({VIP_DATA_i[47:24], VIP_HSYNC_i[1], VIP_VSYNC_i[1], VIP_DE_i[1], VIP_FID_i[1], unused1, VIP_DATA_i[23:0], VIP_HSYNC_i[0], VIP_VSYNC_i[0], VIP_DE_i[0], VIP_FID_i[0], unused0})
+);
+
+dc_fifo_out  dc_fifo_out_inst (
+    .data({VIP_DATA_o[47:24], VIP_HSYNC_o[1], VIP_VSYNC_o[1], VIP_DE_o[1], 5'h0, VIP_DATA_o[23:0], VIP_HSYNC_o[0], VIP_VSYNC_o[0], VIP_DE_o[0], 5'h0}),
+    .rdclk(pclk_out),
+    .rdreq(1),
+    .wrclk(pclk_out_div2),
+    .wrreq(1),
+    .q({R_vip, G_vip, B_vip, HSYNC_vip, VSYNC_vip, DE_vip, unused_out})
+);
+`endif // DIV2_SYNC
+`else // PIXPAR2
+wire [23:0] VIP_DATA_i = {R_capt, G_capt, B_capt};
+wire VIP_HSYNC_i = ~HSYNC_capt;
+wire VIP_VSYNC_i = ~VSYNC_capt;
+wire VIP_DE_i = DE_capt;
+wire VIP_FID_i = ~FID_capt;
+wire [23:0] VIP_DATA_o;
+wire [7:0] R_vip = VIP_DATA_o[23:16];
+wire [7:0] G_vip = VIP_DATA_o[15:8];
+wire [7:0] B_vip = VIP_DATA_o[7:0];
+wire VIP_HSYNC_o, VIP_VSYNC_o, VIP_DE_o;
+wire HSYNC_vip = VIP_HSYNC_o;
+wire VSYNC_vip = VIP_VSYNC_o;
+wire DE_vip = VIP_DE_o;
+`endif // PIXPAR2
+
+reg VSYNC_vip_prev;
+wire vip_frame_start = VSYNC_vip_prev & ~VSYNC_vip;
+
+always @(posedge pclk_out) begin
+    VSYNC_vip_prev <= VSYNC_vip;
+end
+`endif // VIP
 
 // output data assignment (2 stages and launch on negedge for timing closure)
 reg [7:0] R_out, G_out, B_out;
@@ -355,10 +453,68 @@ sys u0 (
     .sc_config_0_sc_if_sl_config_o          (sl_config),
     .sc_config_0_sc_if_sl_config2_o         (sl_config2),
     .osd_generator_0_osd_if_vclk            (PCLK_sc),
-    .osd_generator_0_osd_if_xpos            (xpos),
-    .osd_generator_0_osd_if_ypos            (ypos),
+    .osd_generator_0_osd_if_xpos            (xpos_sc),
+    .osd_generator_0_osd_if_ypos            (ypos_sc),
     .osd_generator_0_osd_if_osd_enable      (osd_enable),
-    .osd_generator_0_osd_if_osd_color       (osd_color)
+    .osd_generator_0_osd_if_osd_color       (osd_color),
+    .clk_0_clk                              (FPGA_CLK1_50),                 //              clk.clk
+    .memory_mem_a                           ( HPS_DDR3_ADDR),                       //                memory.mem_a
+    .memory_mem_ba                          ( HPS_DDR3_BA),                         //                .mem_ba
+    .memory_mem_ck                          ( HPS_DDR3_CK_P),                       //                .mem_ck
+    .memory_mem_ck_n                        ( HPS_DDR3_CK_N),                       //                .mem_ck_n
+    .memory_mem_cke                         ( HPS_DDR3_CKE),                        //                .mem_cke
+    .memory_mem_cs_n                        ( HPS_DDR3_CS_N),                       //                .mem_cs_n
+    .memory_mem_ras_n                       ( HPS_DDR3_RAS_N),                      //                .mem_ras_n
+    .memory_mem_cas_n                       ( HPS_DDR3_CAS_N),                      //                .mem_cas_n
+    .memory_mem_we_n                        ( HPS_DDR3_WE_N),                       //                .mem_we_n
+    .memory_mem_reset_n                     ( HPS_DDR3_RESET_N),                    //                .mem_reset_n
+    .memory_mem_dq                          ( HPS_DDR3_DQ),                         //                .mem_dq
+    .memory_mem_dqs                         ( HPS_DDR3_DQS_P),                      //                .mem_dqs
+    .memory_mem_dqs_n                       ( HPS_DDR3_DQS_N),                      //                .mem_dqs_n
+    .memory_mem_odt                         ( HPS_DDR3_ODT),                        //                .mem_odt
+    .memory_mem_dm                          ( HPS_DDR3_DM),                         //                .mem_dm
+    .memory_oct_rzqin                       ( HPS_DDR3_RZQ),                        //                .oct_rzqin
+`ifdef VIP
+    .alt_vip_cl_cvi_0_clocked_video_vid_clk                    (
+`ifdef PIXPAR2
+    pclk_capture_div2
+`else
+    pclk_capture
+`endif
+    ),
+    .alt_vip_cl_cvi_0_clocked_video_vid_data                   (VIP_DATA_i),
+    .alt_vip_cl_cvi_0_clocked_video_vid_de                     (VIP_DE_i),
+    .alt_vip_cl_cvi_0_clocked_video_vid_datavalid              (1'b1),
+    .alt_vip_cl_cvi_0_clocked_video_vid_locked                 (1'b1),
+    .alt_vip_cl_cvi_0_clocked_video_vid_f                      (VIP_FID_i),
+    .alt_vip_cl_cvi_0_clocked_video_vid_v_sync                 (VIP_VSYNC_i),
+    .alt_vip_cl_cvi_0_clocked_video_vid_h_sync                 (VIP_HSYNC_i),
+    .alt_vip_cl_cvi_0_clocked_video_vid_color_encoding         (0),
+    .alt_vip_cl_cvi_0_clocked_video_vid_bit_width              (0),
+    .alt_vip_cl_cvi_0_clocked_video_sof                        (),
+    .alt_vip_cl_cvi_0_clocked_video_sof_locked                 (),
+    .alt_vip_cl_cvi_0_clocked_video_refclk_div                 (),
+    .alt_vip_cl_cvi_0_clocked_video_clipping                   (),
+    .alt_vip_cl_cvi_0_clocked_video_padding                    (),
+    .alt_vip_cl_cvi_0_clocked_video_overflow                   (cvi_overflow),
+    .alt_vip_cl_cvo_0_clocked_video_vid_clk                    (
+`ifdef PIXPAR2
+    pclk_out_div2
+`else
+    pclk_out
+`endif
+    ),
+    .alt_vip_cl_cvo_0_clocked_video_vid_data                   (VIP_DATA_o),
+    .alt_vip_cl_cvo_0_clocked_video_underflow                  (cvo_underflow),
+    .alt_vip_cl_cvo_0_clocked_video_vid_mode_change            (),
+    .alt_vip_cl_cvo_0_clocked_video_vid_std                    (),
+    .alt_vip_cl_cvo_0_clocked_video_vid_datavalid              (VIP_DE_o),
+    .alt_vip_cl_cvo_0_clocked_video_vid_v_sync                 (VIP_VSYNC_o),
+    .alt_vip_cl_cvo_0_clocked_video_vid_h_sync                 (VIP_HSYNC_o),
+    .alt_vip_cl_cvo_0_clocked_video_vid_f                      (),
+    .alt_vip_cl_cvo_0_clocked_video_vid_h                      (),
+    .alt_vip_cl_cvo_0_clocked_video_vid_v                      ()
+`endif
 );
 
 scanconverter scanconverter_inst (
@@ -385,6 +541,19 @@ scanconverter scanconverter_inst (
     .sl_config(sl_config),
     .sl_config2(sl_config2),
     .testpattern_enable(testpattern_enable),
+`ifdef VIP
+    .ext_sync_mode(vip_select),
+    .ext_frame_change_i(vip_frame_start),
+    .ext_R_i(R_vip),
+    .ext_G_i(G_vip),
+    .ext_B_i(B_vip),
+`else
+    .ext_sync_mode(0),
+    .ext_frame_change_i(0),
+    .ext_R_i(0),
+    .ext_G_i(0),
+    .ext_B_i(0),
+`endif
     .PCLK_o(PCLK_sc),
     .R_o(R_sc),
     .G_o(G_sc),
@@ -392,8 +561,8 @@ scanconverter scanconverter_inst (
     .HSYNC_o(HSYNC_sc),
     .VSYNC_o(VSYNC_sc),
     .DE_o(DE_sc),
-    .xpos_o(xpos),
-    .ypos_o(ypos),
+    .xpos_o(xpos_sc),
+    .ypos_o(ypos_sc),
     .resync_strobe(resync_strobe_i)
 );
 

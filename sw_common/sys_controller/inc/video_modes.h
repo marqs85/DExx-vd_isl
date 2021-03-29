@@ -125,6 +125,7 @@ typedef enum {
 } stdmode_t;
 
 typedef enum {
+    /* Generic */
     SMPPRESET_GEN_720x240    = 0,
     SMPPRESET_GEN_960x240,
     SMPPRESET_GEN_1280x240,
@@ -147,9 +148,26 @@ typedef enum {
     SMPPRESET_GEN_1707x480_WS,
     SMPPRESET_GEN_720x576,
     SMPPRESET_GEN_1536x576,
+    /* DTV / PC */
+    SMPPRESET_DTV480I,
+    SMPPRESET_DTV480I_WS,
+    SMPPRESET_DTV576I,
+    SMPPRESET_DTV576I_WS,
+    SMPPRESET_ARC_384P,
+    SMPPRESET_PC_700x400,
+    SMPPRESET_PC_640x400,
     SMPPRESET_VGA480P60,
     SMPPRESET_DTV480P,
     SMPPRESET_DTV480P_WS,
+    SMPPRESET_DTV576P,
+    SMPPRESET_DTV576P_WS,
+    SMPPRESET_DTV720P50,
+    SMPPRESET_DTV720P60,
+    SMPPRESET_DTV1080I50,
+    SMPPRESET_DTV1080I60,
+    SMPPRESET_DTV1080P50,
+    SMPPRESET_DTV1080P60,
+    /* console-specific */
     SMPPRESET_SNES_256x240,
     SMPPRESET_SNES_512x240,
     SMPPRESET_MD_256x224,
@@ -159,6 +177,10 @@ typedef enum {
     SMPPRESET_PSX_384x240,
     SMPPRESET_PSX_512x240,
     SMPPRESET_PSX_640x240,
+    SMPPRESET_SAT_320x240,
+    SMPPRESET_SAT_352x240,
+    SMPPRESET_SAT_640x240,
+    SMPPRESET_SAT_704x240,
     SMPPRESET_N64_320x240,
     SMPPRESET_N64_640x240,
 } smp_preset_id_t;
@@ -187,9 +209,16 @@ typedef enum {
 typedef enum {
     SM_GEN_4_3      = 0,
     SM_GEN_16_9,
+    SM_OPT_DTV480I,
+    SM_OPT_DTV480I_WS,
+    SM_OPT_DTV576I,
+    SM_OPT_DTV576I_WS,
     SM_OPT_DTV480P,
     SM_OPT_DTV480P_WS,
     SM_OPT_VGA480P60,
+    SM_OPT_DTV576P,
+    SM_OPT_DTV576P_WS,
+    SM_OPT_PC_HDTV,
     SM_OPT_SNES_256COL,
     SM_OPT_SNES_512COL,
     SM_OPT_MD_256COL,
@@ -201,37 +230,38 @@ typedef enum {
     SM_OPT_PSX_640COL,
     SM_OPT_SAT_320COL,
     SM_OPT_SAT_352COL,
+    SM_OPT_SAT_640COL,
     SM_OPT_SAT_704COL,
     SM_OPT_N64_320COL,
     SM_OPT_N64_640COL,
 } smp_mode_t;
 
 typedef struct {
-    uint16_t h_active:13;
-    uint16_t v_active:11;
+    uint16_t h_active;
+    uint16_t v_active;
     uint8_t v_hz_max;
     uint16_t h_total;
-    uint8_t  h_total_adj:5;
-    uint16_t v_total:11;
-    uint16_t h_backporch:9;
-    uint16_t v_backporch:9;
-    uint16_t h_synclen:9;
-    uint8_t v_synclen:4;
-    uint8_t interlaced:1;
-} __attribute__((packed)) sync_timings_t;
+    uint8_t  h_total_adj;
+    uint16_t v_total;
+    uint16_t h_backporch;
+    uint16_t v_backporch;
+    uint16_t h_synclen;
+    uint8_t v_synclen;
+    uint8_t interlaced;
+} sync_timings_t;
 
 typedef struct {
     char name[14];
-    HDMI_vic_t vic:8;
+    HDMI_vic_t vic;
     sync_timings_t timings;
     uint8_t sampler_phase;
-    video_type type:4;
-    video_group group:4;
+    video_type type;
+    video_group group;
     mode_flags flags;
-    HDMI_pixelrep_t tx_pixelrep:2;
-    HDMI_pixelrep_t hdmitx_pixr_ifr:2;
+    HDMI_pixelrep_t tx_pixelrep;
+    HDMI_pixelrep_t hdmitx_pixr_ifr;
     // for generation from 27MHz clock
-    uint8_t si_pclk_mult:4;
+    uint8_t si_pclk_mult;
     si5351_ms_config_t si_ms_conf;
 } mode_data_t;
 
@@ -241,8 +271,8 @@ typedef struct {
     sync_timings_t timings_i;
     uint8_t h_skip;
     uint8_t sampler_phase;
-    video_type type:4;
-    video_group group:4;
+    video_type type;
+    video_group group;
 } smp_preset_t;
 
 typedef struct {
@@ -273,6 +303,8 @@ typedef struct {
 void set_default_vm_table();
 
 uint32_t estimate_dotclk(mode_data_t *vm_in, uint32_t h_hz);
+
+int get_scaler_mode(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t *vm_conf, int *framelock);
 
 int get_adaptive_lm_mode(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t *vm_conf);
 
