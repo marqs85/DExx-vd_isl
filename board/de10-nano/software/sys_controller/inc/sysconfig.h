@@ -5,6 +5,7 @@
 
 #define DExx_FW
 #define INC_ADV7513
+#define VIP
 
 #ifndef DEBUG
 #define OS_PRINTF(...)

@@ -15,8 +15,16 @@ create_clock -period 185MHz -name pclk_si [get_ports GPIO_0[0]]
 #derive_pll_clocks
 create_generated_clock -source {pll_sys|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|refclkin} -divide_by 5 -multiply_by 54 -duty_cycle 50.00 -name pll_vco_clk {pll_sys|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|vcoph[0]}
 create_generated_clock -source {pll_sys|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]} -divide_by 20 -duty_cycle 50.00 -name clk27 {pll_sys|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}
+create_generated_clock -source {u0|pll_0|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|refclkin} -divide_by 2 -multiply_by 15 -duty_cycle 50.00 -name pll_0_vco {u0|pll_0|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|vcoph[0]}
+create_generated_clock -source {u0|pll_0|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]} -divide_by 3 -duty_cycle 50.00 -name clk125p5 {u0|pll_0|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}
 
 create_generated_clock -name pclk_si_out -master_clock pclk_si -source [get_ports GPIO_0[0]] -multiply_by 1 [get_ports HDMI_TX_CLK]
+
+# specify div2 capture and output clocks
+set pclk_capture_div_pin [get_pins pclk_capture_div2|q]
+create_generated_clock -name pclk_isl_div2 -master_clock pclk_isl -source [get_ports GPIO_0[1]] -divide_by 2 $pclk_capture_div_pin
+set pclk_si_div_pin [get_pins pclk_out_div2|q]
+create_generated_clock -name pclk_si_div2 -master_clock pclk_si -source [get_ports GPIO_0[0]] -divide_by 2 $pclk_si_div_pin
 
 #**************************************************************
 # Set Clock Latency
@@ -69,8 +77,11 @@ set_clock_groups -asynchronous -group \
                             {clk50} \
                             {clk50_2} \
                             {clk50_3} \
+                            {clk125p5} \
                             {pclk_isl} \
+                            {pclk_isl_div2} \
                             {pclk_si pclk_si_out} \
+                            {pclk_si_div2} \
                             {pll_vco_clk} \
                             {clk27}
 

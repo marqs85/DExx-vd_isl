@@ -1,5 +1,5 @@
 `define ENABLE_HPS
-//`define VIP
+`define VIP
 `define PIXPAR2
 
 module DE10_Nano_vd_isl (
@@ -253,6 +253,18 @@ isl51002_frontend u_isl_frontend (
     .pcnt_frame(ISL_fe_pcnt_frame)
 );
 
+wire [7:0] R_capt = ISL_R_post;
+wire [7:0] G_capt = ISL_G_post;
+wire [7:0] B_capt = ISL_B_post;
+wire HSYNC_capt = ISL_HSYNC_post;
+wire VSYNC_capt = ISL_VSYNC_post;
+wire DE_capt = ISL_DE_post;
+wire FID_capt = ISL_FID_post;
+wire interlace_flag_capt = ISL_fe_interlace;
+wire frame_change_capt = ISL_fe_frame_change;
+wire [10:0] xpos_capt = ISL_fe_xpos;
+wire [10:0] ypos_capt = ISL_fe_ypos;
+
 // output clock assignment
 assign pclk_out = PCLK_sc;
 assign HDMI_TX_CLK = pclk_out;
@@ -424,8 +436,9 @@ pll pll_sys (
 );
 
 sys u0 (
-    .clk_clk                 (clk27),                 //              clk.clk
-    .reset_reset_n           (sys_reset_n),            //            reset.reset_n
+    .clk_clk                 (clk27),
+    .clk_0_clk               (FPGA_CLK1_50),
+    .reset_reset_n           (sys_reset_n),
     /*.i2c_0_i2c_serial_sda_in (HDMI_I2C_SDA), // i2c_0_i2c_serial.sda_in
     .i2c_0_i2c_serial_scl_in (HDMI_I2C_SCL), //                 .scl_in
     .i2c_0_i2c_serial_sda_oe (sda_oe), //                 .sda_oe
@@ -457,7 +470,6 @@ sys u0 (
     .osd_generator_0_osd_if_ypos            (ypos_sc),
     .osd_generator_0_osd_if_osd_enable      (osd_enable),
     .osd_generator_0_osd_if_osd_color       (osd_color),
-    .clk_0_clk                              (FPGA_CLK1_50),                 //              clk.clk
     .memory_mem_a                           ( HPS_DDR3_ADDR),                       //                memory.mem_a
     .memory_mem_ba                          ( HPS_DDR3_BA),                         //                .mem_ba
     .memory_mem_ck                          ( HPS_DDR3_CK_P),                       //                .mem_ck
@@ -521,17 +533,17 @@ scanconverter scanconverter_inst (
     .PCLK_CAP_i(pclk_capture),
     .PCLK_OUT_i(SI_PCLK_i),
     .reset_n(sys_reset_n),  //TODO: sync to pclk_capture
-    .R_i(ISL_R_post),
-    .G_i(ISL_G_post),
-    .B_i(ISL_B_post),
-    .HSYNC_i(ISL_HSYNC_post),
-    .VSYNC_i(ISL_VSYNC_post),
-    .DE_i(ISL_DE_post),
-    .FID_i(ISL_FID_post),
-    .interlaced_in_i(ISL_fe_interlace),
-    .frame_change_i(ISL_fe_frame_change),
-    .xpos_i(ISL_fe_xpos),
-    .ypos_i(ISL_fe_ypos),
+    .R_i(R_capt),
+    .G_i(G_capt),
+    .B_i(B_capt),
+    .HSYNC_i(HSYNC_capt),
+    .VSYNC_i(VSYNC_capt),
+    .DE_i(DE_capt),
+    .FID_i(FID_capt),
+    .interlaced_in_i(interlace_flag_capt),
+    .frame_change_i(frame_change_capt),
+    .xpos_i(xpos_capt),
+    .ypos_i(ypos_capt),
     .hv_out_config(hv_out_config),
     .hv_out_config2(hv_out_config2),
     .hv_out_config3(hv_out_config3),

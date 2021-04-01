@@ -179,11 +179,11 @@ typedef struct {
     uint32_t mode;
 } vip_dli_ii_regs;
 
-volatile vip_cvi_ii_regs *vip_cvi = (volatile vip_cvi_ii_regs*)0x00024000;
-volatile vip_cvo_ii_regs *vip_cvo = (volatile vip_cvo_ii_regs*)0x00025000;
-volatile vip_dli_ii_regs *vip_dli = (volatile vip_dli_ii_regs*)0x00026000;
-volatile vip_scl_ii_regs *vip_scl_nn = (volatile vip_scl_ii_regs*)0x00027000;
-volatile vip_scl_ii_regs *vip_scl_pp = (volatile vip_scl_ii_regs*)0x00028000;
+volatile vip_cvi_ii_regs *vip_cvi = (volatile vip_cvi_ii_regs*)ALT_VIP_CL_CVI_0_BASE;
+volatile vip_cvo_ii_regs *vip_cvo = (volatile vip_cvo_ii_regs*)ALT_VIP_CL_CVO_0_BASE;
+volatile vip_dli_ii_regs *vip_dli = (volatile vip_dli_ii_regs*)ALT_VIP_CL_DIL_0_BASE;
+volatile vip_scl_ii_regs *vip_scl_nn = (volatile vip_scl_ii_regs*)ALT_VIP_CL_SCL_0_BASE;
+volatile vip_scl_ii_regs *vip_scl_pp = (volatile vip_scl_ii_regs*)ALT_VIP_CL_SCL_1_BASE;
 #endif
 
 si5351_ms_config_t si_audio_mclk_48k_conf = {3740, 628, 1125, 8832, 0, 1, 0, 0, 0};

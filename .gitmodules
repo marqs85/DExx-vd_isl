@@ -4,3 +4,6 @@
 [submodule "software/sys_controller/ic_drivers"]
 	path = sw_common/sys_controller/ic_drivers
 	url = https://github.com/marqs85/ic_drivers.git
+[submodule "board/de10-nano/software/bootloader/u-boot-socfpga"]
+	path = board/de10-nano/software/bootloader/u-boot-socfpga
+	url = https://github.com/altera-opensource/u-boot-socfpga
