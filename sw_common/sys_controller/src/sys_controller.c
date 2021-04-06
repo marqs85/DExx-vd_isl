@@ -179,11 +179,18 @@ typedef struct {
     uint32_t mode;
 } vip_dli_ii_regs;
 
+typedef struct {
+    uint32_t ctrl;
+    uint32_t status;
+    uint32_t irq;
+} vip_vfb_ii_regs;
+
 volatile vip_cvi_ii_regs *vip_cvi = (volatile vip_cvi_ii_regs*)ALT_VIP_CL_CVI_0_BASE;
 volatile vip_cvo_ii_regs *vip_cvo = (volatile vip_cvo_ii_regs*)ALT_VIP_CL_CVO_0_BASE;
 volatile vip_dli_ii_regs *vip_dli = (volatile vip_dli_ii_regs*)ALT_VIP_CL_DIL_0_BASE;
 volatile vip_scl_ii_regs *vip_scl_nn = (volatile vip_scl_ii_regs*)ALT_VIP_CL_SCL_0_BASE;
 volatile vip_scl_ii_regs *vip_scl_pp = (volatile vip_scl_ii_regs*)ALT_VIP_CL_SCL_1_BASE;
+volatile vip_vfb_ii_regs *vip_fb = (volatile vip_vfb_ii_regs*)ALT_VIP_CL_VFB_0_BASE;
 #endif
 
 si5351_ms_config_t si_audio_mclk_48k_conf = {3740, 628, 1125, 8832, 0, 1, 0, 0, 0};
@@ -312,6 +319,7 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t 
     vip_dli->ctrl = vip_enable;
     vip_scl_nn->ctrl = vip_enable;
     vip_scl_pp->ctrl = vip_enable;
+    vip_fb->ctrl = vip_enable;
     vip_cvo->ctrl = vip_enable;
 
     if (avconfig->scl_dil_alg == 0) {
@@ -327,7 +335,12 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t 
         vip_scl_nn->height = vm_conf->y_size;
     } else {
         vip_scl_nn->width = vm_in->timings.h_active;
-        vip_scl_nn->height = vm_in->timings.v_active*(vm_in->timings.interlaced+1);
+
+        // Pre-scale height by 2 for 240p/288p when using Lanczos as main algorithm
+        if (!vm_in->timings.interlaced && (vm_in->timings.v_active < 300))
+            vip_scl_nn->height = vm_in->timings.v_active*2;
+        else
+            vip_scl_nn->height = vm_in->timings.v_active*(vm_in->timings.interlaced+1);
     }
     vip_scl_pp->width = vm_conf->x_size;
     vip_scl_pp->height = vm_conf->y_size;
@@ -434,6 +447,7 @@ int init_hw() {
     vip_dli->ctrl = 0;
     vip_scl_nn->ctrl = 0;
     vip_scl_pp->ctrl = 0;
+    vip_fb->ctrl = 0;
     vip_cvo->ctrl = 0;
 #endif
 
