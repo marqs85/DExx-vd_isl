@@ -336,10 +336,10 @@
  <module
    name="address_span_extender_0"
    kind="altera_address_span_extender"
-   version="16.0"
+   version="20.1"
    enabled="1">
   <parameter name="BURSTCOUNT_WIDTH" value="9" />
-  <parameter name="DATA_WIDTH" value="128" />
+  <parameter name="DATA_WIDTH" value="256" />
   <parameter name="ENABLE_SLAVE_PORT" value="false" />
   <parameter name="MASTER_ADDRESS_DEF" value="0" />
   <parameter name="MASTER_ADDRESS_WIDTH" value="32" />
@@ -347,7 +347,7 @@
   <parameter name="SLAVE_ADDRESS_WIDTH" value="26" />
   <parameter name="SUB_WINDOW_COUNT" value="1" />
  </module>
- <module name="clk_50" kind="clock_source" version="16.0" enabled="1">
+ <module name="clk_50" kind="clock_source" version="20.1" enabled="1">
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
@@ -356,13 +356,13 @@
  <module
    name="clock_bridge_0"
    kind="altera_clock_bridge"
-   version="16.0"
+   version="20.1"
    enabled="1">
   <parameter name="DERIVED_CLOCK_RATE" value="0" />
   <parameter name="EXPLICIT_CLOCK_RATE" value="0" />
   <parameter name="NUM_CLOCK_OUTPUTS" value="1" />
  </module>
- <module name="hps" kind="altera_hps" version="16.0" enabled="1">
+ <module name="hps" kind="altera_hps" version="20.1" enabled="1">
   <parameter name="ABSTRACT_REAL_COMPARE_TEST" value="false" />
   <parameter name="ABS_RAM_MEM_INIT_FILENAME" value="meminit" />
   <parameter name="ACV_PHY_CLK_ADD_FR_PHASE" value="0.0" />
@@ -473,7 +473,7 @@
   <parameter name="F2SCLK_SDRAMCLK_FREQ" value="0" />
   <parameter name="F2SCLK_WARMRST_Enable" value="true" />
   <parameter name="F2SDRAM_Type">Avalon-MM Bidirectional</parameter>
-  <parameter name="F2SDRAM_Width" value="128" />
+  <parameter name="F2SDRAM_Width" value="256" />
   <parameter name="F2SINTERRUPT_Enable" value="false" />
   <parameter name="F2S_Width" value="0" />
   <parameter name="FIX_READ_LATENCY" value="8" />
@@ -495,7 +495,6 @@
   <parameter name="FPGA_PERIPHERAL_INPUT_CLOCK_FREQ_I2C1_SCL_IN" value="100" />
   <parameter name="FPGA_PERIPHERAL_INPUT_CLOCK_FREQ_I2C2_SCL_IN" value="100" />
   <parameter name="FPGA_PERIPHERAL_INPUT_CLOCK_FREQ_I2C3_SCL_IN" value="100" />
-  <parameter name="FPGA_PERIPHERAL_INPUT_CLOCK_FREQ_SDIO_CLK_IN" value="100" />
   <parameter name="FPGA_PERIPHERAL_INPUT_CLOCK_FREQ_SPIS0_SCLK_IN" value="100" />
   <parameter name="FPGA_PERIPHERAL_INPUT_CLOCK_FREQ_SPIS1_SCLK_IN" value="100" />
   <parameter name="FPGA_PERIPHERAL_INPUT_CLOCK_FREQ_USB0_CLK_IN" value="100" />
@@ -900,7 +899,7 @@
    enabled="1" />
  <connection
    kind="avalon"
-   version="16.0"
+   version="20.1"
    start="address_span_extender_0.expanded_master"
    end="hps.f2h_sdram0_data">
   <parameter name="arbitrationPriority" value="1" />
@@ -909,42 +908,42 @@
  </connection>
  <connection
    kind="clock"
-   version="16.0"
+   version="20.1"
    start="clk_50.clk"
    end="hps_reset_manager_0.clock" />
  <connection
    kind="clock"
-   version="16.0"
+   version="20.1"
    start="clock_bridge_0.out_clk"
    end="address_span_extender_0.clock" />
  <connection
    kind="clock"
-   version="16.0"
+   version="20.1"
    start="clock_bridge_0.out_clk"
    end="hps.f2h_sdram0_clock" />
  <connection
    kind="reset"
-   version="16.0"
+   version="20.1"
    start="hps.h2f_reset"
    end="clk_50.clk_in_reset" />
  <connection
    kind="reset"
-   version="16.0"
+   version="20.1"
    start="hps.h2f_reset"
    end="hps_reset_manager_0.hps_fpga_reset" />
  <connection
    kind="reset"
-   version="16.0"
+   version="20.1"
    start="hps.h2f_reset"
    end="address_span_extender_0.reset" />
  <connection
    kind="reset"
-   version="16.0"
+   version="20.1"
    start="hps_reset_manager_0.hps_cold_reset"
    end="hps.f2h_cold_reset_req" />
  <connection
    kind="reset"
-   version="16.0"
+   version="20.1"
    start="hps_reset_manager_0.hps_warm_reset"
    end="hps.f2h_warm_reset_req" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />

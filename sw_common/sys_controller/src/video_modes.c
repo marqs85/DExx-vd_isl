@@ -281,10 +281,13 @@ int get_scaler_mode(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t *v
     } else {
         *framelock = 0;
 
-        if (cc->scl_aspect < 4)
+        if (cc->scl_aspect < 4) {
             gen_width_limit = (aspect_map[cc->scl_aspect][0]*freerun_preset->timings.v_active)/aspect_map[cc->scl_aspect][1];
-        else
+            if (gen_width_limit > freerun_preset->timings.h_active)
+                gen_width_limit = freerun_preset->timings.h_active;
+        } else {
             gen_width_limit = 0;
+        }
 
         // Go through sampling presets and find closest one for analog sources
         if (!vm_in->timings.h_total) {
@@ -304,10 +307,10 @@ int get_scaler_mode(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t *v
                         // Find closest sampling width that does not exceed output active
                         if (smp_preset->timings_i.h_active <= gen_width_limit)
                             mindiff_id = i;
-                    }
-
-                    if (mindiff_lines == 0)
+                    } else if (diff_lines > mindiff_lines) {
+                        // Break out if suitable mode already found
                         break;
+                    }
                 }
             }
 

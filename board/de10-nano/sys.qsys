@@ -523,7 +523,7 @@
   <parameter name="BOB_BEHAVIOUR" value="FRAME_FOR_FIELD" />
   <parameter name="CADENCE_ALGORITHM_NAME" value="CADENCE_32_22_VOF" />
   <parameter name="CADENCE_DETECTION" value="0" />
-  <parameter name="CLOCKS_ARE_SEPARATE" value="0" />
+  <parameter name="CLOCKS_ARE_SEPARATE" value="1" />
   <parameter name="COLOR_PLANES_ARE_IN_PARALLEL" value="1" />
   <parameter name="DEINTERLACE_ALGORITHM" value="MOTION_ADAPTIVE" />
   <parameter name="DISABLE_EMBEDDED_STREAM_CLEANER" value="0" />
@@ -539,7 +539,7 @@
   <parameter name="MA_READ_MASTER_BURST_TARGET" value="32" />
   <parameter name="MA_READ_MASTER_FIFO_DEPTH" value="64" />
   <parameter name="MEM_BASE_ADDR" value="134217728" />
-  <parameter name="MEM_PORT_WIDTH" value="128" />
+  <parameter name="MEM_PORT_WIDTH" value="256" />
   <parameter name="MOTION_BLEED" value="1" />
   <parameter name="MOTION_BPS" value="7" />
   <parameter name="MOTION_READ_MASTER_BURST_TARGET" value="32" />
@@ -669,7 +669,7 @@
   <parameter name="AUTO_DEVICE_SPEEDGRADE" value="7" />
   <parameter name="BITS_PER_SYMBOL" value="8" />
   <parameter name="BURST_ALIGNMENT" value="1" />
-  <parameter name="CLOCKS_ARE_SEPARATE" value="0" />
+  <parameter name="CLOCKS_ARE_SEPARATE" value="1" />
   <parameter name="COLOR_PLANES_ARE_IN_PARALLEL" value="1" />
   <parameter name="CONTROLLED_DROP_REPEAT" value="1" />
   <parameter name="DROP_FRAMES" value="1" />
@@ -687,7 +687,7 @@
   <parameter name="MAX_WIDTH" value="2560" />
   <parameter name="MEM_BASE_ADDR" value="268435456" />
   <parameter name="MEM_BUFFER_OFFSET" value="134217728" />
-  <parameter name="MEM_PORT_WIDTH" value="128" />
+  <parameter name="MEM_PORT_WIDTH" value="256" />
   <parameter name="MULTI_FRAME_DELAY" value="1" />
   <parameter name="NUMBER_OF_COLOR_PLANES" value="3" />
   <parameter name="PIXELS_IN_PARALLEL" value="2" />
@@ -724,9 +724,9 @@
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="AUTO_DEVICE_SPEEDGRADE" value="7" />
   <parameter name="AUTO_GENERATION_ID" value="0" />
-  <parameter name="AUTO_HPS_F2H_SDRAM0_CLOCK_CLOCK_DOMAIN" value="6" />
-  <parameter name="AUTO_HPS_F2H_SDRAM0_CLOCK_CLOCK_RATE" value="125000000" />
-  <parameter name="AUTO_HPS_F2H_SDRAM0_CLOCK_RESET_DOMAIN" value="6" />
+  <parameter name="AUTO_HPS_F2H_SDRAM0_CLOCK_CLOCK_DOMAIN" value="7" />
+  <parameter name="AUTO_HPS_F2H_SDRAM0_CLOCK_CLOCK_RATE" value="100000000" />
+  <parameter name="AUTO_HPS_F2H_SDRAM0_CLOCK_RESET_DOMAIN" value="7" />
   <parameter name="AUTO_UNIQUE_ID" value="$${FILENAME}_ddr3_0" />
  </module>
  <module name="i2c_0" kind="altera_avalon_i2c" version="20.1" enabled="0">
@@ -1158,9 +1158,9 @@
   <parameter name="gui_fractional_cout" value="32" />
   <parameter name="gui_mif_generate" value="false" />
   <parameter name="gui_multiply_factor" value="1" />
-  <parameter name="gui_number_of_clocks" value="1" />
+  <parameter name="gui_number_of_clocks" value="2" />
   <parameter name="gui_operation_mode" value="direct" />
-  <parameter name="gui_output_clock_frequency0" value="125.0" />
+  <parameter name="gui_output_clock_frequency0" value="150.0" />
   <parameter name="gui_output_clock_frequency1" value="100.0" />
   <parameter name="gui_output_clock_frequency10" value="100.0" />
   <parameter name="gui_output_clock_frequency11" value="100.0" />
@@ -1598,11 +1598,6 @@
    kind="clock"
    version="20.1"
    start="pll_0.outclk0"
-   end="ddr3_0.hps_f2h_sdram0_clock" />
- <connection
-   kind="clock"
-   version="20.1"
-   start="pll_0.outclk0"
    end="alt_vip_cl_cvi_0.main_clock" />
  <connection
    kind="clock"
@@ -1624,6 +1619,21 @@
    version="20.1"
    start="pll_0.outclk0"
    end="alt_vip_cl_cvo_0.main_clock" />
+ <connection
+   kind="clock"
+   version="20.1"
+   start="pll_0.outclk1"
+   end="alt_vip_cl_dil_0.av_mm_clock" />
+ <connection
+   kind="clock"
+   version="20.1"
+   start="pll_0.outclk1"
+   end="ddr3_0.hps_f2h_sdram0_clock" />
+ <connection
+   kind="clock"
+   version="20.1"
+   start="pll_0.outclk1"
+   end="alt_vip_cl_vfb_0.mem_clock" />
  <connection
    kind="interrupt"
    version="20.1"
@@ -1670,6 +1680,11 @@
    kind="reset"
    version="20.1"
    start="clk_1.clk_reset"
+   end="alt_vip_cl_dil_0.av_mm_reset" />
+ <connection
+   kind="reset"
+   version="20.1"
+   start="clk_1.clk_reset"
    end="alt_vip_cl_dil_0.av_st_reset" />
  <connection
    kind="reset"
@@ -1706,6 +1721,11 @@
    version="20.1"
    start="clk_1.clk_reset"
    end="alt_vip_cl_cvo_0.main_reset" />
+ <connection
+   kind="reset"
+   version="20.1"
+   start="clk_1.clk_reset"
+   end="alt_vip_cl_vfb_0.mem_reset" />
  <connection
    kind="reset"
    version="20.1"
