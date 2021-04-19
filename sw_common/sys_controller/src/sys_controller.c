@@ -326,9 +326,15 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t 
         vip_dli->mode = (1<<1);
     } else if (avconfig->scl_dil_alg == 1) {
         vip_dli->mode = (1<<2);
+    } else if (avconfig->scl_dil_alg == 3) {
+        vip_dli->mode = (1<<0);
     } else {
         vip_dli->mode = 0;
     }
+
+#ifdef DEBUG
+    vip_dli->motion_shift = avconfig->scl_dil_motion_shift;
+#endif
 
     if (avconfig->scl_alg == 0) {
         vip_scl_nn->width = vm_conf->x_size;
