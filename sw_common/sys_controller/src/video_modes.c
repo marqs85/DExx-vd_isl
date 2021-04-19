@@ -169,7 +169,7 @@ int get_framelock_config(mode_data_t *vm_in, ad_mode_id_t target_ad_id_list[][2]
             mode_preset = (mode_data_t*)&video_modes_default[ad_mode_id_map[target_ad_id_list[smp_preset->group][j]]];
 
             if (((vm_in->timings.v_total == smp_preset->timings_i.v_total) && (vm_in->timings.v_total == mode_preset->timings.v_total)) &&
-                (!vm_in->timings.h_total || ((vm_in->timings.h_total == smp_preset->timings_i.h_total) && (vm_in->timings.h_total == mode_preset->timings.h_total))) &&
+                ((!vm_in->timings.h_total || (vm_in->timings.h_total == smp_preset->timings_i.h_total)) && (smp_preset->timings_i.h_total == mode_preset->timings.h_total)) &&
                 (vm_in->timings.interlaced == smp_preset->timings_i.interlaced) &&
                 (vm_in->timings.h_total || (target_sm_list[smp_preset->group] == smp_preset->sm)))
             {

@@ -386,13 +386,10 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t 
 int init_hw() {
     int ret;
 
-    // reset sysctrl (in case just Nios2 is restarted)
-    IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, 0x00);
-
-    // unreset hw
+    // reset hw
+    sys_ctrl = 0x00;
+    IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);
     usleep(400000);
-    /*sys_ctrl = SCTRL_ISL_RESET_N|SCTRL_HDMIRX_RESET_N;
-    IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);*/
 
     I2C_init(I2C_OPENCORES_0_BASE,ALT_CPU_FREQ,400000);
     I2C_init(I2C_OPENCORES_1_BASE,ALT_CPU_FREQ,400000);
@@ -412,7 +409,7 @@ int init_hw() {
     }
 #endif
 #ifdef INC_SII1136
-    sys_ctrl |= SCTRL_HDMITX_RESET_N;
+    sys_ctrl |= SCTRL_HDMI_RESET_N;
     IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);
     usleep(20000);
     ret = sii1136_init(&siitx_dev);
