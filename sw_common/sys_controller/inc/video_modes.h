@@ -104,24 +104,27 @@ typedef enum {
     STDMODE_240p         = 7,
     STDMODE_288p         = 15,
     STDMODE_480i         = 23,
-    STDMODE_480p         = 24,
+    STDMODE_480p,
     STDMODE_576i         = 27,
-    STDMODE_576p         = 28,
+    STDMODE_576p,
     STDMODE_720p_50      = 30,
-    STDMODE_720p_60      = 31,
-    STDMODE_1280x1024_60 = 34,
-    STDMODE_1080i_50     = 36,
-    STDMODE_1080i_60     = 37,
-    STDMODE_1080p_50     = 38,
-    STDMODE_1080p_60     = 39,
-    STDMODE_1080p_120    = 40,
-    STDMODE_1600x1200_60 = 41,
-    STDMODE_1920x1200_50 = 42,
-    STDMODE_1920x1200_60 = 43,
-    STDMODE_1920x1440_50 = 44,
-    STDMODE_1920x1440_60 = 45,
-    STDMODE_2560x1440_50 = 46,
-    STDMODE_2560x1440_60 = 47
+    STDMODE_720p_60,
+    STDMODE_720p_100,
+    STDMODE_720p_120,
+    STDMODE_1280x1024_60 = 36,
+    STDMODE_1080i_50     = 38,
+    STDMODE_1080i_60,
+    STDMODE_1080p_50,
+    STDMODE_1080p_60,
+    STDMODE_1080p_100,
+    STDMODE_1080p_120,
+    STDMODE_1600x1200_60,
+    STDMODE_1920x1200_50,
+    STDMODE_1920x1200_60,
+    STDMODE_1920x1440_50,
+    STDMODE_1920x1440_60,
+    STDMODE_2560x1440_50,
+    STDMODE_2560x1440_60
 } stdmode_t;
 
 typedef enum {
@@ -186,28 +189,6 @@ typedef enum {
 } smp_preset_id_t;
 
 typedef enum {
-    ADMODE_240p      = 0,
-    ADMODE_288p,
-    ADMODE_480p,
-    ADMODE_576p,
-    ADMODE_720p_50,
-    ADMODE_720p_60,
-    ADMODE_1280x1024_60,
-    ADMODE_1080i_50_CR,
-    ADMODE_1080i_60_LB,
-    ADMODE_1080p_50_CR,
-    ADMODE_1080p_60_LB,
-    ADMODE_1080p_60_CR,
-    ADMODE_1600x1200_60,
-    ADMODE_1920x1200_50,
-    ADMODE_1920x1200_60,
-    ADMODE_1920x1440_50,
-    ADMODE_1920x1440_60,
-    ADMODE_2560x1440_50,
-    ADMODE_2560x1440_60,
-} ad_mode_id_t;
-
-typedef enum {
     SM_GEN_4_3      = 0,
     SM_GEN_16_9,
     SM_OPT_DTV480I,
@@ -238,9 +219,14 @@ typedef enum {
 } smp_mode_t;
 
 typedef struct {
+    stdmode_t stdmode_id;
+    uint8_t y_rpt;
+} ad_mode_t;
+
+typedef struct {
     uint16_t h_active;
     uint16_t v_active;
-    uint8_t v_hz_max;
+    uint16_t v_hz_x100;
     uint16_t h_total;
     uint8_t  h_total_adj;
     uint16_t v_total;
@@ -277,15 +263,11 @@ typedef struct {
 } smp_preset_t;
 
 typedef struct {
-    ad_mode_id_t id;
+    stdmode_t mode_id;
     smp_preset_id_t smp_preset_id;
     uint16_t v_total_override;
-    uint8_t x_rpt;
-    uint8_t y_rpt;
-    int16_t x_offset_i;
-    int16_t y_offset_i;
     si5351_ms_config_t si_ms_conf;
-} ad_mode_data_t;
+} fl_config_t;
 
 typedef struct {
     uint8_t x_rpt;
@@ -298,19 +280,20 @@ typedef struct {
     uint16_t framesync_line;
     uint8_t x_start_lb;
     int8_t y_start_lb;
-} vm_mult_config_t;
+    uint8_t framelock;
+} vm_proc_config_t;
 
 
 void set_default_vm_table();
 
 uint32_t estimate_dotclk(mode_data_t *vm_in, uint32_t h_hz);
 
-int get_scaler_mode(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t *vm_conf, int *framelock);
+int get_scaler_mode(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t *vm_conf);
 
-int get_adaptive_lm_mode(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t *vm_conf);
+int get_adaptive_lm_mode(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t *vm_conf);
 
-int get_pure_lm_mode(mode_data_t *vm_in, mode_data_t *vm_out, vm_mult_config_t *vm_conf);
+int get_pure_lm_mode(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t *vm_conf);
 
-int get_standard_mode(unsigned stdmode_idx_arr_idx, vm_mult_config_t *vm_conf, mode_data_t *vm_in, mode_data_t *vm_out);
+int get_standard_mode(unsigned stdmode_idx_arr_idx, vm_proc_config_t *vm_conf, mode_data_t *vm_in, mode_data_t *vm_out);
 
 #endif /* VIDEO_MODES_H_ */
