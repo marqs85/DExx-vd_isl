@@ -152,6 +152,7 @@ typedef struct {
     uint8_t scl_framelock;
     uint8_t scl_aspect;
     uint8_t scl_alg;
+    uint8_t scl_edge_thold;
     uint8_t scl_dil_motion_shift;
 #ifndef VIP_DIL_B
     uint8_t scl_dil_alg;

@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Apr 25, 2021 11:04:56 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1619381096047</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>May 6, 2021 12:12:45 AM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1620249165470</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/markus/Code/DExx-vd_isl/board/de10-nano/software/sys_controller_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../sys.sopcinfo</SopcDesignFile>
@@ -923,12 +923,6 @@
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>alt_vip_cl_scl_1</slaveDescriptor>
-                <addressRange>0x00841800 - 0x008419FF</addressRange>
-                <addressSpan>512</addressSpan>
-                <attributes/>
-        </MemoryMap>
-        <MemoryMap>
                 <slaveDescriptor>alt_vip_cl_scl_0</slaveDescriptor>
                 <addressRange>0x00841A00 - 0x00841BFF</addressRange>
                 <addressSpan>512</addressSpan>
@@ -1030,10 +1024,6 @@
                 <sectionName>.stack</sectionName>
                 <regionName>onchip_memory2_0</regionName>
         </LinkerSection>
-        <DriverPackageInfo>
-                <name>none</name>
-                <moduleName>alt_vip_cl_scl_1</moduleName>
-        </DriverPackageInfo>
         <DriverPackageInfo>
                 <name>none</name>
                 <moduleName>alt_vip_cl_scl_0</moduleName>

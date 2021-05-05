@@ -103,7 +103,7 @@ static const char *oper_mode_desc[] = { "Pure LM", "Adaptive LM", "Scaler" };
 static const char *scl_out_mode_desc[] = { "720x480 (60Hz)", "720x576 (50Hz)", "1280x720 (50-120Hz)", "1280x1024 (60Hz)", "1920x1080 (50-120Hz)", "1600x1200 (60Hz)", "1920x1200 (50-60Hz)", "1920x1440 (50-60Hz)", "2560x1440 (50-60Hz)" };
 static const char *scl_framelock_desc[] = { "On", "On (2x Hz)", "Off (closest Hz)", "Off (50Hz)", "Off (60Hz)", "Off (100Hz)", "Off (120Hz)" };
 static const char *scl_aspect_desc[] = { "4:3", "16:9", "8:7", "1:1 source PAR", "Full" };
-static const char *scl_alg_desc[] = { "Nearest", "Lanczos3" };
+static const char *scl_alg_desc[] = { "Nearest", "Lanczos3", "Lanczos4", "Lanczos2&3", "Lanczos3&4", "SL sharp" };
 #ifndef VIP_DIL_B
 #ifdef DEBUG
 static const char *scl_dil_alg_desc[] = { "Bob", "Weave", "Motion adaptive", "Visualize motion" };
@@ -248,6 +248,7 @@ MENU(menu_scaler, P99_PROTECT({
     { "Framelock",                              OPT_AVCONFIG_SELECTION, { .sel = { &tc.scl_framelock,   OPT_WRAP, SETTING_ITEM(scl_framelock_desc) } } },
     { "Aspect ratio",                           OPT_AVCONFIG_SELECTION, { .sel = { &tc.scl_aspect,      OPT_WRAP, SETTING_ITEM(scl_aspect_desc) } } },
     { "Scaling algorithm",                      OPT_AVCONFIG_SELECTION, { .sel = { &tc.scl_alg,         OPT_WRAP, SETTING_ITEM(scl_alg_desc) } } },
+    { "Edge threshold",                         OPT_AVCONFIG_NUMVALUE, { .num = { &tc.scl_edge_thold,  OPT_NOWRAP, 0, 255, value_disp } } },
 #ifndef VIP_DIL_B
     { "Deinterlace mode",                       OPT_AVCONFIG_SELECTION, { .sel = { &tc.scl_dil_alg,     OPT_WRAP, SETTING_ITEM(scl_dil_alg_desc) } } },
 #endif
