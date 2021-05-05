@@ -174,10 +174,22 @@ typedef struct {
     uint32_t ctrl;
     uint32_t status;
     uint32_t rsv;
+#ifndef VIP_DIL_B
     uint32_t unused[11];
     uint32_t motion_shift;
     uint32_t unused2;
     uint32_t mode;
+#else
+    uint32_t cadence_detected;
+    uint32_t unused[8];
+    uint32_t cadence_detect_enable;
+    uint32_t unused2[12];
+    uint32_t motion_shift;
+    uint32_t unused3;
+    uint32_t visualize_motion;
+    uint32_t rsv2[2];
+    uint32_t motion_scale;
+#endif
 } vip_dli_ii_regs;
 
 typedef struct {
@@ -323,6 +335,7 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
     vip_fb->ctrl = vip_enable;
     vip_cvo->ctrl = vip_enable;
 
+#ifndef VIP_DIL_B
     if (avconfig->scl_dil_alg == 0) {
         vip_dli->mode = (1<<1);
     } else if (avconfig->scl_dil_alg == 1) {
@@ -332,6 +345,11 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
     } else {
         vip_dli->mode = 0;
     }
+#else
+    vip_dli->motion_scale = avconfig->scl_dil_motion_scale;
+    vip_dli->cadence_detect_enable = avconfig->scl_dil_cadence_detect_enable;
+    vip_dli->visualize_motion = avconfig->scl_dil_visualize_motion;
+#endif
 
     vip_dli->motion_shift = avconfig->scl_dil_motion_shift;
 

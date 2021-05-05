@@ -7,6 +7,14 @@
 #define INC_ADV7513
 #define VIP
 
+#if ALT_VIP_CL_DIL_0_SPAN == 256
+#define VIP_DIL_B
+#elif ALT_VIP_CL_DIL_0_SPAN == 128
+#define VIP_DIL_A
+#else
+#error VIP Deinterlacer II: unexpected run-time control address span
+#endif
+
 #ifndef DEBUG
 #define OS_PRINTF(...)
 #define ErrorF(...)
