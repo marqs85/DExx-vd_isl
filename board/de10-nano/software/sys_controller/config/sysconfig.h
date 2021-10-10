@@ -29,6 +29,6 @@
 //#define printf dd_printf
 #endif
 
-#define WAITLOOP_SLEEP_US   10000
+#define MAINLOOP_INTERVAL_US   10000
 
 #endif /* SYSCONFIG_H_ */

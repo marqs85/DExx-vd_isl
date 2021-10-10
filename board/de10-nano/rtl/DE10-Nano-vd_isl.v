@@ -130,9 +130,9 @@ wire isl_reset_n = sys_ctrl[1];
 wire hdmirx_reset_n = sys_ctrl[2];
 wire emif_hwreset_n = sys_ctrl[3];
 wire emif_swreset_n = sys_ctrl[4];
-wire emif_powerdn_req = sys_ctrl[5];
-wire emif_powerdn_mask = sys_ctrl[6];
-wire capture_sel = sys_ctrl[7];*/
+wire emif_powerdn_req = sys_ctrl[5];*/
+wire vip_reset_n = sys_ctrl[6];
+//wire capture_sel = sys_ctrl[7];
 wire isl_hsync_pol = sys_ctrl[8];
 wire isl_vsync_pol = sys_ctrl[9];
 wire isl_vsync_type = sys_ctrl[10];
@@ -214,7 +214,7 @@ end
 
 wire [7:0] ISL_R_post, ISL_G_post, ISL_B_post;
 wire ISL_HSYNC_post, ISL_VSYNC_post, ISL_DE_post, ISL_FID_post;
-wire ISL_fe_interlace, ISL_fe_frame_change;
+wire ISL_fe_interlace, ISL_fe_frame_change, ISL_sof_scaler;
 wire [19:0] ISL_fe_pcnt_frame;
 wire [10:0] ISL_fe_vtotal, ISL_fe_xpos, ISL_fe_ypos;
 isl51002_frontend u_isl_frontend ( 
@@ -250,6 +250,7 @@ isl51002_frontend u_isl_frontend (
     .ypos_o(ISL_fe_ypos),
     .vtotal(ISL_fe_vtotal),
     .frame_change(ISL_fe_frame_change),
+    .sof_scaler(ISL_sof_scaler),
     .pcnt_frame(ISL_fe_pcnt_frame)
 );
 
@@ -262,6 +263,7 @@ wire DE_capt = ISL_DE_post;
 wire FID_capt = ISL_FID_post;
 wire interlace_flag_capt = ISL_fe_interlace;
 wire frame_change_capt = ISL_fe_frame_change;
+wire sof_scaler_capt = ISL_sof_scaler;
 wire [10:0] xpos_capt = ISL_fe_xpos;
 wire [10:0] ypos_capt = ISL_fe_ypos;
 
@@ -520,12 +522,18 @@ sys u0 (
     .alt_vip_cl_cvo_0_clocked_video_underflow                  (cvo_underflow),
     .alt_vip_cl_cvo_0_clocked_video_vid_mode_change            (),
     .alt_vip_cl_cvo_0_clocked_video_vid_std                    (),
+    .alt_vip_cl_cvo_0_clocked_video_vid_vcoclk_div             (),
+    .alt_vip_cl_cvo_0_clocked_video_vid_sof_locked             (),
+    .alt_vip_cl_cvo_0_clocked_video_vid_sof                    (),
     .alt_vip_cl_cvo_0_clocked_video_vid_datavalid              (VIP_DE_o),
     .alt_vip_cl_cvo_0_clocked_video_vid_v_sync                 (VIP_VSYNC_o),
     .alt_vip_cl_cvo_0_clocked_video_vid_h_sync                 (VIP_HSYNC_o),
     .alt_vip_cl_cvo_0_clocked_video_vid_f                      (),
     .alt_vip_cl_cvo_0_clocked_video_vid_h                      (),
-    .alt_vip_cl_cvo_0_clocked_video_vid_v                      ()
+    .alt_vip_cl_cvo_0_clocked_video_vid_v                      (),
+    .alt_vip_cl_cvo_0_genlock_sof_locked                       (1'b1),
+    .alt_vip_cl_cvo_0_genlock_sof                              (sof_scaler_capt),
+    .vip_reset_reset_n                                         (vip_reset_n)
 `endif
 );
 

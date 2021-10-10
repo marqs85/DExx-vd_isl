@@ -147,6 +147,7 @@ C_SRCS += ../../../../sw_common/sys_controller/src/video_modes.c
 C_SRCS += ../../../../sw_common/sys_controller/src/avconfig.c
 C_SRCS += ../../../../sw_common/sys_controller/src/menu.c
 C_SRCS += ../../../../sw_common/sys_controller/src/controls.c
+C_SRCS += ../../../../sw_common/sys_controller/src/utils.c
 C_SRCS += ../../../../sw_common/sys_controller/ic_drivers/si5351/si5351.c
 C_SRCS += ../../../../sw_common/sys_controller/ic_drivers/isl51002/isl51002.c
 C_SRCS += ../../../../sw_common/sys_controller/ic_drivers/us2066/us2066.c

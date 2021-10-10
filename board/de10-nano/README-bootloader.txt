@@ -15,8 +15,12 @@ cd software/bootloader/u-boot-socfpga
 cd software/bootloader/u-boot-socfpga
 export CROSS_COMPILE=arm-linux-gnueabihf-
 make socfpga_de10_nano_defconfig
+echo "CONFIG_USE_BOOTCOMMAND=y" >> .config
+echo "CONFIG_BOOTCOMMAND=\"run fatscript\"" >> .config
 make -j 48
 
 # Generate SD card image
 cd software/bootloader/sd_image
-su-to-root -c "python3 ./make_sdimage_p3.py -f -P ../u-boot-socfpga/u-boot-with-spl.sfp,num=3,format=raw,size=2M,type=A2 -s 4M -n sdcard_cv.img"
+mkdir -p sdfs
+../u-boot-socfpga/tools/mkimage  -A arm -O linux -T script -C none -a 0 -e 0 -n "My script" -d u-boot.script sdfs/u-boot.scr
+su-to-root -c "python3 ./make_sdimage_p3.py -f -P ../u-boot-socfpga/u-boot-with-spl.sfp,num=3,format=raw,size=2M,type=A2 -P sdfs/*,num=1,format=fat32,size=32M -s 40M -n sdcard_cv.img"

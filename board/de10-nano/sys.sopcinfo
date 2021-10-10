@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="sys" kind="sys" version="1.0" fabric="QSYS">
  <!-- Format version 20.1 720 (Future versions may contain additional information.) -->
- <!-- 2021.05.19.00:12:50 -->
+ <!-- 2021.10.09.14:36:16 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1621372362</value>
+  <value>1633779368</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -1340,7 +1340,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="GENERATE_SYNC">
    <type>int</type>
-   <value>0</value>
+   <value>1</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -1348,9 +1348,9 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="ACCEPT_SYNC">
    <type>int</type>
-   <value>0</value>
+   <value>1</value>
    <derived>false</derived>
-   <enabled>false</enabled>
+   <enabled>true</enabled>
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
@@ -1358,7 +1358,7 @@ the requested settings for a module instance. -->
    <type>int</type>
    <value>0</value>
    <derived>false</derived>
-   <enabled>false</enabled>
+   <enabled>true</enabled>
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
@@ -1683,6 +1683,24 @@ parameters are a RESULT of the module parameters. -->
     <role>vid_std</role>
    </port>
    <port>
+    <name>clocked_video_vid_vcoclk_div</name>
+    <direction>Output</direction>
+    <width>1</width>
+    <role>vid_vcoclk_div</role>
+   </port>
+   <port>
+    <name>clocked_video_vid_sof_locked</name>
+    <direction>Output</direction>
+    <width>1</width>
+    <role>vid_sof_locked</role>
+   </port>
+   <port>
+    <name>clocked_video_vid_sof</name>
+    <direction>Output</direction>
+    <width>1</width>
+    <role>vid_sof</role>
+   </port>
+   <port>
     <name>clocked_video_vid_datavalid</name>
     <direction>Output</direction>
     <width>2</width>
@@ -1717,6 +1735,57 @@ parameters are a RESULT of the module parameters. -->
     <direction>Output</direction>
     <width>2</width>
     <role>vid_v</role>
+   </port>
+  </interface>
+  <interface name="genlock" kind="conduit_end" version="20.1">
+   <!-- The connection points exposed by a module instance for the
+particular module parameters. Connection points and their
+parameters are a RESULT of the module parameters. -->
+   <parameter name="associatedClock">
+    <type>java.lang.String</type>
+    <value></value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="associatedReset">
+    <type>java.lang.String</type>
+    <value></value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="deviceFamily">
+    <type>java.lang.String</type>
+    <value>UNKNOWN</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="generateLegacySim">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <type>conduit</type>
+   <isStart>false</isStart>
+   <port>
+    <name>genlock_sof_locked</name>
+    <direction>Input</direction>
+    <width>1</width>
+    <role>sof_locked</role>
+   </port>
+   <port>
+    <name>genlock_sof</name>
+    <direction>Input</direction>
+    <width>1</width>
+    <role>sof</role>
    </port>
   </interface>
   <interface name="main_clock" kind="clock_sink" version="20.1">
@@ -9147,7 +9216,7 @@ parameters are a RESULT of the module parameters. -->
 the requested settings for a module instance. -->
   <parameter name="AUTO_GENERATION_ID">
    <type>java.lang.Integer</type>
-   <value>1621372362</value>
+   <value>1633779368</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -91973,7 +92042,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="gui_use_locked">
    <type>boolean</type>
-   <value>true</value>
+   <value>false</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -95915,14 +95984,76 @@ parameters are a RESULT of the module parameters. -->
     <name>alt_vip_cl_vfb_0.mem_clock</name>
    </clockDomainMember>
   </interface>
-  <interface name="locked" kind="conduit_end" version="20.1">
+ </module>
+ <module
+   name="reset_bridge_0"
+   kind="altera_reset_bridge"
+   version="20.1"
+   path="reset_bridge_0">
+  <!-- Describes a single module. Module parameters are
+the requested settings for a module instance. -->
+  <parameter name="ACTIVE_LOW_RESET">
+   <type>int</type>
+   <value>1</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="SYNCHRONOUS_EDGES">
+   <type>java.lang.String</type>
+   <value>none</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="NUM_RESET_OUTPUTS">
+   <type>int</type>
+   <value>1</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="USE_RESET_REQUEST">
+   <type>int</type>
+   <value>0</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="AUTO_CLK_CLOCK_RATE">
+   <type>java.lang.Long</type>
+   <value>-1</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+   <sysinfo_type>CLOCK_RATE</sysinfo_type>
+   <sysinfo_arg>clk</sysinfo_arg>
+  </parameter>
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <interface name="in_reset" kind="reset_sink" version="20.1">
    <!-- The connection points exposed by a module instance for the
 particular module parameters. Connection points and their
 parameters are a RESULT of the module parameters. -->
-   <assignment>
-    <name>ui.blockdiagram.direction</name>
-    <value>OUTPUT</value>
-   </assignment>
    <parameter name="associatedClock">
     <type>java.lang.String</type>
     <value></value>
@@ -95931,9 +96062,9 @@ parameters are a RESULT of the module parameters. -->
     <visible>true</visible>
     <valid>true</valid>
    </parameter>
-   <parameter name="associatedReset">
-    <type>java.lang.String</type>
-    <value></value>
+   <parameter name="synchronousEdges">
+    <type>com.altera.sopcmodel.reset.Reset$Edges</type>
+    <value>NONE</value>
     <derived>false</derived>
     <enabled>true</enabled>
     <visible>true</visible>
@@ -95955,13 +96086,74 @@ parameters are a RESULT of the module parameters. -->
     <visible>true</visible>
     <valid>true</valid>
    </parameter>
-   <type>conduit</type>
+   <type>reset</type>
    <isStart>false</isStart>
    <port>
-    <name>locked</name>
+    <name>in_reset_n</name>
+    <direction>Input</direction>
+    <width>1</width>
+    <role>reset_n</role>
+   </port>
+  </interface>
+  <interface name="out_reset" kind="reset_source" version="20.1">
+   <!-- The connection points exposed by a module instance for the
+particular module parameters. Connection points and their
+parameters are a RESULT of the module parameters. -->
+   <parameter name="associatedClock">
+    <type>java.lang.String</type>
+    <value></value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="associatedDirectReset">
+    <type>java.lang.String</type>
+    <value>in_reset</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="associatedResetSinks">
+    <type>[Ljava.lang.String;</type>
+    <value>in_reset</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="synchronousEdges">
+    <type>com.altera.sopcmodel.reset.Reset$Edges</type>
+    <value>NONE</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="deviceFamily">
+    <type>java.lang.String</type>
+    <value>UNKNOWN</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="generateLegacySim">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <type>reset</type>
+   <isStart>true</isStart>
+   <port>
+    <name>out_reset_n</name>
     <direction>Output</direction>
     <width>1</width>
-    <role>export</role>
+    <role>reset_n</role>
    </port>
   </interface>
  </module>
@@ -96594,7 +96786,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.CMacro.TIMESTAMP</name>
-   <value>1621372362</value>
+   <value>1633779368</value>
   </assignment>
   <assignment>
    <name>embeddedsw.dts.compatible</name>
@@ -96614,7 +96806,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.dts.params.timestamp</name>
-   <value>1621372362</value>
+   <value>1633779368</value>
   </assignment>
   <assignment>
    <name>embeddedsw.dts.vendor</name>
@@ -96630,7 +96822,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="timestamp">
    <type>int</type>
-   <value>1621372362</value>
+   <value>1633779368</value>
    <derived>true</derived>
    <enabled>false</enabled>
    <visible>false</visible>
@@ -107396,11 +107588,11 @@ parameters are a RESULT of the module parameters. -->
   <endConnectionPoint>windowed_slave</endConnectionPoint>
  </connection>
  <connection
-   name="alt_vip_cl_dil_0.dout/alt_vip_cl_scl_0.din"
+   name="alt_vip_cl_dil_0.dout/alt_vip_cl_vfb_0.din"
    kind="avalon_streaming"
    version="20.1"
    start="alt_vip_cl_dil_0.dout"
-   end="alt_vip_cl_scl_0.din">
+   end="alt_vip_cl_vfb_0.din">
   <parameter name="deviceFamily">
    <type>java.lang.String</type>
    <value>UNKNOWN</value>
@@ -107419,15 +107611,15 @@ parameters are a RESULT of the module parameters. -->
   </parameter>
   <startModule>alt_vip_cl_dil_0</startModule>
   <startConnectionPoint>dout</startConnectionPoint>
-  <endModule>alt_vip_cl_scl_0</endModule>
+  <endModule>alt_vip_cl_vfb_0</endModule>
   <endConnectionPoint>din</endConnectionPoint>
  </connection>
  <connection
-   name="alt_vip_cl_vfb_0.dout/alt_vip_cl_cvo_0.din"
+   name="alt_vip_cl_vfb_0.dout/alt_vip_cl_scl_0.din"
    kind="avalon_streaming"
    version="20.1"
    start="alt_vip_cl_vfb_0.dout"
-   end="alt_vip_cl_cvo_0.din">
+   end="alt_vip_cl_scl_0.din">
   <parameter name="deviceFamily">
    <type>java.lang.String</type>
    <value>UNKNOWN</value>
@@ -107446,15 +107638,15 @@ parameters are a RESULT of the module parameters. -->
   </parameter>
   <startModule>alt_vip_cl_vfb_0</startModule>
   <startConnectionPoint>dout</startConnectionPoint>
-  <endModule>alt_vip_cl_cvo_0</endModule>
+  <endModule>alt_vip_cl_scl_0</endModule>
   <endConnectionPoint>din</endConnectionPoint>
  </connection>
  <connection
-   name="alt_vip_cl_scl_0.dout/alt_vip_cl_vfb_0.din"
+   name="alt_vip_cl_scl_0.dout/alt_vip_cl_cvo_0.din"
    kind="avalon_streaming"
    version="20.1"
    start="alt_vip_cl_scl_0.dout"
-   end="alt_vip_cl_vfb_0.din">
+   end="alt_vip_cl_cvo_0.din">
   <parameter name="deviceFamily">
    <type>java.lang.String</type>
    <value>UNKNOWN</value>
@@ -107473,7 +107665,7 @@ parameters are a RESULT of the module parameters. -->
   </parameter>
   <startModule>alt_vip_cl_scl_0</startModule>
   <startConnectionPoint>dout</startConnectionPoint>
-  <endModule>alt_vip_cl_vfb_0</endModule>
+  <endModule>alt_vip_cl_cvo_0</endModule>
   <endConnectionPoint>din</endConnectionPoint>
  </connection>
  <connection
@@ -108308,10 +108500,10 @@ parameters are a RESULT of the module parameters. -->
   <endConnectionPoint>status_update_irq</endConnectionPoint>
  </connection>
  <connection
-   name="clk_1.clk_reset/alt_vip_cl_dil_0.av_mm_reset"
+   name="clk_0.clk_reset/alt_vip_cl_dil_0.av_mm_reset"
    kind="reset"
    version="20.1"
-   start="clk_1.clk_reset"
+   start="clk_0.clk_reset"
    end="alt_vip_cl_dil_0.av_mm_reset">
   <parameter name="deviceFamily">
    <type>java.lang.String</type>
@@ -108329,37 +108521,10 @@ parameters are a RESULT of the module parameters. -->
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
-  <startModule>clk_1</startModule>
+  <startModule>clk_0</startModule>
   <startConnectionPoint>clk_reset</startConnectionPoint>
   <endModule>alt_vip_cl_dil_0</endModule>
   <endConnectionPoint>av_mm_reset</endConnectionPoint>
- </connection>
- <connection
-   name="clk_1.clk_reset/alt_vip_cl_dil_0.av_st_reset"
-   kind="reset"
-   version="20.1"
-   start="clk_1.clk_reset"
-   end="alt_vip_cl_dil_0.av_st_reset">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>clk_1</startModule>
-  <startConnectionPoint>clk_reset</startConnectionPoint>
-  <endModule>alt_vip_cl_dil_0</endModule>
-  <endConnectionPoint>av_st_reset</endConnectionPoint>
  </connection>
  <connection
    name="clk_0.clk_reset/i2c_opencores_0.clock_reset"
@@ -108416,118 +108581,10 @@ parameters are a RESULT of the module parameters. -->
   <endConnectionPoint>clock_reset</endConnectionPoint>
  </connection>
  <connection
-   name="clk_1.clk_reset/alt_vip_cl_cvi_0.main_reset"
+   name="clk_0.clk_reset/alt_vip_cl_vfb_0.mem_reset"
    kind="reset"
    version="20.1"
-   start="clk_1.clk_reset"
-   end="alt_vip_cl_cvi_0.main_reset">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>clk_1</startModule>
-  <startConnectionPoint>clk_reset</startConnectionPoint>
-  <endModule>alt_vip_cl_cvi_0</endModule>
-  <endConnectionPoint>main_reset</endConnectionPoint>
- </connection>
- <connection
-   name="clk_1.clk_reset/alt_vip_cl_scl_0.main_reset"
-   kind="reset"
-   version="20.1"
-   start="clk_1.clk_reset"
-   end="alt_vip_cl_scl_0.main_reset">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>clk_1</startModule>
-  <startConnectionPoint>clk_reset</startConnectionPoint>
-  <endModule>alt_vip_cl_scl_0</endModule>
-  <endConnectionPoint>main_reset</endConnectionPoint>
- </connection>
- <connection
-   name="clk_1.clk_reset/alt_vip_cl_vfb_0.main_reset"
-   kind="reset"
-   version="20.1"
-   start="clk_1.clk_reset"
-   end="alt_vip_cl_vfb_0.main_reset">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>clk_1</startModule>
-  <startConnectionPoint>clk_reset</startConnectionPoint>
-  <endModule>alt_vip_cl_vfb_0</endModule>
-  <endConnectionPoint>main_reset</endConnectionPoint>
- </connection>
- <connection
-   name="clk_1.clk_reset/alt_vip_cl_cvo_0.main_reset"
-   kind="reset"
-   version="20.1"
-   start="clk_1.clk_reset"
-   end="alt_vip_cl_cvo_0.main_reset">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>clk_1</startModule>
-  <startConnectionPoint>clk_reset</startConnectionPoint>
-  <endModule>alt_vip_cl_cvo_0</endModule>
-  <endConnectionPoint>main_reset</endConnectionPoint>
- </connection>
- <connection
-   name="clk_1.clk_reset/alt_vip_cl_vfb_0.mem_reset"
-   kind="reset"
-   version="20.1"
-   start="clk_1.clk_reset"
+   start="clk_0.clk_reset"
    end="alt_vip_cl_vfb_0.mem_reset">
   <parameter name="deviceFamily">
    <type>java.lang.String</type>
@@ -108545,7 +108602,7 @@ parameters are a RESULT of the module parameters. -->
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
-  <startModule>clk_1</startModule>
+  <startModule>clk_0</startModule>
   <startConnectionPoint>clk_reset</startConnectionPoint>
   <endModule>alt_vip_cl_vfb_0</endModule>
   <endConnectionPoint>mem_reset</endConnectionPoint>
@@ -109009,6 +109066,141 @@ parameters are a RESULT of the module parameters. -->
   <endModule>clk_1</endModule>
   <endConnectionPoint>clk_in_reset</endConnectionPoint>
  </connection>
+ <connection
+   name="reset_bridge_0.out_reset/alt_vip_cl_dil_0.av_st_reset"
+   kind="reset"
+   version="20.1"
+   start="reset_bridge_0.out_reset"
+   end="alt_vip_cl_dil_0.av_st_reset">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>reset_bridge_0</startModule>
+  <startConnectionPoint>out_reset</startConnectionPoint>
+  <endModule>alt_vip_cl_dil_0</endModule>
+  <endConnectionPoint>av_st_reset</endConnectionPoint>
+ </connection>
+ <connection
+   name="reset_bridge_0.out_reset/alt_vip_cl_cvi_0.main_reset"
+   kind="reset"
+   version="20.1"
+   start="reset_bridge_0.out_reset"
+   end="alt_vip_cl_cvi_0.main_reset">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>reset_bridge_0</startModule>
+  <startConnectionPoint>out_reset</startConnectionPoint>
+  <endModule>alt_vip_cl_cvi_0</endModule>
+  <endConnectionPoint>main_reset</endConnectionPoint>
+ </connection>
+ <connection
+   name="reset_bridge_0.out_reset/alt_vip_cl_vfb_0.main_reset"
+   kind="reset"
+   version="20.1"
+   start="reset_bridge_0.out_reset"
+   end="alt_vip_cl_vfb_0.main_reset">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>reset_bridge_0</startModule>
+  <startConnectionPoint>out_reset</startConnectionPoint>
+  <endModule>alt_vip_cl_vfb_0</endModule>
+  <endConnectionPoint>main_reset</endConnectionPoint>
+ </connection>
+ <connection
+   name="reset_bridge_0.out_reset/alt_vip_cl_scl_0.main_reset"
+   kind="reset"
+   version="20.1"
+   start="reset_bridge_0.out_reset"
+   end="alt_vip_cl_scl_0.main_reset">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>reset_bridge_0</startModule>
+  <startConnectionPoint>out_reset</startConnectionPoint>
+  <endModule>alt_vip_cl_scl_0</endModule>
+  <endConnectionPoint>main_reset</endConnectionPoint>
+ </connection>
+ <connection
+   name="reset_bridge_0.out_reset/alt_vip_cl_cvo_0.main_reset"
+   kind="reset"
+   version="20.1"
+   start="reset_bridge_0.out_reset"
+   end="alt_vip_cl_cvo_0.main_reset">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>reset_bridge_0</startModule>
+  <startConnectionPoint>out_reset</startConnectionPoint>
+  <endModule>alt_vip_cl_cvo_0</endModule>
+  <endConnectionPoint>main_reset</endConnectionPoint>
+ </connection>
  <plugin>
   <instanceCount>1</instanceCount>
   <name>alt_vip_cl_cvi</name>
@@ -109026,7 +109218,7 @@ parameters are a RESULT of the module parameters. -->
   <version>20.1</version>
  </plugin>
  <plugin>
-  <instanceCount>68</instanceCount>
+  <instanceCount>69</instanceCount>
   <name>reset_sink</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
@@ -109194,7 +109386,7 @@ parameters are a RESULT of the module parameters. -->
   <version>20.1</version>
  </plugin>
  <plugin>
-  <instanceCount>11</instanceCount>
+  <instanceCount>12</instanceCount>
   <name>reset_source</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
@@ -109559,6 +109751,14 @@ parameters are a RESULT of the module parameters. -->
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IModule</subtype>
   <displayName>PLL Intel FPGA IP</displayName>
+  <version>20.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>altera_reset_bridge</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IModule</subtype>
+  <displayName>Reset Bridge</displayName>
   <version>20.1</version>
  </plugin>
  <plugin>

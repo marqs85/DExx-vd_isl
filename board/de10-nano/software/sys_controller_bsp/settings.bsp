@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>May 19, 2021 12:18:36 AM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1621372716030</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Oct 9, 2021 3:02:09 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1633780929519</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/markus/Code/DExx-vd_isl/board/de10-nano/software/sys_controller_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../sys.sopcinfo</SopcDesignFile>

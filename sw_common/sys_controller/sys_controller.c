@@ -42,7 +42,7 @@
 #include "video_modes.h"
 
 #define FW_VER_MAJOR 0
-#define FW_VER_MINOR 43
+#define FW_VER_MINOR 50
 
 //fix PD and cec
 #define ADV7513_MAIN_BASE 0x72
@@ -118,6 +118,8 @@ static const char *avinput_str[] = { "Test pattern", "AV1_RGBS", "AV1_RGsB", "AV
 #include "src/scl_pp_coeffs.c"
 
 const pp_coeff* scl_pp_coeff_list[][2] = {{&pp_coeff_nearest, NULL},
+                                          {&pp_coeff_nearest, NULL},
+                                          {&pp_coeff_nearest, NULL},
                                           {&pp_coeff_lanczos3, NULL},
                                           {&pp_coeff_lanczos4, NULL},
                                           {&pp_coeff_lanczos2, &pp_coeff_lanczos3},
@@ -215,6 +217,13 @@ typedef struct {
     uint32_t ctrl;
     uint32_t status;
     uint32_t irq;
+    uint32_t frame_cnt;
+    uint32_t drop_rpt_cnt;
+    uint32_t unused[3];
+    uint32_t misc;
+    uint32_t locked;
+    uint32_t input_rate;
+    uint32_t output_rate;
 } vip_vfb_ii_regs;
 
 volatile vip_cvi_ii_regs *vip_cvi = (volatile vip_cvi_ii_regs*)ALT_VIP_CL_CVI_0_BASE;
@@ -291,7 +300,7 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
     sl_config_reg sl_config = {.data=0x00000000};
     sl_config2_reg sl_config2 = {.data=0x00000000};
 
-    vip_enable = (avconfig->oper_mode == OPERMODE_SCALER);
+    vip_enable = !enable_tp && (avconfig->oper_mode == 1);
     uint32_t h_blank, v_blank, h_frontporch, v_frontporch;
 
     // Set input params
@@ -378,7 +387,7 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
 
     vip_dli->motion_shift = avconfig->scl_dil_motion_shift;
 
-    if (avconfig->scl_alg != scl_loaded_pp_coeff) {
+    if ((avconfig->scl_alg < 6) && (avconfig->scl_alg != scl_loaded_pp_coeff)) {
         for (p=0; p<16; p++) {
             for (t=0; t<4; t++)
                 vip_scl_pp->coeff_data[t] = scl_pp_coeff_list[avconfig->scl_alg][0]->v[0][p][t];
@@ -410,6 +419,13 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
 
     vip_scl_pp->width = vm_conf->x_size;
     vip_scl_pp->height = vm_conf->y_size;
+
+    vip_fb->input_rate = vm_in->timings.v_hz_x100;
+    vip_fb->output_rate = vm_out->timings.v_hz_x100;
+    //vip_fb->locked = vm_conf->framelock;  // causes cvo fifo underflows
+    vip_fb->locked = 0;
+    if (vm_conf->framelock)
+        vip_cvo->ctrl |= (1<<4);
 
     h_blank = vm_out->timings.h_total-vm_conf->x_size;
     v_blank = vm_out->timings.v_total-vm_conf->y_size;
@@ -450,6 +466,8 @@ int init_hw() {
     sys_ctrl = 0x00;
     IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);
     usleep(400000);
+    sys_ctrl |= SCTRL_EMIF_MPFE_RESET_N;
+    IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);
 
     I2C_init(I2C_OPENCORES_0_BASE,ALT_CPU_FREQ,400000);
     I2C_init(I2C_OPENCORES_1_BASE,ALT_CPU_FREQ,400000);
@@ -499,39 +517,23 @@ int init_hw() {
     ui_disp_status(1);
     si5351_init(&si_dev);
 
-    si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, &si_audio_mclk_96k_conf);
+    si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, 0, 0, 0, &si_audio_mclk_96k_conf);
 
     set_default_avconfig(1);
     set_default_keymap();
     init_menu();
 
-#ifdef VIP
-    vip_cvi->ctrl = 0;
-    vip_dli->ctrl = 0;
-    vip_scl_pp->ctrl = 0;
-    vip_fb->ctrl = 0;
-    vip_cvo->ctrl = 0;
-    scl_loaded_pp_coeff = -1;
-#endif
-
-    //memcpy(video_modes, video_modes_default, VIDEO_MODES_SIZE);
-
     return 0;
 }
 
 void switch_input(rc_code_t code, btn_vec_t pb_vec) {
-    avinput_t prev_input = (avinput <= AV1_RGBS) ? AV4 : (avinput-1);
-    avinput_t next_input = (avinput == AV4) ? AV1_RGBS : (avinput+1);
+    avinput_t prev_input = (avinput <= AV1_RGBS) ? AV1_RGBCS : (avinput-1);
+    avinput_t next_input = (avinput == AV1_RGBCS) ? AV1_RGBS : (avinput+1);
 
     switch (code) {
         case RC_BTN1: target_avinput = AV1_RGBS; break;
         case RC_BTN4: target_avinput = (avinput == AV1_RGsB) ? AV1_YPbPr : AV1_RGsB; break;
         case RC_BTN7: target_avinput = (avinput == AV1_RGBHV) ? AV1_RGBCS : AV1_RGBHV; break;
-        case RC_BTN2: target_avinput = (avinput == AV2_YPbPr) ? AV2_RGsB : AV2_YPbPr; break;
-        case RC_BTN3: target_avinput = (avinput == AV3_RGBHV) ? AV3_RGBCS : AV3_RGBHV; break;
-        case RC_BTN6: target_avinput = AV3_RGBS; break;
-        case RC_BTN9: target_avinput = (avinput == AV3_RGsB) ? AV3_YPbPr : AV3_RGsB; break;
-        case RC_BTN5: target_avinput = AV4; break;
         case RC_BTN0: target_avinput = AV_TESTPAT; break;
         case RC_UP: target_avinput = prev_input; break;
         case RC_DOWN: target_avinput = next_input; break;
@@ -619,6 +621,8 @@ void mainloop()
     status_t status;
     avconfig_t *cur_avconfig;
     si5351_clk_src si_clk_src;
+    si5351_ms_config_t *si_ms_conf_ptr;
+    alt_timestamp_type start_ts;
 
     enable_isl=0;
     enable_tp=1;
@@ -626,6 +630,7 @@ void mainloop()
     cur_avconfig = get_current_avconfig();
 
     while (1) {
+        start_ts = alt_timestamp();
         target_avinput = avinput;
         read_controls();
         parse_control();
@@ -667,40 +672,6 @@ void mainloop()
                 target_isl_input = ISL_CH0;
                 target_isl_sync = SYNC_CS;
                 target_format = FORMAT_RGBS;
-                break;
-            case AV2_YPbPr:
-                target_isl_input = ISL_CH1;
-                target_format = FORMAT_YPbPr;
-                break;
-            case AV2_RGsB:
-                target_isl_input = ISL_CH1;
-                target_format = FORMAT_RGsB;
-                break;
-            case AV3_RGBHV:
-                target_isl_input = ISL_CH2;
-                target_format = FORMAT_RGBHV;
-                target_isl_sync = SYNC_HV;
-                break;
-            case AV3_RGBCS:
-                target_isl_input = ISL_CH2;
-                target_isl_sync = SYNC_CS;
-                target_format = FORMAT_RGBS;
-                break;
-            case AV3_RGBS:
-                target_isl_input = ISL_CH2;
-                target_format = FORMAT_RGBS;
-                break;
-            case AV3_RGsB:
-                target_isl_input = ISL_CH2;
-                target_format = FORMAT_RGsB;
-                break;
-            case AV3_YPbPr:
-                target_isl_input = ISL_CH2;
-                target_format = FORMAT_YPbPr;
-                break;
-            case AV4:
-                enable_isl = 0;
-                target_format = FORMAT_YPbPr;
                 break;
             default:
                 enable_isl = 0;
@@ -749,7 +720,7 @@ void mainloop()
                     si5351_set_integer_mult(&si_dev, SI_PLLA, SI_CLK4, SI_XTAL, 0, vmode_out.si_pclk_mult, vmode_out.si_ms_conf.outdiv);
                     pclk_o_hz = vmode_out.si_pclk_mult*si_dev.xtal_freq;
                 } else {
-                    si5351_set_frac_mult(&si_dev, SI_PLLA, SI_CLK4, SI_XTAL, &vmode_out.si_ms_conf);
+                    si5351_set_frac_mult(&si_dev, SI_PLLA, SI_CLK4, SI_XTAL, 0, 0, 0, &vmode_out.si_ms_conf);
                     pclk_o_hz = (vmode_out.timings.h_total*vmode_out.timings.v_total*(vmode_out.timings.v_hz_x100/100))>>vmode_out.timings.interlaced;
                 }
 
@@ -807,24 +778,12 @@ void mainloop()
                     vmode_in.timings.v_total = isl_dev.ss.v_total;
                     vmode_in.timings.interlaced = isl_dev.ss.interlace_flag;
 
-                    if (cur_avconfig->oper_mode == OPERMODE_PURE_LM) {
-                        oper_mode = (get_pure_lm_mode(&vmode_in, &vmode_out, &vm_conf) == 0) ? OPERMODE_PURE_LM : OPERMODE_INVALID;
-                    } else if (cur_avconfig->oper_mode == OPERMODE_ADAPT_LM) {
-                        oper_mode = (get_adaptive_lm_mode(&vmode_in, &vmode_out, &vm_conf) == 0) ? OPERMODE_ADAPT_LM : OPERMODE_INVALID;
-                        if (oper_mode == OPERMODE_INVALID)
-                            oper_mode = (get_pure_lm_mode(&vmode_in, &vmode_out, &vm_conf) == 0) ? OPERMODE_PURE_LM : OPERMODE_INVALID;
-                    } else {
-#ifdef VIP
-                        oper_mode = (get_scaler_mode(&vmode_in, &vmode_out, &vm_conf) == 0) ? OPERMODE_SCALER : OPERMODE_INVALID;
-#else
-                        oper_mode = OPERMODE_INVALID;
-#endif
-                    }
+                    oper_mode = get_operating_mode(cur_avconfig, &vmode_in, &vmode_out, &vm_conf);
 
                     if (oper_mode == OPERMODE_PURE_LM)
-                        sniprintf(op_status, 4, "x%u", (int8_t)vm_conf.y_rpt+1);
+                        sniprintf(op_status, 4, "x%u", vm_conf.y_rpt+1);
                     else if (oper_mode == OPERMODE_ADAPT_LM)
-                        sniprintf(op_status, 4, "x%ua", (int8_t)vm_conf.y_rpt+1);
+                        sniprintf(op_status, 4, "%c%ua", (vm_conf.y_rpt < 0) ? '/' : 'x', (vm_conf.y_rpt < 0) ? (-1*vm_conf.y_rpt+1) : vm_conf.y_rpt+1);
                     else if (oper_mode == OPERMODE_SCALER)
                         sniprintf(op_status, 4, "SCL");
 
@@ -842,6 +801,7 @@ void mainloop()
                         pll_h_total = (vm_conf.h_skip+1) * vmode_in.timings.h_total + (((vm_conf.h_skip+1) * vmode_in.timings.h_total_adj * 5 + 50) / 100);
 
                         si_clk_src = vm_conf.framelock ? SI_CLKIN : SI_XTAL;
+                        si_ms_conf_ptr = vm_conf.framelock ? NULL : &vmode_out.si_ms_conf;
                         pclk_i_hz = h_hz * pll_h_total;
                         dotclk_hz = estimate_dotclk(&vmode_in, h_hz);
                         pclk_o_hz = vmode_out.si_pclk_mult ? vmode_out.si_pclk_mult*((si_clk_src == SI_CLKIN) ? pclk_i_hz : si_dev.xtal_freq) : (vmode_out.timings.h_total*vmode_out.timings.v_total*(vmode_out.timings.v_hz_x100/100))>>vmode_out.timings.interlaced;
@@ -868,7 +828,14 @@ void mainloop()
 
                         // Setup Si5351
                         if (vmode_out.si_pclk_mult == 0)
-                            si5351_set_frac_mult(&si_dev, SI_PLLA, SI_CLK4, si_clk_src, &vmode_out.si_ms_conf);
+                            si5351_set_frac_mult(&si_dev,
+                                                 SI_PLLA,
+                                                 SI_CLK4,
+                                                 si_clk_src,
+                                                 pclk_i_hz,
+                                                 vmode_out.timings.h_total*vmode_out.timings.v_total*(vmode_in.timings.interlaced+1)*vm_conf.framelock,
+                                                 pll_h_total*vmode_in.timings.v_total*(vmode_out.timings.interlaced+1),
+                                                 si_ms_conf_ptr);
                         else
                             si5351_set_integer_mult(&si_dev, SI_PLLA, SI_CLK4, si_clk_src, pclk_i_hz, vmode_out.si_pclk_mult, vmode_out.si_ms_conf.outdiv);
 
@@ -909,20 +876,23 @@ void mainloop()
 #ifdef INC_ADV7513
         adv7513_check_hpd_power(&advtx_dev);
         if (advtx_dev.powered_on && (cur_avconfig->hdmitx_cfg.i2s_fs != advtx_dev.cfg.i2s_fs))
-            si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, (cur_avconfig->hdmitx_cfg.i2s_fs == IEC60958_FS_96KHZ) ? &si_audio_mclk_96k_conf : &si_audio_mclk_48k_conf);
+            si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, 0, 0, 0, (cur_avconfig->hdmitx_cfg.i2s_fs == IEC60958_FS_96KHZ) ? &si_audio_mclk_96k_conf : &si_audio_mclk_48k_conf);
         adv7513_update_config(&advtx_dev, &cur_avconfig->hdmitx_cfg);
 #endif
 #ifdef INC_SII1136
         sii1136_update_config(&siitx_dev, &cur_avconfig->hdmitx_cfg);
 #endif
 
-        usleep(20000);
+        while (alt_timestamp() < start_ts + MAINLOOP_INTERVAL_US*(TIMER_0_FREQ/1000000)) {}
     }
 }
 
 int main()
 {
     int ret;
+
+    // Start system clock
+    alt_timestamp_start();
 
     while (1) {
         ret = init_hw();

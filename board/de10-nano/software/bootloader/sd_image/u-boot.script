@@ -1,0 +1,8 @@
+# u-boot script
+
+echo ------ Programming FPGA ------
+fpgadata=0x2000000
+rbf=DE10-Nano-vd_isl.rbf
+fatload mmc 0:1 $fpgadata $rbf
+fpga load 0 $fpgadata $filesize
+bridge enable
