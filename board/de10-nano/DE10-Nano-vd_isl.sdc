@@ -6,7 +6,7 @@ create_clock -period 20 -name clk50 [get_ports FPGA_CLK1_50]
 create_clock -period 20 -name clk50_2 [get_ports FPGA_CLK2_50]
 create_clock -period 20 -name clk50_3 [get_ports FPGA_CLK3_50]
 
-create_clock -period 108MHz -name pclk_isl [get_ports GPIO_0[1]]
+create_clock -period 108MHz -name pclk_isl [get_ports GPIO_0[2]]
 create_clock -period 185MHz -name pclk_si [get_ports GPIO_0[0]]
 
 #**************************************************************
@@ -15,15 +15,15 @@ create_clock -period 185MHz -name pclk_si [get_ports GPIO_0[0]]
 #derive_pll_clocks
 create_generated_clock -source {pll_sys|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|refclkin} -divide_by 5 -multiply_by 54 -duty_cycle 50.00 -name pll_vco_clk {pll_sys|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|vcoph[0]}
 create_generated_clock -source {pll_sys|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]} -divide_by 20 -duty_cycle 50.00 -name clk27 {pll_sys|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}
-create_generated_clock -source {u0|pll_0|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|refclkin} -divide_by 2 -multiply_by 12 -duty_cycle 50.00 -name pll_0_vco {u0|pll_0|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|vcoph[0]}
-create_generated_clock -source {u0|pll_0|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]} -divide_by 2 -duty_cycle 50.00 -name clk150 {u0|pll_0|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}
-create_generated_clock -source {u0|pll_0|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]} -divide_by 3 -duty_cycle 50.00 -name clk100 {u0|pll_0|altera_pll_i|general[1].gpll~PLL_OUTPUT_COUNTER|divclk}
+create_generated_clock -source {sys_inst|pll_0|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|refclkin} -divide_by 2 -multiply_by 20 -duty_cycle 50.00 -name pll_0_vco {sys_inst|pll_0|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|vcoph[0]}
+create_generated_clock -source {sys_inst|pll_0|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]} -divide_by 4 -duty_cycle 50.00 -name clk_vip {sys_inst|pll_0|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}
+create_generated_clock -source {sys_inst|pll_0|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]} -divide_by 5 -duty_cycle 50.00 -name clk100 {sys_inst|pll_0|altera_pll_i|general[1].gpll~PLL_OUTPUT_COUNTER|divclk}
 
 create_generated_clock -name pclk_si_out -master_clock pclk_si -source [get_ports GPIO_0[0]] -multiply_by 1 [get_ports HDMI_TX_CLK]
 
 # specify div2 capture and output clocks
 set pclk_capture_div_pin [get_pins pclk_capture_div2|q]
-create_generated_clock -name pclk_isl_div2 -master_clock pclk_isl -source [get_ports GPIO_0[1]] -divide_by 2 $pclk_capture_div_pin
+create_generated_clock -name pclk_isl_div2 -master_clock pclk_isl -source [get_ports GPIO_0[2]] -divide_by 2 $pclk_capture_div_pin
 set pclk_si_div_pin [get_pins pclk_out_div2|q]
 create_generated_clock -name pclk_si_div2 -master_clock pclk_si -source [get_ports GPIO_0[0]] -divide_by 2 $pclk_si_div_pin
 
@@ -65,6 +65,9 @@ set_false_path -to [get_ports {LED*}]
 set_false_path -from [get_ports {GPIO_0[4] GPIO_0[5] HDMI_I2C_SCL HDMI_I2C_SDA}]
 set_false_path -to [get_ports {GPIO_0[4] GPIO_0[5] HDMI_I2C_SCL HDMI_I2C_SDA}]
 
+# misc
+set_false_path -setup -to [get_registers sys:sys_inst|sys_alt_vip_cl_cvo_0:alt_vip_cl_cvo_0|alt_vip_cvo_core:cvo_core|alt_vip_cvo_sync_conditioner:pixel_channel_sync_conditioner|alt_vip_common_sync_generation:sync_generation_generate.sync_generation|sof*]
+
 #**************************************************************
 # Set Output Delay
 #**************************************************************
@@ -79,7 +82,7 @@ set_clock_groups -asynchronous -group \
                             {clk50_2} \
                             {clk50_3} \
                             {clk100} \
-                            {clk150} \
+                            {clk_vip} \
                             {pclk_isl} \
                             {pclk_isl_div2} \
                             {pclk_si pclk_si_out} \

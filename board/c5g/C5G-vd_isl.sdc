@@ -2,20 +2,29 @@
 # Create Clock
 #**************************************************************
 
-create_clock -period 20 -name clk50 [get_ports CLOCK_50_B5B]
+create_clock -period 20 -name clk50 [get_ports CLOCK_50_B6A]
+#create_clock -period 20 -name clk50_2 [get_ports CLOCK_50_B3B]
 
-create_clock -period 108MHz -name pclk_isl [get_ports GPIO[1]]
-create_clock -period 242MHz -name pclk_si [get_ports GPIO[0]]
+create_clock -period 108MHz -name pclk_isl [get_ports GPIO[2]]
+create_clock -period 200MHz -name pclk_si [get_ports GPIO[0]]
 
 #**************************************************************
 # Create Generated Clock
 #**************************************************************
 #derive_pll_clocks
-create_generated_clock -source {pll_sys|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|refclkin} -divide_by 5 -multiply_by 54 -duty_cycle 50.00 -name pll_vco_clk {pll_sys|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|vcoph[0]}
-create_generated_clock -source {pll_sys|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]} -divide_by 20 -duty_cycle 50.00 -name clk27 {pll_sys|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}
+create_generated_clock -source {pll_sys|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|refclkin} -divide_by 128 -multiply_by 1521 -duty_cycle 50.00 -name pll_vco_clk {pll_sys|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|vcoph[0]}
+create_generated_clock -source {pll_sys|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]} -divide_by 22 -duty_cycle 50.00 -name clk27 {pll_sys|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}
+create_generated_clock -source {pll_sys|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]} -divide_by 4 -duty_cycle 50.00 -name clk_vip {pll_sys|pll_inst|altera_pll_i|general[1].gpll~PLL_OUTPUT_COUNTER|divclk}
+create_generated_clock -source {pll_sys|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]} -divide_by 6 -duty_cycle 50.00 -name clk100 {pll_sys|pll_inst|altera_pll_i|general[2].gpll~PLL_OUTPUT_COUNTER|divclk}
 
 create_generated_clock -name pclk_si_out -master_clock pclk_si -source [get_ports GPIO[0]] -multiply_by 1 [get_ports HDMI_TX_CLK]
 create_generated_clock -name pclk_si_out_hsmc -master_clock pclk_si -source [get_ports GPIO[0]] -multiply_by 1 [get_ports HDMI_TX_HSMC_CLK]
+
+# specify div2 capture and output clocks
+set pclk_capture_div_pin [get_pins pclk_capture_div2|q]
+create_generated_clock -name pclk_isl_div2 -master_clock pclk_isl -source [get_ports GPIO[2]] -divide_by 2 $pclk_capture_div_pin
+set pclk_si_div_pin [get_pins pclk_out_div2|q]
+create_generated_clock -name pclk_si_div2 -master_clock pclk_si -source [get_ports GPIO[0]] -divide_by 2 $pclk_si_div_pin
 
 #**************************************************************
 # Set Clock Latency
@@ -62,10 +71,13 @@ set_false_path -to [get_ports {LED* HDMI_TX_HSMC_RESET_N HDMI_TX_HSMC_SPDIF}]
 set_false_path -from [get_ports {GPIO[4] GPIO[5] I2C_SDA HDMI_TX_HSMC_I2C_SCL HDMI_TX_HSMC_I2C_SDA}]
 set_false_path -to [get_ports {GPIO[4] GPIO[5] I2C_SDA I2C_SCL HDMI_TX_HSMC_I2C_SCL HDMI_TX_HSMC_I2C_SDA}]
 
-#**************************************************************
-# Set Output Delay
-#**************************************************************
-
+# Misc
+set_false_path -from {emif_hwreset_n_sync2_reg emif_swreset_n_sync2_reg}
+set_false_path -to {emif_hwreset_n_sync1_reg emif_swreset_n_sync1_reg}
+set_false_path -to sys:sys_inst|sys_pio_1:pio_2|readdata[0]
+set_false_path -to sys:sys_inst|sys_pio_1:pio_2|readdata[1]
+set_false_path -to sys:sys_inst|sys_pio_1:pio_2|readdata[2]
+set_false_path -setup -to [get_registers sys:sys_inst|sys_alt_vip_cl_cvo_0:alt_vip_cl_cvo_0|alt_vip_cvo_core:cvo_core|alt_vip_cvo_sync_conditioner:pixel_channel_sync_conditioner|alt_vip_common_sync_generation:sync_generation_generate.sync_generation|sof*]
 
 
 #**************************************************************
@@ -73,8 +85,12 @@ set_false_path -to [get_ports {GPIO[4] GPIO[5] I2C_SDA I2C_SCL HDMI_TX_HSMC_I2C_
 #**************************************************************
 set_clock_groups -asynchronous -group \
                             {clk50} \
+                            {clk100} \
+                            {clk_vip} \
                             {pclk_isl} \
+                            {pclk_isl_div2} \
                             {pclk_si pclk_si_out pclk_si_out_hsmc} \
+                            {pclk_si_div2} \
                             {pll_vco_clk} \
                             {clk27}
 

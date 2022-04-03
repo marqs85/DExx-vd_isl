@@ -13,7 +13,7 @@
    {
       datum _sortIndex
       {
-         value = "18";
+         value = "20";
          type = "int";
       }
    }
@@ -21,7 +21,7 @@
    {
       datum baseAddress
       {
-         value = "8658304";
+         value = "1536";
          type = "String";
       }
    }
@@ -29,7 +29,7 @@
    {
       datum _sortIndex
       {
-         value = "22";
+         value = "24";
          type = "int";
       }
    }
@@ -37,7 +37,7 @@
    {
       datum baseAddress
       {
-         value = "8654848";
+         value = "0";
          type = "String";
       }
    }
@@ -45,7 +45,7 @@
    {
       datum _sortIndex
       {
-         value = "19";
+         value = "21";
          type = "int";
       }
    }
@@ -53,7 +53,7 @@
    {
       datum baseAddress
       {
-         value = "8658176";
+         value = "1664";
          type = "String";
       }
    }
@@ -61,7 +61,7 @@
    {
       datum _sortIndex
       {
-         value = "21";
+         value = "23";
          type = "int";
       }
    }
@@ -69,7 +69,7 @@
    {
       datum baseAddress
       {
-         value = "8657408";
+         value = "1024";
          type = "String";
       }
    }
@@ -77,7 +77,7 @@
    {
       datum _sortIndex
       {
-         value = "20";
+         value = "22";
          type = "int";
       }
    }
@@ -85,7 +85,7 @@
    {
       datum baseAddress
       {
-         value = "8658432";
+         value = "1792";
          type = "String";
       }
    }
@@ -109,7 +109,7 @@
    {
       datum _sortIndex
       {
-         value = "16";
+         value = "18";
          type = "int";
       }
    }
@@ -125,7 +125,7 @@
    {
       datum _sortIndex
       {
-         value = "8";
+         value = "9";
          type = "int";
       }
    }
@@ -141,7 +141,7 @@
    {
       datum _sortIndex
       {
-         value = "12";
+         value = "14";
          type = "int";
       }
    }
@@ -149,7 +149,7 @@
    {
       datum baseAddress
       {
-         value = "8658656";
+         value = "8656288";
          type = "String";
       }
    }
@@ -157,7 +157,7 @@
    {
       datum _sortIndex
       {
-         value = "13";
+         value = "15";
          type = "int";
       }
    }
@@ -165,7 +165,7 @@
    {
       datum baseAddress
       {
-         value = "8658624";
+         value = "8656256";
          type = "String";
       }
    }
@@ -173,7 +173,7 @@
    {
       datum _sortIndex
       {
-         value = "5";
+         value = "6";
          type = "int";
       }
    }
@@ -181,12 +181,17 @@
    {
       datum baseAddress
       {
-         value = "8657920";
+         value = "8655872";
          type = "String";
       }
    }
    element intel_generic_serial_flash_interface_top_0.avl_mem
    {
+      datum _lockedAddress
+      {
+         value = "1";
+         type = "boolean";
+      }
       datum baseAddress
       {
          value = "0";
@@ -197,7 +202,7 @@
    {
       datum _sortIndex
       {
-         value = "7";
+         value = "8";
          type = "int";
       }
    }
@@ -205,7 +210,23 @@
    {
       datum baseAddress
       {
-         value = "8658728";
+         value = "8656376";
+         type = "String";
+      }
+   }
+   element mm_clock_crossing_bridge_0
+   {
+      datum _sortIndex
+      {
+         value = "3";
+         type = "int";
+      }
+   }
+   element mm_clock_crossing_bridge_0.s0
+   {
+      datum baseAddress
+      {
+         value = "16777216";
          type = "String";
       }
    }
@@ -213,7 +234,7 @@
    {
       datum _sortIndex
       {
-         value = "3";
+         value = "4";
          type = "int";
       }
    }
@@ -229,7 +250,7 @@
    {
       datum _sortIndex
       {
-         value = "4";
+         value = "5";
          type = "int";
       }
    }
@@ -245,7 +266,7 @@
    {
       datum _sortIndex
       {
-         value = "15";
+         value = "17";
          type = "int";
       }
    }
@@ -253,7 +274,7 @@
    {
       datum baseAddress
       {
-         value = "8655872";
+         value = "8654848";
          type = "String";
       }
    }
@@ -261,7 +282,7 @@
    {
       datum _sortIndex
       {
-         value = "9";
+         value = "10";
          type = "int";
       }
    }
@@ -269,7 +290,7 @@
    {
       datum baseAddress
       {
-         value = "8658704";
+         value = "8656352";
          type = "String";
       }
    }
@@ -277,7 +298,7 @@
    {
       datum _sortIndex
       {
-         value = "10";
+         value = "11";
          type = "int";
       }
    }
@@ -285,7 +306,23 @@
    {
       datum baseAddress
       {
-         value = "8658688";
+         value = "8656336";
+         type = "String";
+      }
+   }
+   element pio_2
+   {
+      datum _sortIndex
+      {
+         value = "12";
+         type = "int";
+      }
+   }
+   element pio_2.s1
+   {
+      datum baseAddress
+      {
+         value = "8656320";
          type = "String";
       }
    }
@@ -301,7 +338,7 @@
    {
       datum _sortIndex
       {
-         value = "17";
+         value = "19";
          type = "int";
       }
    }
@@ -309,7 +346,7 @@
    {
       datum _sortIndex
       {
-         value = "11";
+         value = "13";
          type = "int";
       }
    }
@@ -317,7 +354,7 @@
    {
       datum baseAddress
       {
-         value = "8658560";
+         value = "8656192";
          type = "String";
       }
    }
@@ -325,7 +362,7 @@
    {
       datum _sortIndex
       {
-         value = "6";
+         value = "7";
          type = "int";
       }
    }
@@ -333,7 +370,7 @@
    {
       datum baseAddress
       {
-         value = "8658720";
+         value = "8656368";
          type = "String";
       }
    }
@@ -341,7 +378,7 @@
    {
       datum _sortIndex
       {
-         value = "14";
+         value = "16";
          type = "int";
       }
    }
@@ -349,7 +386,7 @@
    {
       datum baseAddress
       {
-         value = "8658496";
+         value = "8656128";
          type = "String";
       }
    }
@@ -416,6 +453,11 @@
  <interface
    name="pio_1_controls_in"
    internal="pio_1.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="pio_2_sys_status_in"
+   internal="pio_2.external_connection"
    type="conduit"
    dir="end" />
  <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
@@ -580,7 +622,7 @@
   <parameter name="H_FRACTION_BITS" value="7" />
   <parameter name="H_FUNCTION" value="LANCZOS_2" />
   <parameter name="H_INTEGER_BITS" value="1" />
-  <parameter name="H_PHASES" value="16" />
+  <parameter name="H_PHASES" value="64" />
   <parameter name="H_SIGNED" value="1" />
   <parameter name="H_SYMMETRIC" value="0" />
   <parameter name="H_TAPS" value="4" />
@@ -605,7 +647,7 @@
   <parameter name="V_FRACTION_BITS" value="7" />
   <parameter name="V_FUNCTION" value="LANCZOS_2" />
   <parameter name="V_INTEGER_BITS" value="1" />
-  <parameter name="V_PHASES" value="16" />
+  <parameter name="V_PHASES" value="64" />
   <parameter name="V_SIGNED" value="1" />
   <parameter name="V_SYMMETRIC" value="0" />
   <parameter name="V_TAPS" value="4" />
@@ -749,6 +791,23 @@
   <parameter name="writeIRQThreshold" value="8" />
  </module>
  <module
+   name="mm_clock_crossing_bridge_0"
+   kind="altera_avalon_mm_clock_crossing_bridge"
+   version="20.1"
+   enabled="1">
+  <parameter name="ADDRESS_UNITS" value="SYMBOLS" />
+  <parameter name="ADDRESS_WIDTH" value="10" />
+  <parameter name="COMMAND_FIFO_DEPTH" value="4" />
+  <parameter name="DATA_WIDTH" value="32" />
+  <parameter name="MASTER_SYNC_DEPTH" value="2" />
+  <parameter name="MAX_BURST_SIZE" value="1" />
+  <parameter name="RESPONSE_FIFO_DEPTH" value="4" />
+  <parameter name="SLAVE_SYNC_DEPTH" value="2" />
+  <parameter name="SYMBOL_WIDTH" value="8" />
+  <parameter name="SYSINFO_ADDR_WIDTH" value="11" />
+  <parameter name="USE_AUTO_ADDRESS_WIDTH" value="1" />
+ </module>
+ <module
    name="nios2_gen2_0"
    kind="altera_nios2_gen2"
    version="20.1"
@@ -769,10 +828,10 @@
   <parameter name="customInstSlavesSystemInfo_nios_a" value="&lt;info/&gt;" />
   <parameter name="customInstSlavesSystemInfo_nios_b" value="&lt;info/&gt;" />
   <parameter name="customInstSlavesSystemInfo_nios_c" value="&lt;info/&gt;" />
-  <parameter name="dataAddrWidth" value="24" />
+  <parameter name="dataAddrWidth" value="25" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='intel_generic_serial_flash_interface_top_0.avl_mem' start='0x0' end='0x800000' type='intel_generic_serial_flash_interface_top.avl_mem' /><slave name='onchip_memory2_0.s1' start='0x820000' end='0x834000' type='altera_avalon_onchip_memory2.s1' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x840800' end='0x841000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='alt_vip_cl_cvo_0.control' start='0x841000' end='0x841400' type='alt_vip_cl_cvo.control' /><slave name='osd_generator_0.avalon_s' start='0x841400' end='0x841800' type='osd_generator.avalon_s' /><slave name='alt_vip_cl_scl_0.control' start='0x841A00' end='0x841C00' type='alt_vip_cl_scl.control' /><slave name='intel_generic_serial_flash_interface_top_0.avl_csr' start='0x841C00' end='0x841D00' type='intel_generic_serial_flash_interface_top.avl_csr' /><slave name='alt_vip_cl_dil_0.control' start='0x841D00' end='0x841D80' type='alt_vip_cl_dil.control' /><slave name='alt_vip_cl_cvi_0.control' start='0x841D80' end='0x841E00' type='alt_vip_cl_cvi.control' /><slave name='alt_vip_cl_vfb_0.control' start='0x841E00' end='0x841E40' type='alt_vip_cl_vfb.control' /><slave name='timer_0.s1' start='0x841E40' end='0x841E80' type='altera_avalon_timer.s1' /><slave name='sc_config_0.avalon_s' start='0x841E80' end='0x841EC0' type='sc_config.avalon_s' /><slave name='i2c_opencores_1.avalon_slave_0' start='0x841EC0' end='0x841EE0' type='i2c_opencores.avalon_slave_0' /><slave name='i2c_opencores_0.avalon_slave_0' start='0x841EE0' end='0x841F00' type='i2c_opencores.avalon_slave_0' /><slave name='pio_1.s1' start='0x841F00' end='0x841F10' type='altera_avalon_pio.s1' /><slave name='pio_0.s1' start='0x841F10' end='0x841F20' type='altera_avalon_pio.s1' /><slave name='sysid_qsys_0.control_slave' start='0x841F20' end='0x841F28' type='altera_avalon_sysid_qsys.control_slave' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x841F28' end='0x841F30' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='intel_generic_serial_flash_interface_top_0.avl_mem' start='0x0' end='0x800000' type='intel_generic_serial_flash_interface_top.avl_mem' /><slave name='onchip_memory2_0.s1' start='0x820000' end='0x834000' type='altera_avalon_onchip_memory2.s1' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x840800' end='0x841000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='osd_generator_0.avalon_s' start='0x841000' end='0x841400' type='osd_generator.avalon_s' /><slave name='intel_generic_serial_flash_interface_top_0.avl_csr' start='0x841400' end='0x841500' type='intel_generic_serial_flash_interface_top.avl_csr' /><slave name='timer_0.s1' start='0x841500' end='0x841540' type='altera_avalon_timer.s1' /><slave name='sc_config_0.avalon_s' start='0x841540' end='0x841580' type='sc_config.avalon_s' /><slave name='i2c_opencores_1.avalon_slave_0' start='0x841580' end='0x8415A0' type='i2c_opencores.avalon_slave_0' /><slave name='i2c_opencores_0.avalon_slave_0' start='0x8415A0' end='0x8415C0' type='i2c_opencores.avalon_slave_0' /><slave name='pio_2.s1' start='0x8415C0' end='0x8415D0' type='altera_avalon_pio.s1' /><slave name='pio_1.s1' start='0x8415D0' end='0x8415E0' type='altera_avalon_pio.s1' /><slave name='pio_0.s1' start='0x8415E0' end='0x8415F0' type='altera_avalon_pio.s1' /><slave name='sysid_qsys_0.control_slave' start='0x8415F0' end='0x8415F8' type='altera_avalon_sysid_qsys.control_slave' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x8415F8' end='0x841600' type='altera_avalon_jtag_uart.avalon_jtag_slave' /><slave name='alt_vip_cl_cvo_0.control' start='0x1000000' end='0x1000400' type='alt_vip_cl_cvo.control' /><slave name='alt_vip_cl_scl_0.control' start='0x1000400' end='0x1000600' type='alt_vip_cl_scl.control' /><slave name='alt_vip_cl_cvi_0.control' start='0x1000600' end='0x1000680' type='alt_vip_cl_cvi.control' /><slave name='alt_vip_cl_dil_0.control' start='0x1000680' end='0x1000700' type='alt_vip_cl_dil.control' /><slave name='alt_vip_cl_vfb_0.control' start='0x1000700' end='0x1000740' type='alt_vip_cl_vfb.control' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -991,6 +1050,20 @@
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="32" />
  </module>
+ <module name="pio_2" kind="altera_avalon_pio" version="20.1" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="27000000" />
+  <parameter name="direction" value="Input" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="32" />
+ </module>
  <module name="pll_0" kind="altera_pll" version="20.1" enabled="1">
   <parameter name="debug_print_output" value="false" />
   <parameter name="debug_use_rbc_taf_method" value="false" />
@@ -1110,7 +1183,7 @@
   <parameter name="gui_multiply_factor" value="1" />
   <parameter name="gui_number_of_clocks" value="2" />
   <parameter name="gui_operation_mode" value="direct" />
-  <parameter name="gui_output_clock_frequency0" value="150.0" />
+  <parameter name="gui_output_clock_frequency0" value="125.0" />
   <parameter name="gui_output_clock_frequency1" value="100.0" />
   <parameter name="gui_output_clock_frequency10" value="100.0" />
   <parameter name="gui_output_clock_frequency11" value="100.0" />
@@ -1231,7 +1304,7 @@
    start="nios2_gen2_0.data_master"
    end="jtag_uart_0.avalon_jtag_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00841f28" />
+  <parameter name="baseAddress" value="0x008415f8" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1240,7 +1313,7 @@
    start="nios2_gen2_0.data_master"
    end="sc_config_0.avalon_s">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00841e80" />
+  <parameter name="baseAddress" value="0x00841540" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1249,7 +1322,7 @@
    start="nios2_gen2_0.data_master"
    end="osd_generator_0.avalon_s">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00841400" />
+  <parameter name="baseAddress" value="0x00841000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1258,7 +1331,7 @@
    start="nios2_gen2_0.data_master"
    end="i2c_opencores_0.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00841ee0" />
+  <parameter name="baseAddress" value="0x008415a0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1267,7 +1340,7 @@
    start="nios2_gen2_0.data_master"
    end="i2c_opencores_1.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00841ec0" />
+  <parameter name="baseAddress" value="0x00841580" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1276,7 +1349,7 @@
    start="nios2_gen2_0.data_master"
    end="intel_generic_serial_flash_interface_top_0.avl_csr">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00841c00" />
+  <parameter name="baseAddress" value="0x00841400" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1292,54 +1365,9 @@
    kind="avalon"
    version="20.1"
    start="nios2_gen2_0.data_master"
-   end="alt_vip_cl_cvi_0.control">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00841d80" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="20.1"
-   start="nios2_gen2_0.data_master"
-   end="alt_vip_cl_scl_0.control">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00841a00" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="20.1"
-   start="nios2_gen2_0.data_master"
-   end="alt_vip_cl_cvo_0.control">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00841000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="20.1"
-   start="nios2_gen2_0.data_master"
-   end="alt_vip_cl_dil_0.control">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00841d00" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="20.1"
-   start="nios2_gen2_0.data_master"
-   end="alt_vip_cl_vfb_0.control">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00841e00" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="20.1"
-   start="nios2_gen2_0.data_master"
    end="sysid_qsys_0.control_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00841f20" />
+  <parameter name="baseAddress" value="0x008415f0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1364,6 +1392,15 @@
    kind="avalon"
    version="20.1"
    start="nios2_gen2_0.data_master"
+   end="mm_clock_crossing_bridge_0.s0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x01000000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="20.1"
+   start="nios2_gen2_0.data_master"
    end="onchip_memory2_0.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x00820000" />
@@ -1375,7 +1412,7 @@
    start="nios2_gen2_0.data_master"
    end="pio_0.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00841f10" />
+  <parameter name="baseAddress" value="0x008415e0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1384,7 +1421,7 @@
    start="nios2_gen2_0.data_master"
    end="pio_1.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00841f00" />
+  <parameter name="baseAddress" value="0x008415d0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1393,7 +1430,16 @@
    start="nios2_gen2_0.data_master"
    end="timer_0.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x00841e40" />
+  <parameter name="baseAddress" value="0x00841500" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="20.1"
+   start="nios2_gen2_0.data_master"
+   end="pio_2.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x008415c0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1421,6 +1467,51 @@
    end="onchip_memory2_0.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x00820000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="20.1"
+   start="mm_clock_crossing_bridge_0.m0"
+   end="alt_vip_cl_cvo_0.control">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="20.1"
+   start="mm_clock_crossing_bridge_0.m0"
+   end="alt_vip_cl_scl_0.control">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0400" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="20.1"
+   start="mm_clock_crossing_bridge_0.m0"
+   end="alt_vip_cl_vfb_0.control">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0700" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="20.1"
+   start="mm_clock_crossing_bridge_0.m0"
+   end="alt_vip_cl_dil_0.control">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0680" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="20.1"
+   start="mm_clock_crossing_bridge_0.m0"
+   end="alt_vip_cl_cvi_0.control">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0600" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1509,6 +1600,7 @@
    start="clk_0.clk"
    end="intel_generic_serial_flash_interface_top_0.clk" />
  <connection kind="clock" version="20.1" start="clk_1.clk" end="ddr3_0.clk" />
+ <connection kind="clock" version="20.1" start="clk_0.clk" end="pio_2.clk" />
  <connection
    kind="clock"
    version="20.1"
@@ -1539,8 +1631,18 @@
  <connection
    kind="clock"
    version="20.1"
+   start="clk_0.clk"
+   end="mm_clock_crossing_bridge_0.s0_clk" />
+ <connection
+   kind="clock"
+   version="20.1"
    start="pll_0.outclk0"
    end="alt_vip_cl_dil_0.av_st_clock" />
+ <connection
+   kind="clock"
+   version="20.1"
+   start="pll_0.outclk0"
+   end="mm_clock_crossing_bridge_0.m0_clk" />
  <connection
    kind="clock"
    version="20.1"
@@ -1636,6 +1738,11 @@
  <connection
    kind="reset"
    version="20.1"
+   start="clk_1.clk_reset"
+   end="mm_clock_crossing_bridge_0.m0_reset" />
+ <connection
+   kind="reset"
+   version="20.1"
    start="clk_0.clk_reset"
    end="alt_vip_cl_vfb_0.mem_reset" />
  <connection
@@ -1666,6 +1773,7 @@
    start="clk_0.clk_reset"
    end="intel_generic_serial_flash_interface_top_0.reset" />
  <connection kind="reset" version="20.1" start="clk_1.clk_reset" end="pll_0.reset" />
+ <connection kind="reset" version="20.1" start="clk_0.clk_reset" end="pio_2.reset" />
  <connection
    kind="reset"
    version="20.1"
@@ -1689,6 +1797,11 @@
  <connection
    kind="reset"
    version="20.1"
+   start="clk_1.clk_reset"
+   end="mm_clock_crossing_bridge_0.s0_reset" />
+ <connection
+   kind="reset"
+   version="20.1"
    start="nios2_gen2_0.debug_reset_request"
    end="nios2_gen2_0.reset" />
  <connection
@@ -1706,6 +1819,11 @@
    version="20.1"
    start="nios2_gen2_0.debug_reset_request"
    end="pio_1.reset" />
+ <connection
+   kind="reset"
+   version="20.1"
+   start="nios2_gen2_0.debug_reset_request"
+   end="pio_2.reset" />
  <connection
    kind="reset"
    version="20.1"

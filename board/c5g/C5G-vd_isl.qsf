@@ -42,7 +42,7 @@ set_global_assignment -name DEVICE 5CGXFC5C6F27C7
 set_global_assignment -name TOP_LEVEL_ENTITY C5G_vd_isl
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 16.0.2
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "11:08:14  OCTOBER 14, 2016"
-set_global_assignment -name LAST_QUARTUS_VERSION "19.1.0 Lite Edition"
+set_global_assignment -name LAST_QUARTUS_VERSION "20.1.1 Lite Edition"
 set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION "USE AS REGULAR IO"
 
 #============================================================
@@ -67,6 +67,7 @@ set_instance_assignment -name IO_STANDARD "2.5 V" -to AUD_XCK
 # CLOCK
 #============================================================
 set_instance_assignment -name IO_STANDARD LVDS -to CLOCK_125_p
+set_instance_assignment -name IO_STANDARD "1.2-V HSUL" -to CLOCK_50_B3B
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLOCK_50_B5B
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLOCK_50_B6A
 set_instance_assignment -name IO_STANDARD "2.5 V" -to CLOCK_50_B7A
@@ -489,6 +490,7 @@ set_location_assignment PIN_H10 -to AUD_DACDAT
 set_location_assignment PIN_G10 -to AUD_DACLRCK
 set_location_assignment PIN_D6 -to AUD_XCK
 set_location_assignment PIN_U12 -to CLOCK_125_p
+set_location_assignment PIN_T13 -to CLOCK_50_B3B
 set_location_assignment PIN_R20 -to CLOCK_50_B5B
 set_location_assignment PIN_N20 -to CLOCK_50_B6A
 set_location_assignment PIN_H12 -to CLOCK_50_B7A
@@ -879,6 +881,34 @@ set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[35]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[32]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[31]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[30]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[29]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[28]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[27]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[26]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[25]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[24]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[23]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[22]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[21]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[20]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[19]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[18]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[17]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[16]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[15]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[14]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[13]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[12]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[11]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[10]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[9]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[8]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[7]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO[6]
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to HDMI_TX_D
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to HDMI_TX_HS
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to HDMI_TX_VS
@@ -891,23 +921,9 @@ set_global_assignment -name ENABLE_SIGNALTAP OFF
 set_global_assignment -name USE_SIGNALTAP_FILE output_files/stp1.stp
 set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005
 set_global_assignment -name VERILOG_SHOW_LMF_MAPPING_MESSAGES OFF
-set_global_assignment -name QIP_FILE sys/synthesis/sys.qip
-set_global_assignment -name QIP_FILE ../../rtl_common/linebuf.qip
-set_global_assignment -name QIP_FILE ../../rtl_common/char_array.qip
-set_global_assignment -name QIP_FILE ../../rtl_common/char_rom.qip
-set_global_assignment -name QIP_FILE software/sys_controller/mem_init/meminit.qip
-set_global_assignment -name QIP_FILE rtl/pll.qip
-set_global_assignment -name SIP_FILE rtl/pll.sip
-set_global_assignment -name VERILOG_FILE "rtl/C5G-vd_isl.v"
-set_global_assignment -name VERILOG_FILE ../../rtl_common/scanconverter.v
-set_global_assignment -name VERILOG_FILE ../../rtl_common/ir_rcv.v
-set_global_assignment -name VERILOG_FILE ../../rtl_common/ic_frontends/isl51002/isl51002_frontend.v
 set_global_assignment -name SEARCH_PATH ../../rtl_common
 set_global_assignment -name SEARCH_PATH rtl
-set_global_assignment -name SDC_FILE "C5G-vd_isl.sdc"
-set_global_assignment -name CDF_FILE "C5G-vd_isl.cdf"
 
-set_global_assignment -name SIGNALTAP_FILE output_files/stp1.stp
 set_global_assignment -name ENABLE_OCT_DONE OFF
 set_global_assignment -name STRATIXV_CONFIGURATION_SCHEME "ACTIVE SERIAL X4"
 set_global_assignment -name USE_CONFIGURATION_DEVICE ON
@@ -931,6 +947,26 @@ set_global_assignment -name OPTIMIZATION_MODE "AGGRESSIVE PERFORMANCE"
 
 set_global_assignment -name ENABLE_CONFIGURATION_PINS OFF
 set_global_assignment -name ENABLE_BOOT_SEL_PIN OFF
+
+
+
+set_global_assignment -name QIP_FILE sys/synthesis/sys.qip
+set_global_assignment -name QIP_FILE ../../rtl_common/linebuf.qip
+set_global_assignment -name QIP_FILE ../../rtl_common/char_array.qip
+set_global_assignment -name QIP_FILE ../../rtl_common/char_rom.qip
+set_global_assignment -name QIP_FILE ../../rtl_common/dc_fifo_out.qip
+set_global_assignment -name QIP_FILE ../../rtl_common/dc_fifo_in.qip
+set_global_assignment -name QIP_FILE software/sys_controller/mem_init/meminit.qip
+set_global_assignment -name QIP_FILE rtl/pll.qip
+set_global_assignment -name SIP_FILE rtl/pll.sip
+set_global_assignment -name VERILOG_FILE "rtl/C5G-vd_isl.v"
+set_global_assignment -name VERILOG_FILE ../../rtl_common/scanconverter.v
+set_global_assignment -name VERILOG_FILE ../../rtl_common/ir_rcv.v
+set_global_assignment -name VERILOG_FILE ../../rtl_common/ic_frontends/isl51002/isl51002_frontend.v
+set_global_assignment -name SDC_FILE "C5G-vd_isl.sdc"
+set_global_assignment -name CDF_FILE "C5G-vd_isl.cdf"
+set_global_assignment -name SIGNALTAP_FILE output_files/stp1.stp
+
 
 
 

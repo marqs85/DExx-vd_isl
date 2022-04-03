@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Oct 9, 2021 3:02:09 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1633780929519</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Apr 3, 2022 5:57:17 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1648997837853</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/markus/Code/DExx-vd_isl/board/de10-nano/software/sys_controller_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../sys.sopcinfo</SopcDesignFile>
@@ -911,94 +911,100 @@
                 <attributes>memory</attributes>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>alt_vip_cl_cvo_0</slaveDescriptor>
+                <slaveDescriptor>osd_generator_0</slaveDescriptor>
                 <addressRange>0x00841000 - 0x008413FF</addressRange>
                 <addressSpan>1024</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>osd_generator_0</slaveDescriptor>
-                <addressRange>0x00841400 - 0x008417FF</addressRange>
-                <addressSpan>1024</addressSpan>
-                <attributes/>
-        </MemoryMap>
-        <MemoryMap>
-                <slaveDescriptor>alt_vip_cl_scl_0</slaveDescriptor>
-                <addressRange>0x00841A00 - 0x00841BFF</addressRange>
-                <addressSpan>512</addressSpan>
-                <attributes/>
-        </MemoryMap>
-        <MemoryMap>
                 <slaveDescriptor>intel_generic_serial_flash_interface_top_0_avl_csr</slaveDescriptor>
-                <addressRange>0x00841C00 - 0x00841CFF</addressRange>
+                <addressRange>0x00841400 - 0x008414FF</addressRange>
                 <addressSpan>256</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>alt_vip_cl_dil_0</slaveDescriptor>
-                <addressRange>0x00841D00 - 0x00841D7F</addressRange>
-                <addressSpan>128</addressSpan>
-                <attributes/>
-        </MemoryMap>
-        <MemoryMap>
-                <slaveDescriptor>alt_vip_cl_cvi_0</slaveDescriptor>
-                <addressRange>0x00841D80 - 0x00841DFF</addressRange>
-                <addressSpan>128</addressSpan>
-                <attributes/>
-        </MemoryMap>
-        <MemoryMap>
-                <slaveDescriptor>alt_vip_cl_vfb_0</slaveDescriptor>
-                <addressRange>0x00841E00 - 0x00841E3F</addressRange>
-                <addressSpan>64</addressSpan>
-                <attributes/>
-        </MemoryMap>
-        <MemoryMap>
                 <slaveDescriptor>timer_0</slaveDescriptor>
-                <addressRange>0x00841E40 - 0x00841E7F</addressRange>
+                <addressRange>0x00841500 - 0x0084153F</addressRange>
                 <addressSpan>64</addressSpan>
                 <attributes>timer</attributes>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>sc_config_0</slaveDescriptor>
-                <addressRange>0x00841E80 - 0x00841EBF</addressRange>
+                <addressRange>0x00841540 - 0x0084157F</addressRange>
                 <addressSpan>64</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>i2c_opencores_1</slaveDescriptor>
-                <addressRange>0x00841EC0 - 0x00841EDF</addressRange>
+                <addressRange>0x00841580 - 0x0084159F</addressRange>
                 <addressSpan>32</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>i2c_opencores_0</slaveDescriptor>
-                <addressRange>0x00841EE0 - 0x00841EFF</addressRange>
+                <addressRange>0x008415A0 - 0x008415BF</addressRange>
                 <addressSpan>32</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
+                <slaveDescriptor>pio_2</slaveDescriptor>
+                <addressRange>0x008415C0 - 0x008415CF</addressRange>
+                <addressSpan>16</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
                 <slaveDescriptor>pio_1</slaveDescriptor>
-                <addressRange>0x00841F00 - 0x00841F0F</addressRange>
+                <addressRange>0x008415D0 - 0x008415DF</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>pio_0</slaveDescriptor>
-                <addressRange>0x00841F10 - 0x00841F1F</addressRange>
+                <addressRange>0x008415E0 - 0x008415EF</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>sysid_qsys_0</slaveDescriptor>
-                <addressRange>0x00841F20 - 0x00841F27</addressRange>
+                <addressRange>0x008415F0 - 0x008415F7</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>jtag_uart_0</slaveDescriptor>
-                <addressRange>0x00841F28 - 0x00841F2F</addressRange>
+                <addressRange>0x008415F8 - 0x008415FF</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes>printable</attributes>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>alt_vip_cl_cvo_0</slaveDescriptor>
+                <addressRange>0x01000000 - 0x010003FF</addressRange>
+                <addressSpan>1024</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>alt_vip_cl_scl_0</slaveDescriptor>
+                <addressRange>0x01000400 - 0x010005FF</addressRange>
+                <addressSpan>512</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>alt_vip_cl_cvi_0</slaveDescriptor>
+                <addressRange>0x01000600 - 0x0100067F</addressRange>
+                <addressSpan>128</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>alt_vip_cl_dil_0</slaveDescriptor>
+                <addressRange>0x01000680 - 0x010006FF</addressRange>
+                <addressSpan>128</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>alt_vip_cl_vfb_0</slaveDescriptor>
+                <addressRange>0x01000700 - 0x0100073F</addressRange>
+                <addressSpan>64</addressSpan>
+                <attributes/>
         </MemoryMap>
         <LinkerSection>
                 <sectionName>.text</sectionName>
@@ -1024,6 +1030,10 @@
                 <sectionName>.stack</sectionName>
                 <regionName>onchip_memory2_0</regionName>
         </LinkerSection>
+        <DriverPackageInfo>
+                <name>none</name>
+                <moduleName>alt_vip_cl_vfb_0</moduleName>
+        </DriverPackageInfo>
         <DriverPackageInfo>
                 <name>none</name>
                 <moduleName>alt_vip_cl_scl_0</moduleName>

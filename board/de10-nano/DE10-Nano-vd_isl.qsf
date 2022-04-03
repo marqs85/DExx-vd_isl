@@ -1,12 +1,12 @@
 # -------------------------------------------------------------------------- #
 #
 # Copyright (C) 2019  Intel Corporation. All rights reserved.
-# Your use of Intel Corporation's design tools, logic functions 
-# and other software and tools, and any partner logic 
-# functions, and any output files from any of the foregoing 
-# (including device programming or simulation files), and any 
-# associated documentation or information are expressly subject 
-# to the terms and conditions of the Intel Program License 
+# Your use of Intel Corporation's design tools, logic functions
+# and other software and tools, and any partner logic
+# functions, and any output files from any of the foregoing
+# (including device programming or simulation files), and any
+# associated documentation or information are expressly subject
+# to the terms and conditions of the Intel Program License
 # Subscription Agreement, the Intel Quartus Prime License Agreement,
 # the Intel FPGA IP License Agreement, or other applicable license
 # agreement, including, without limitation, that your use is for
@@ -463,6 +463,34 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[2]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SW[3]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[35]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[32]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[31]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[30]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[29]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[28]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[27]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[26]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[25]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[24]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[23]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[22]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[21]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[20]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[19]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[18]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[17]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[16]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[15]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[14]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[13]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[12]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[11]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[10]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[9]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[8]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[7]
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to GPIO_0[6]
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to HDMI_TX_D
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to HDMI_TX_HS
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to HDMI_TX_VS
@@ -717,4 +745,6 @@ set_global_assignment -name SIGNALTAP_FILE output_files/stp1.stp
 set_global_assignment -name ENABLE_CONFIGURATION_PINS OFF
 set_global_assignment -name ENABLE_BOOT_SEL_PIN OFF
 set_global_assignment -name GENERATE_RBF_FILE ON
+
+
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
