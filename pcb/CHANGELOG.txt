@@ -27,3 +27,10 @@ v1.3 (08/2020)
 * revert v1.2 XTAL change
 * update regulators and power routing
 * csync/sog switch added
+
+
+v1.4 (04/2022)
+
+* revert pclk gpio change
+* connect pclk directly to clkgen
+* optimize BOM

@@ -1,0 +1,37 @@
+### Module positions - created on 2022-04-25T00:21:05 EEST ###
+### Printed by Pcbnew version 6.0.4+dfsg-1
+## Unit = mm, Angle = deg.
+## Side : bottom
+# Ref     Val       Package                      PosX       PosY       Rot  Side
+C9        0.1u      SM0603_Capa_libcms       -59.4800   -52.8900  180.0000  bottom
+C10       0.1u      SM0603_Capa_libcms       -59.4800   -64.9000  180.0000  bottom
+C11       0.1u      SM0603_Capa_libcms       -59.4800   -61.4700  180.0000  bottom
+C12       0.1u      SM0603_Capa_libcms       -59.4800   -56.3200  180.0000  bottom
+C14       0.1u      SM0603_Capa_libcms       -59.4800   -51.1700  180.0000  bottom
+C15       0.1u      SM0603_Capa_libcms       -59.4700   -47.7200  180.0000  bottom
+C16       0.1u      SM0603_Capa_libcms       -59.4800   -63.1800  180.0000  bottom
+C17       0.1u      SM0603_Capa_libcms       -59.4800   -59.7500  180.0000  bottom
+C18       0.1u      SM0603_Capa_libcms       -59.4800   -58.0300  180.0000  bottom
+C19       0.1u      SM0603_Capa_libcms       -59.4800   -54.6000  180.0000  bottom
+C21       0.1u      SM0603_Capa_libcms       -59.4800   -49.4500  180.0000  bottom
+C24       22p       SM0603_Capa_libcms       -64.1200   -39.4800   90.0000  bottom
+C25       22p       SM0603_Capa_libcms       -62.3400   -39.4800   90.0000  bottom
+C26       0.1u      SM0603_Capa_libcms       -57.0400   -44.8400  -90.0000  bottom
+C28       0.1u      SM0603_Capa_libcms       -52.7600   -67.1300  -90.0000  bottom
+C29       0.1u      SM0603_Capa_libcms       -49.5200   -67.1300   90.0000  bottom
+C31       0.1u      SM0603_Capa_libcms       -46.0800   -67.1400   90.0000  bottom
+C32       0.1u      SM0603_Capa_libcms       -44.1800   -52.2400    0.0000  bottom
+C33       0.1u      SM0603_Capa_libcms       -44.1700   -49.7400    0.0000  bottom
+C34       0.1u      SM0603_Capa_libcms       -44.1800   -62.7500    0.0000  bottom
+C35       0.1u      SM0603_Capa_libcms       -44.1800   -59.2500    0.0000  bottom
+C36       0.1u      SM0603_Capa_libcms       -44.1800   -55.7500    0.0000  bottom
+C37       0.1u      SM0603_Capa_libcms       -23.9701   -36.9728  -90.0000  bottom
+C38       0.1u      SM0603_Capa_libcms       -24.0001   -31.6028   90.0000  bottom
+C41       0.1u      SM0603_Capa_libcms       -29.1901   -31.6228   90.0000  bottom
+C52       0.1u      SM0603_Capa_libcms       -89.0200   -45.9800   90.0000  bottom
+C53       0.1u      SM0603_Capa_libcms       -23.9500   -96.7200  -90.0000  bottom
+R37       2.2k      SM0603_Resistor_libcms   -38.1900   -35.8820  -90.0000  bottom
+R39       2.2k      SM0603_Resistor_libcms   -39.1200   -46.9700  180.0000  bottom
+R40       2.2k      SM0603_Resistor_libcms   -39.1300   -48.6900  180.0000  bottom
+R45       4.7k      SM0603_Resistor_libcms   -52.4600   -33.7400  -90.0000  bottom
+## End
