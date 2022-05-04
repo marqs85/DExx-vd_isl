@@ -170,7 +170,7 @@ wire [31:0] controls = {6'h0, btn_sync2_reg, ir_code_cnt, ir_code};
 wire [31:0] sys_status = {32'h0};
 
 wire [31:0] hv_in_config, hv_in_config2, hv_in_config3, hv_out_config, hv_out_config2, hv_out_config3, xy_out_config, xy_out_config2;
-wire [31:0] misc_config, sl_config, sl_config2;
+wire [31:0] misc_config, sl_config, sl_config2, sl_config3;
 
 reg [23:0] resync_led_ctr;
 reg resync_strobe_sync1_reg, resync_strobe_sync2_reg, resync_strobe_prev;
@@ -469,6 +469,7 @@ sys sys_inst (
     .sc_config_0_sc_if_misc_config_o        (misc_config),
     .sc_config_0_sc_if_sl_config_o          (sl_config),
     .sc_config_0_sc_if_sl_config2_o         (sl_config2),
+    .sc_config_0_sc_if_sl_config3_o         (sl_config3),
     .osd_generator_0_osd_if_vclk            (PCLK_sc),
     .osd_generator_0_osd_if_xpos            (xpos_sc),
     .osd_generator_0_osd_if_ypos            (ypos_sc),
@@ -562,6 +563,7 @@ scanconverter scanconverter_inst (
     .misc_config(misc_config),
     .sl_config(sl_config),
     .sl_config2(sl_config2),
+    .sl_config3(sl_config3),
     .testpattern_enable(testpattern_enable),
 `ifdef VIP
     .ext_sync_mode(vip_select),
