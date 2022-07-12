@@ -58,14 +58,15 @@ set_output_delay -clock pclk_si_out -min $hdmitx_dmin $hdmitx_data_outputs -add_
 set_output_delay -clock pclk_si_out -max $hdmitx_dmax $hdmitx_data_outputs -add_delay
 
 # SiI1136
-set hdmitx_dmin -0.45
-set hdmitx_dmax 1.36
-set hdmitx_data_outputs [get_ports {HDMI_TX_HSMC_D* HDMI_TX_HSMC_HS HDMI_TX_HSMC_VS HDMI_TX_HSMC_DE}]
-set_output_delay -clock pclk_si_out_hsmc -clock_fall -min $hdmitx_dmin $hdmitx_data_outputs -add_delay
-set_output_delay -clock pclk_si_out_hsmc -clock_fall -max $hdmitx_dmax $hdmitx_data_outputs -add_delay
+#set hdmitx_dmin -0.45
+#set hdmitx_dmax 1.36
+#set hdmitx_data_outputs [get_ports {HDMI_TX_HSMC_D* HDMI_TX_HSMC_HS HDMI_TX_HSMC_VS HDMI_TX_HSMC_DE}]
+#set_output_delay -clock pclk_si_out_hsmc -clock_fall -min $hdmitx_dmin $hdmitx_data_outputs -add_delay
+#set_output_delay -clock pclk_si_out_hsmc -clock_fall -max $hdmitx_dmax $hdmitx_data_outputs -add_delay
 
 set_false_path -from [get_ports {GPIO[34] KEY* SW*}]
-set_false_path -to [get_ports {LED* HDMI_TX_HSMC_RESET_N HDMI_TX_HSMC_SPDIF}]
+set_false_path -to [get_ports {LED*}]
+#set_false_path -to [get_ports {HDMI_TX_HSMC_RESET_N HDMI_TX_HSMC_SPDIF}]
 
 # TODO: set I2C constraints
 set_false_path -from [get_ports {GPIO[4] GPIO[5] I2C_SDA HDMI_TX_HSMC_I2C_SCL HDMI_TX_HSMC_I2C_SDA}]

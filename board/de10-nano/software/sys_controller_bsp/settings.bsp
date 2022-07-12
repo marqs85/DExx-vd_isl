@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Jun 20, 2022 7:32:42 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1655742762080</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Jul 12, 2022 1:17:07 AM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1657577827523</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/markus/Code/DExx-vd_isl/board/de10-nano/software/sys_controller_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../sys.sopcinfo</SopcDesignFile>
@@ -906,8 +906,8 @@
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>onchip_memory2_0</slaveDescriptor>
-                <addressRange>0x00820000 - 0x00833FFF</addressRange>
-                <addressSpan>81920</addressSpan>
+                <addressRange>0x00820000 - 0x00837FFF</addressRange>
+                <addressSpan>98304</addressSpan>
                 <attributes>memory</attributes>
         </MemoryMap>
         <MemoryMap>

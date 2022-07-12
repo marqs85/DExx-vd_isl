@@ -5,8 +5,8 @@
 
 #define DExx_FW
 #define C5G
-#define INC_SII1136
-//#define INC_ADV7513
+//#define INC_SII1136
+#define INC_ADV7513
 #define VIP
 
 #ifndef DEBUG

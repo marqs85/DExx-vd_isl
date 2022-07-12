@@ -151,7 +151,7 @@ assign GPIO_0[4] = sda_oe ? 1'b0 : 1'bz;*/
 assign HDMI_I2C_SDA = sda_oe ? 1'b0 : 1'bz;*/
 
 reg ir_rx_sync1_reg, ir_rx_sync2_reg;
-reg [1:0] btn_sync1_reg, btn_sync2_reg;
+reg [5:0] btn_sync1_reg, btn_sync2_reg;
 
 wire [15:0] ir_code;
 wire [7:0] ir_code_cnt;
@@ -173,7 +173,7 @@ wire cvi_overflow, cvo_underflow;
 
 wire vs_flag = testpattern_enable ? 1'b0 : ~ISL_VSYNC_post;
 
-wire [31:0] controls = {6'h0, btn_sync2_reg, ir_code_cnt, ir_code};
+wire [31:0] controls = {2'h0, btn_sync2_reg, ir_code_cnt, ir_code};
 wire [31:0] sys_status = {32'h0};
 
 wire [31:0] hv_in_config, hv_in_config2, hv_in_config3, hv_out_config, hv_out_config2, hv_out_config3, xy_out_config, xy_out_config2;
@@ -439,12 +439,12 @@ end
 // Insert synchronizers to async inputs (synchronize to CPU clock)
 always @(posedge clk27 or negedge sys_reset_n) begin
     if (!sys_reset_n) begin
-        btn_sync1_reg <= 2'b11;
-        btn_sync2_reg <= 2'b11;
+        btn_sync1_reg <= '1;
+        btn_sync2_reg <= '1;
         ir_rx_sync1_reg <= 1'b1;
         ir_rx_sync2_reg <= 1'b1;
     end else begin
-        btn_sync1_reg <= KEY;
+        btn_sync1_reg <= {KEY[1], 1'b1, KEY[0], 3'h7};
         btn_sync2_reg <= btn_sync1_reg;
         ir_rx_sync1_reg <= IR_RX_i;
         ir_rx_sync2_reg <= ir_rx_sync1_reg;

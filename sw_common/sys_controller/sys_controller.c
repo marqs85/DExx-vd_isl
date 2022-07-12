@@ -40,9 +40,11 @@
 #include "avconfig.h"
 #include "av_controller.h"
 #include "video_modes.h"
+#include "flash.h"
+#include "userdata.h"
 
 #define FW_VER_MAJOR 0
-#define FW_VER_MINOR 57
+#define FW_VER_MINOR 58
 
 //fix PD and cec
 #define ADV7513_MAIN_BASE 0x72
@@ -55,6 +57,13 @@
 #define ISL51002_BASE (0x98>>1)
 #define SI5351_BASE (0xC0>>1)
 #define US2066_BASE (0x7a>>1)
+
+// Default settings
+const settings_t ts_default = {
+    .default_avinput = 0,
+    .osd_enable = 1,
+    .osd_status_timeout = 1,
+};
 
 isl51002_dev isl_dev = {.i2cm_base = I2C_OPENCORES_0_BASE,
                         .i2c_addr = ISL51002_BASE,
@@ -86,6 +95,13 @@ sii1136_dev siitx_dev = {
 us2066_dev chardisp_dev = {.i2cm_base = I2C_OPENCORES_0_BASE,
                            .i2c_addr = US2066_BASE};
 
+flash_ctrl_dev flashctrl_dev = {.regs = (volatile gen_flash_if_regs*)INTEL_GENERIC_SERIAL_FLASH_INTERFACE_TOP_0_AVL_CSR_BASE,
+#ifdef C5G
+                                .flash_size = 0x2000000};
+#else
+                                .flash_size = 0x800000};
+#endif
+
 #ifdef DE2_115
 alt_up_character_lcd_dev charlcd_dev = {.base = CHARACTER_LCD_0_BASE};
 #endif
@@ -102,12 +118,12 @@ uint8_t sl_def_iv_x, sl_def_iv_y;
 int enable_isl, enable_tp;
 oper_mode_t oper_mode;
 
-extern uint8_t osd_enable;
-
-avinput_t avinput, target_avinput, default_avinput;
+avinput_t avinput, target_avinput;
 
 mode_data_t vmode_in, vmode_out;
 vm_proc_config_t vm_conf;
+
+settings_t cs, ts;
 
 char row1[US2066_ROW_LEN+1], row2[US2066_ROW_LEN+1];
 extern char menu_row1[US2066_ROW_LEN+1], menu_row2[US2066_ROW_LEN+1];
@@ -242,7 +258,7 @@ void ui_disp_menu(uint8_t osd_mode)
 {
     uint8_t menu_page;
 
-    if ((osd_mode == 1) || (osd_enable == 2)) {
+    if ((osd_mode == 1) || (ts.osd_enable == 2)) {
         strncpy((char*)osd->osd_array.data[0][0], menu_row1, OSD_CHAR_COLS);
         strncpy((char*)osd->osd_array.data[1][0], menu_row2, OSD_CHAR_COLS);
         osd->osd_row_color.mask = 0;
@@ -633,10 +649,16 @@ int init_hw() {
 
     si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, 0, 0, 0, &si_audio_mclk_96k_conf);
 
-    set_default_avconfig(1);
-    set_default_keymap();
+    set_default_profile(1);
     set_default_settings();
     init_menu();
+    init_userdata();
+
+    // Load initconfig and profile
+    read_userdata(INIT_CONFIG_SLOT, 0);
+    read_userdata(0, 0);
+
+    update_settings(1);
 
     return 0;
 }
@@ -719,9 +741,29 @@ void print_vm_stats() {
     osd->osd_sec_enable[1].mask = (1<<(row+1))-1;
 }
 
+void set_default_settings() {
+    memcpy(&ts, &ts_default, sizeof(settings_t));
+    set_default_keymap();
+}
+
+void update_settings(int init_setup) {
+    if (init_setup || (ts.osd_enable != cs.osd_enable) || (ts.osd_status_timeout != cs.osd_status_timeout)) {
+        osd->osd_config.enable = !!ts.osd_enable;
+        osd->osd_config.status_timeout = ts.osd_status_timeout;
+        if (is_menu_active()) {
+            render_osd_menu();
+            display_menu((rc_code_t)-1, (btn_code_t)-1);
+        }
+    }
+    if (init_setup)
+        target_avinput = ts.default_avinput;
+
+    memcpy(&cs, &ts, sizeof(settings_t));
+}
+
 void mainloop()
 {
-    int i, man_input_change;
+    int i, man_input_change, setup_rc_ret, setup_rc_flag=0;
     char op_status[4];
     uint32_t pclk_i_hz, pclk_o_hz, dotclk_hz, h_hz, pll_h_total, pll_h_total_prev=0;
     isl_input_t target_isl_input=0;
@@ -735,10 +777,17 @@ void mainloop()
 
     cur_avconfig = get_current_avconfig();
 
+    // remote setup
+    if ((~IORD_ALTERA_AVALON_PIO_DATA(PIO_1_BASE) >> CONTROLS_BTN_OFFS) & JOY_DOWN) {
+        target_avinput = AV_TESTPAT;
+        setup_rc_flag = 1;
+    }
+
     while (1) {
         start_ts = alt_timestamp();
         read_controls();
-        parse_control();
+        if (!setup_rc_flag)
+            parse_control();
 
         if (!sys_powered_on)
             break;
@@ -815,11 +864,11 @@ void mainloop()
             ui_disp_status(1);
         }
 
-        update_settings();
+        update_settings(0);
         status = update_avconfig();
 
         if (enable_tp) {
-            if (status == TP_MODE_CHANGE) {
+            if (status & TP_MODE_CHANGE) {
                 get_standard_mode(cur_avconfig->tp_mode, &vm_conf, &vmode_in, &vmode_out);
                 if (vmode_out.si_pclk_mult > 0) {
                     si5351_set_integer_mult(&si_dev, SI_PLLA, SI_CLK4, SI_XTAL, 0, vmode_out.si_pclk_mult, vmode_out.si_ms_conf.outdiv);
@@ -857,7 +906,7 @@ void mainloop()
             }
 
             if (isl_dev.sync_active) {
-                if (isl_get_sync_stats(&isl_dev, sc->fe_status.vtotal, sc->fe_status.interlace_flag, sc->fe_status2.pcnt_frame) || (status == MODE_CHANGE)) {
+                if (isl_get_sync_stats(&isl_dev, sc->fe_status.vtotal, sc->fe_status.interlace_flag, sc->fe_status2.pcnt_frame) || (status & MODE_CHANGE)) {
                     memset(&vmode_in, 0, sizeof(mode_data_t));
 
 #ifdef ISL_MEAS_HZ
@@ -963,7 +1012,7 @@ void mainloop()
                         sii1136_init_mode(&siitx_dev, vmode_out.tx_pixelrep, vmode_out.hdmitx_pixr_ifr, vmode_out.vic, pclk_o_hz);
 #endif
                     }
-                } else if (status == SC_CONFIG_CHANGE) {
+                } else if (status & SC_CONFIG_CHANGE) {
                     update_sc_config(&vmode_in, &vmode_out, &vm_conf, cur_avconfig);
                 }
             } else {
@@ -982,6 +1031,18 @@ void mainloop()
 #ifdef INC_SII1136
         sii1136_update_config(&siitx_dev, &cur_avconfig->hdmitx_cfg);
 #endif
+
+        if (setup_rc_flag) {
+            osd->osd_config.menu_active = 1;
+            setup_rc_ret = setup_rc();
+            sniprintf(menu_row1, US2066_ROW_LEN+1, (setup_rc_ret == 0) ? "Done" : "Default map set");
+            menu_row2[0] = 0;
+            ui_disp_menu(1);
+            usleep(800000);
+            osd->osd_config.menu_active = 0;
+            read_controls();
+            setup_rc_flag = 0;
+        }
 
         while (alt_timestamp() < start_ts + MAINLOOP_INTERVAL_US*(TIMER_0_FREQ/1000000)) {}
     }
@@ -1013,9 +1074,8 @@ int main()
         sys_ctrl &= ~SCTRL_EMIF_POWERDN_REQ;
         IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);
 
-        // Set default input
+        // Invalidate input
         avinput = (avinput_t)-1;
-        target_avinput = default_avinput;
 
         us2066_display_on(&chardisp_dev);
 
