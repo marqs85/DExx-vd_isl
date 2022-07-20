@@ -52,8 +52,8 @@ set_input_delay -clock pclk_isl -clock_fall -min $ISL_dmin $ISL_inputs -add_dela
 set_input_delay -clock pclk_isl -clock_fall -max $ISL_dmax $ISL_inputs -add_delay
 
 # ADV7513 (0ns video clock delay adjustment)
-set hdmitx_dmin -1.9
-set hdmitx_dmax -0.2
+set hdmitx_dmin -0.7
+set hdmitx_dmax 1.0
 set hdmitx_data_outputs [get_ports {HDMI_TX_D* HDMI_TX_HS HDMI_TX_VS HDMI_TX_DE}]
 set_output_delay -clock pclk_si_out -min $hdmitx_dmin $hdmitx_data_outputs -add_delay
 set_output_delay -clock pclk_si_out -max $hdmitx_dmax $hdmitx_data_outputs -add_delay
