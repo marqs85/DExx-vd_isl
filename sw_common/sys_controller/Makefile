@@ -149,12 +149,17 @@ C_SRCS += ../../../../sw_common/sys_controller/src/menu.c
 C_SRCS += ../../../../sw_common/sys_controller/src/controls.c
 C_SRCS += ../../../../sw_common/sys_controller/src/utils.c
 C_SRCS += ../../../../sw_common/sys_controller/src/flash.c
+C_SRCS += ../../../../sw_common/sys_controller/src/file.c
 C_SRCS += ../../../../sw_common/sys_controller/src/userdata.c
 C_SRCS += ../../../../sw_common/sys_controller/ic_drivers/si5351/si5351.c
 C_SRCS += ../../../../sw_common/sys_controller/ic_drivers/isl51002/isl51002.c
 C_SRCS += ../../../../sw_common/sys_controller/ic_drivers/us2066/us2066.c
 C_SRCS += ../../../../sw_common/sys_controller/ic_drivers/adv7513/adv7513.c
 C_SRCS += ../../../../sw_common/sys_controller/ic_drivers/sii1136/sii1136.c
+C_SRCS += ../../../../sw_common/sys_controller/fatfs/source/diskio.c
+C_SRCS += ../../../../sw_common/sys_controller/fatfs/source/ff.c
+C_SRCS += ../../../../sw_common/sys_controller/fatfs/source/ffsystem.c
+C_SRCS += ../../../../sw_common/sys_controller/fatfs/source/ffunicode.c
 CXX_SRCS :=
 ASM_SRCS :=
 
@@ -203,6 +208,7 @@ APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/ic_drivers/isl51002
 APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/ic_drivers/us2066
 APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/ic_drivers/adv7513
 APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/ic_drivers/sii1136
+APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/fatfs/source
 
 APP_LIBRARY_DIRS :=
 APP_LIBRARY_NAMES :=

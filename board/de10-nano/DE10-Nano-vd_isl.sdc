@@ -19,7 +19,10 @@ create_generated_clock -source {sys_inst|pll_0|altera_pll_i|general[0].gpll~FRAC
 create_generated_clock -source {sys_inst|pll_0|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]} -divide_by 4 -duty_cycle 50.00 -name clk_vip {sys_inst|pll_0|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk}
 create_generated_clock -source {sys_inst|pll_0|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]} -divide_by 5 -duty_cycle 50.00 -name clk100 {sys_inst|pll_0|altera_pll_i|general[1].gpll~PLL_OUTPUT_COUNTER|divclk}
 
+create_generated_clock -name sd_clk -divide_by 4 -source [get_ports FPGA_CLK1_50] [get_pins sys:sys_inst|sdc_controller_top:sdc_controller_0|sdc_controller:sdc0|sd_clock_divider:clock_divider0|SD_CLK_O|q]
+
 create_generated_clock -name pclk_si_out -master_clock pclk_si -source [get_ports GPIO_0[0]] -multiply_by 1 [get_ports HDMI_TX_CLK]
+create_generated_clock -name sd_clk_out -master_clock sd_clk -source [get_pins sys:sys_inst|sdc_controller_top:sdc_controller_0|sdc_controller:sdc0|sd_clock_divider:clock_divider0|SD_CLK_O|q] -multiply_by 1 [get_ports {HPS_SD_CLK}]
 
 # specify div2 capture and output clocks
 set pclk_capture_div_pin [get_pins pclk_capture_div2|q]
@@ -44,6 +47,12 @@ derive_clock_uncertainty
 # Set IO Delay
 #**************************************************************
 
+# SD card (IO constraints from Kingston specsheet, default mode)
+set_input_delay -clock sd_clk_out -clock_fall -min 0 [get_ports {HPS_SD_CMD HPS_SD_DATA[*]}] -add_delay
+set_input_delay -clock sd_clk_out -clock_fall -max 14 [get_ports {HPS_SD_CMD HPS_SD_DATA[*]}] -add_delay
+set_output_delay -clock sd_clk_out -min -5 [get_ports {HPS_SD_CMD HPS_SD_DATA[*]}] -add_delay
+set_output_delay -clock sd_clk_out -max 5 [get_ports {HPS_SD_CMD HPS_SD_DATA[*]}] -add_delay
+
 # ISL51002
 set ISL_dmin [expr 3.4-0.5*(1000/165)]
 set ISL_dmax [expr 0.5*(1000/165)-1.8]
@@ -59,7 +68,7 @@ set_output_delay -clock pclk_si_out -min $hdmitx_dmin $hdmitx_data_outputs -add_
 set_output_delay -clock pclk_si_out -max $hdmitx_dmax $hdmitx_data_outputs -add_delay
 
 set_false_path -from [get_ports {GPIO_0[34] KEY* ARDUINO_IO[7] ARDUINO_IO[6] ARDUINO_IO[5] ARDUINO_IO[4]}]
-set_false_path -to [get_ports {LED*}]
+set_false_path -to [get_ports {LED* HPS_LED}]
 
 # TODO: set I2C constraints
 set_false_path -from [get_ports {GPIO_0[4] GPIO_0[5] HDMI_I2C_SCL HDMI_I2C_SDA}]
@@ -78,7 +87,7 @@ set_false_path -setup -to [get_registers sys:sys_inst|sys_alt_vip_cl_cvo_0:alt_v
 # Set Clock Groups
 #**************************************************************
 set_clock_groups -asynchronous -group \
-                            {clk50} \
+                            {clk50 sd_clk sd_clk_out} \
                             {clk50_2} \
                             {clk50_3} \
                             {clk100} \

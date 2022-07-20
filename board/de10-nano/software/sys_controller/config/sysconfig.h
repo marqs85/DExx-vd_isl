@@ -4,6 +4,7 @@
 #include "system.h"
 
 #define DExx_FW
+#define DE10N
 #define INC_ADV7513
 #define VIP
 

@@ -24,4 +24,4 @@ cd software/bootloader/sd_image
 mkdir -p sdfs
 cp ../../../output_files/DE10-Nano-vd_isl.rbf sdfs/
 ../u-boot-socfpga/tools/mkimage  -A arm -O linux -T script -C none -a 0 -e 0 -n "My script" -d u-boot.script sdfs/u-boot.scr
-su-to-root -c "python3 ./make_sdimage_p3.py -f -P ../u-boot-socfpga/u-boot-with-spl.sfp,num=3,format=raw,size=2M,type=A2 -P sdfs/*,num=1,format=fat32,size=32M -s 40M -n sdcard_cv.img"
+su-to-root -c "python3 ./make_sdimage_p3.py -f -P ../u-boot-socfpga/u-boot-with-spl.sfp,num=3,format=raw,size=2M,type=A2 -P sdfs/*,num=1,format=fat32,size=61M -s 64M -n sdcard_cv.img"

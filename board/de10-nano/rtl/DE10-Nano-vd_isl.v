@@ -70,13 +70,13 @@ module DE10_Nano_vd_isl (
       inout              HPS_I2C0_SDAT,
       inout              HPS_I2C1_SCLK,
       inout              HPS_I2C1_SDAT,
-      inout              HPS_KEY,
+      inout              HPS_KEY,*/
       inout              HPS_LED,
-      inout              HPS_LTC_GPIO,
-      output             HPS_SD_CLK,
+      /*inout              HPS_LTC_GPIO,*/
+      inout              HPS_SD_CLK,
       inout              HPS_SD_CMD,
       inout       [3:0]  HPS_SD_DATA,
-      output             HPS_SPIM_CLK,
+      /*output             HPS_SPIM_CLK,
       input              HPS_SPIM_MISO,
       output             HPS_SPIM_MOSI,
       inout              HPS_SPIM_SS,
@@ -184,13 +184,26 @@ reg resync_strobe_sync1_reg, resync_strobe_sync2_reg, resync_strobe_prev;
 wire resync_strobe_i;
 wire resync_strobe = resync_strobe_sync2_reg;
 
-assign LED = {{4{framelock}}, (ir_code == 0), {3{(resync_led_ctr != 0)}}};
+wire resync_led;
+assign {LED[0], LED[7], resync_led} = {framelock, (ir_code == 0), (resync_led_ctr != 0)};
 
 wire [11:0] xpos_sc;
 wire [10:0] ypos_sc;
 wire osd_enable;
 wire [1:0] osd_color;
 
+wire sdc_clk_o;
+wire sdc_clk_oe_o = 1'b1;
+wire sdc_cmd_oe_o, sdc_cmd_o, sdc_cmd_i;
+wire [3:0] sdc_dat_oe_o, sdc_dat_o, sdc_dat_i;
+
+wire [66:0] hps_h2f_loan_io_in;
+wire [66:0] hps_h2f_loan_io_out = {13'h0, resync_led, 5'h0, sdc_dat_o[3:2], sdc_clk_o, 5'h0, sdc_dat_o[1:0], 1'h0, sdc_cmd_o, 36'h0};
+wire [66:0] hps_h2f_loan_io_oe = {13'h0, 1'b1, 5'h0, sdc_dat_oe_o[3:2], sdc_clk_oe_o, 5'h0, sdc_dat_oe_o[1:0], 1'h0, sdc_cmd_oe_o, 36'h0};
+
+assign sdc_dat_i[3:2] = hps_h2f_loan_io_in[47:46];
+assign sdc_dat_i[1:0] = hps_h2f_loan_io_in[39:38];
+assign sdc_cmd_i = hps_h2f_loan_io_in[36];
 
 // ISL51002 RGB digitizer
 reg [7:0] ISL_R, ISL_G, ISL_B;
@@ -460,12 +473,29 @@ pll pll_sys (
 
 sys sys_inst (
     .clk_clk                 (clk27),
-    .clk_0_clk               (FPGA_CLK1_50),
+    .clk_1_clk               (FPGA_CLK1_50),
     .reset_reset_n           (sys_reset_n),
     /*.i2c_0_i2c_serial_sda_in (HDMI_I2C_SDA), // i2c_0_i2c_serial.sda_in
     .i2c_0_i2c_serial_scl_in (HDMI_I2C_SCL), //                 .scl_in
     .i2c_0_i2c_serial_sda_oe (sda_oe), //                 .sda_oe
     .i2c_0_i2c_serial_scl_oe (scl_oe), //                 .scl_oe*/
+    .sdc_controller_0_sd_sd_cmd_dat_i       (sdc_cmd_i),
+    .sdc_controller_0_sd_sd_cmd_out_o       (sdc_cmd_o),
+    .sdc_controller_0_sd_sd_cmd_oe_o        (sdc_cmd_oe_o),
+    .sdc_controller_0_sd_sd_dat_dat_i       (sdc_dat_i),
+    .sdc_controller_0_sd_sd_dat_out_o       (sdc_dat_o),
+    .sdc_controller_0_sd_sd_dat_oe_o        (sdc_dat_oe_o),
+    .sdc_controller_0_sd_clk_o_clk          (sdc_clk_o),
+    .hps_h2f_loan_io_in                     (hps_h2f_loan_io_in),
+    .hps_h2f_loan_io_out                    (hps_h2f_loan_io_out),
+    .hps_h2f_loan_io_oe                     (hps_h2f_loan_io_oe),
+    .hps_io_hps_io_gpio_inst_LOANIO36       (HPS_SD_CMD), 
+    .hps_io_hps_io_gpio_inst_LOANIO38       (HPS_SD_DATA[0]),
+    .hps_io_hps_io_gpio_inst_LOANIO39       (HPS_SD_DATA[1]),
+    .hps_io_hps_io_gpio_inst_LOANIO45       (HPS_SD_CLK),
+    .hps_io_hps_io_gpio_inst_LOANIO46       (HPS_SD_DATA[2]),
+    .hps_io_hps_io_gpio_inst_LOANIO47       (HPS_SD_DATA[3]),
+    .hps_io_hps_io_gpio_inst_LOANIO53       (HPS_LED),
     .i2c_opencores_0_export_scl_pad_io      (GPIO_0[5]),
     .i2c_opencores_0_export_sda_pad_io      (GPIO_0[4]),
     .i2c_opencores_0_export_spi_miso_pad_i  (1'b0),

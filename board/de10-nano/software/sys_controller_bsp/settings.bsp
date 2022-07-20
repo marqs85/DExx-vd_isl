@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Jul 12, 2022 1:17:07 AM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1657577827523</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Jul 20, 2022 11:40:30 AM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1658306430277</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/markus/Code/DExx-vd_isl/board/de10-nano/software/sys_controller_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../sys.sopcinfo</SopcDesignFile>
@@ -906,8 +906,8 @@
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>onchip_memory2_0</slaveDescriptor>
-                <addressRange>0x00820000 - 0x00837FFF</addressRange>
-                <addressSpan>98304</addressSpan>
+                <addressRange>0x00820000 - 0x0083AFFF</addressRange>
+                <addressSpan>110592</addressSpan>
                 <attributes>memory</attributes>
         </MemoryMap>
         <MemoryMap>
@@ -917,62 +917,68 @@
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>intel_generic_serial_flash_interface_top_0_avl_csr</slaveDescriptor>
+                <slaveDescriptor>sdc_controller_0</slaveDescriptor>
                 <addressRange>0x00841400 - 0x008414FF</addressRange>
                 <addressSpan>256</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
+                <slaveDescriptor>intel_generic_serial_flash_interface_top_0_avl_csr</slaveDescriptor>
+                <addressRange>0x00841500 - 0x008415FF</addressRange>
+                <addressSpan>256</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
                 <slaveDescriptor>timer_0</slaveDescriptor>
-                <addressRange>0x00841500 - 0x0084153F</addressRange>
+                <addressRange>0x00841600 - 0x0084163F</addressRange>
                 <addressSpan>64</addressSpan>
                 <attributes>timer</attributes>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>sc_config_0</slaveDescriptor>
-                <addressRange>0x00841540 - 0x0084157F</addressRange>
+                <addressRange>0x00841640 - 0x0084167F</addressRange>
                 <addressSpan>64</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>i2c_opencores_1</slaveDescriptor>
-                <addressRange>0x00841580 - 0x0084159F</addressRange>
+                <addressRange>0x00841680 - 0x0084169F</addressRange>
                 <addressSpan>32</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>i2c_opencores_0</slaveDescriptor>
-                <addressRange>0x008415A0 - 0x008415BF</addressRange>
+                <addressRange>0x008416A0 - 0x008416BF</addressRange>
                 <addressSpan>32</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>pio_2</slaveDescriptor>
-                <addressRange>0x008415C0 - 0x008415CF</addressRange>
+                <addressRange>0x008416C0 - 0x008416CF</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>pio_1</slaveDescriptor>
-                <addressRange>0x008415D0 - 0x008415DF</addressRange>
+                <addressRange>0x008416D0 - 0x008416DF</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>pio_0</slaveDescriptor>
-                <addressRange>0x008415E0 - 0x008415EF</addressRange>
+                <addressRange>0x008416E0 - 0x008416EF</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>sysid_qsys_0</slaveDescriptor>
-                <addressRange>0x008415F0 - 0x008415F7</addressRange>
+                <addressRange>0x008416F0 - 0x008416F7</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
                 <slaveDescriptor>jtag_uart_0</slaveDescriptor>
-                <addressRange>0x008415F8 - 0x008415FF</addressRange>
+                <addressRange>0x008416F8 - 0x008416FF</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes>printable</attributes>
         </MemoryMap>

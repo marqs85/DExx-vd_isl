@@ -6,3 +6,22 @@ rbf=DE10-Nano-vd_isl.rbf
 fatload mmc 0:1 $fpgadata $rbf
 fpga load 0 $fpgadata $filesize
 bridge enable
+
+# hand over SD from HPS to FPGA
+mw 0xFFD08474 0 1
+mw 0xFFD08478 0 1
+mw 0xFFD0847C 0 1
+mw 0xFFD0845C 0 1
+mw 0xFFD08458 0 1
+mw 0xFFD08450 0 1
+
+# connect loanIO to SD pins
+mw 0xFFD08688 0 1
+mw 0xFFD08690 0 1
+mw 0xFFD0868C 0 1
+mw 0xFFD08670 0 1
+mw 0xFFD0866C 0 1
+mw 0xFFD08664 0 1
+
+# connect loanIO to USERLED pin
+mw 0xFFD086A8 0 1

@@ -36,6 +36,8 @@
 #include "us2066.h"
 #include "sc_config_regs.h"
 #include "menu.h"
+#include "mmc.h"
+#include "file.h"
 #include "controls.h"
 #include "avconfig.h"
 #include "av_controller.h"
@@ -109,11 +111,16 @@ alt_up_character_lcd_dev charlcd_dev = {.base = CHARACTER_LCD_0_BASE};
 volatile sc_regs *sc = (volatile sc_regs*)SC_CONFIG_0_BASE;
 volatile osd_regs *osd = (volatile osd_regs*)OSD_GENERATOR_0_BASE;
 
+struct mmc *mmc_dev;
+struct mmc * ocsdc_mmc_init(int base_addr, int clk_freq, unsigned int host_caps);
+
 uint16_t sys_ctrl;
 uint32_t sys_status;
 uint8_t sys_powered_on;
 
 uint8_t sl_def_iv_x, sl_def_iv_y;
+
+uint8_t sd_det;
 
 int enable_isl, enable_tp;
 oper_mode_t oper_mode;
@@ -563,7 +570,7 @@ int init_emif()
             return -2;
     }
     if (((sys_status & SSTAT_EMIF_STAT_MASK) >> SSTAT_EMIF_STAT_OFFS) != 0x3) {
-        printf("Mem calib fail: 0x%x\n", ((sys_status & SSTAT_EMIF_STAT_MASK) >> SSTAT_EMIF_STAT_OFFS));
+        printf("Mem calib fail: 0x%lx\n", ((sys_status & SSTAT_EMIF_STAT_MASK) >> SSTAT_EMIF_STAT_OFFS));
         return -3;
     }
 
@@ -577,6 +584,48 @@ int init_emif()
             break;
         else if (alt_timestamp() >= start_ts + 100000*(TIMER_0_FREQ/1000000))
             return -4;
+    }
+
+    return 0;
+}
+
+int init_sdcard() {
+    FRESULT res;
+    int err = mmc_init(mmc_dev);
+
+    if (err != 0 || mmc_dev->has_init == 0) {
+        printf("mmc_init failed: %d\n\n", err);
+        return -1;
+    } else {
+        printf("mmc_init success\n\n");
+
+        printf("Device: %s\n", mmc_dev->name);
+        printf("Manufacturer ID: %x\n", mmc_dev->cid[0] >> 24);
+        printf("OEM: %x\n", (mmc_dev->cid[0] >> 8) & 0xffff);
+        printf("Name: %c%c%c%c%c \n", mmc_dev->cid[0] & 0xff,
+                (mmc_dev->cid[1] >> 24), (mmc_dev->cid[1] >> 16) & 0xff,
+                (mmc_dev->cid[1] >> 8) & 0xff, mmc_dev->cid[1] & 0xff);
+
+        printf("Tran Speed: %d\n", mmc_dev->tran_speed);
+        printf("Rd Block Len: %d\n", mmc_dev->read_bl_len);
+
+        printf("%s version %d.%d\n", IS_SD(mmc_dev) ? "SD" : "MMC",
+                (mmc_dev->version >> 4) & 0xf, mmc_dev->version & 0xf);
+
+        printf("High Capacity: %s\n", mmc_dev->high_capacity ? "Yes" : "No");
+        printf("Capacity: %lu MB\n", (uint32_t)(mmc_dev->capacity>>20));
+
+        printf("Bus Width: %d-bit\n\n", mmc_dev->bus_width);
+
+        sd_det = 1;
+        res = file_mount(); // check result when confident the SD detection is robust enough
+
+        /*char buff[256];
+
+        if (res == FR_OK) {
+            strcpy(buff, "/");
+            res = scan_files(buff);
+        }*/
     }
 
     return 0;
@@ -649,14 +698,30 @@ int init_hw() {
 
     si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, 0, 0, 0, &si_audio_mclk_96k_conf);
 
+    //init ocsdc driver (IO constraints only cover default mode)
+    mmc_dev = ocsdc_mmc_init(SDC_CONTROLLER_0_BASE, 50000000U, 0x00);
+    // timing is met only for 12.5MHz
+    mmc_dev->f_max = 50000000U / 4;
+    mmc_dev->has_init = 0;
+    ret = init_sdcard();
+    if (ret != 0) {
+        sniprintf(row1, US2066_ROW_LEN+1, "SD init fail");
+        return ret;
+    }
+
     set_default_profile(1);
     set_default_settings();
     init_menu();
     init_userdata();
 
     // Load initconfig and profile
+#ifdef DE10N
+    read_userdata_sd(SD_INIT_CONFIG_SLOT, 0);
+    read_userdata_sd(0, 0);
+#else
     read_userdata(INIT_CONFIG_SLOT, 0);
     read_userdata(0, 0);
+#endif
 
     update_settings(1);
 

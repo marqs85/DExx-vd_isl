@@ -320,7 +320,7 @@
  <interface name="hps_0_f2h_debug_reset_req" internal="hps.f2h_debug_reset_req" />
  <interface name="hps_0_f2h_stm_hw_events" internal="hps.f2h_stm_hw_events" />
  <interface name="hps_0_h2f_user0_clock" internal="hps.h2f_user0_clock" />
- <interface name="hps_0_hps_io" internal="hps.hps_io" />
+ <interface name="hps_0_hps_io" internal="hps.hps_io" type="conduit" dir="end" />
  <interface name="hps_f2h_boot_from_fpga" internal="hps.f2h_boot_from_fpga" />
  <interface
    name="hps_f2h_sdram0_clock"
@@ -332,11 +332,16 @@
    internal="address_span_extender_0.windowed_slave"
    type="avalon"
    dir="end" />
+ <interface
+   name="hps_h2f_loan_io"
+   internal="hps.h2f_loan_io"
+   type="conduit"
+   dir="end" />
  <interface name="memory" internal="hps.memory" type="conduit" dir="end" />
  <module
    name="address_span_extender_0"
    kind="altera_address_span_extender"
-   version="20.1"
+   version="21.1"
    enabled="1">
   <parameter name="BURSTCOUNT_WIDTH" value="9" />
   <parameter name="DATA_WIDTH" value="256" />
@@ -347,7 +352,7 @@
   <parameter name="SLAVE_ADDRESS_WIDTH" value="26" />
   <parameter name="SUB_WINDOW_COUNT" value="1" />
  </module>
- <module name="clk_50" kind="clock_source" version="20.1" enabled="1">
+ <module name="clk_50" kind="clock_source" version="21.1" enabled="1">
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
@@ -356,13 +361,13 @@
  <module
    name="clock_bridge_0"
    kind="altera_clock_bridge"
-   version="20.1"
+   version="21.1"
    enabled="1">
   <parameter name="DERIVED_CLOCK_RATE" value="0" />
   <parameter name="EXPLICIT_CLOCK_RATE" value="0" />
   <parameter name="NUM_CLOCK_OUTPUTS" value="1" />
  </module>
- <module name="hps" kind="altera_hps" version="20.1" enabled="1">
+ <module name="hps" kind="altera_hps" version="21.1" enabled="1">
   <parameter name="ABSTRACT_REAL_COMPARE_TEST" value="false" />
   <parameter name="ABS_RAM_MEM_INIT_FILENAME" value="meminit" />
   <parameter name="ACV_PHY_CLK_ADD_FR_PHASE" value="0.0" />
@@ -536,7 +541,7 @@
   <parameter name="INCLUDE_BOARD_DELAY_MODEL" value="false" />
   <parameter name="INCLUDE_MULTIRANK_BOARD_DELAY_MODEL" value="false" />
   <parameter name="IS_ES_DEVICE" value="false" />
-  <parameter name="LOANIO_Enable">No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No</parameter>
+  <parameter name="LOANIO_Enable">No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,Yes,No,Yes,Yes,No,No,No,No,No,Yes,Yes,Yes,No,No,No,No,No,Yes,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No</parameter>
   <parameter name="LOCAL_ID_WIDTH" value="8" />
   <parameter name="LRDIMM_EXTENDED_CONFIG">0x000000000000000000</parameter>
   <parameter name="LWH2F_Enable" value="false" />
@@ -899,7 +904,7 @@
    enabled="1" />
  <connection
    kind="avalon"
-   version="20.1"
+   version="21.1"
    start="address_span_extender_0.expanded_master"
    end="hps.f2h_sdram0_data">
   <parameter name="arbitrationPriority" value="1" />
@@ -908,42 +913,42 @@
  </connection>
  <connection
    kind="clock"
-   version="20.1"
+   version="21.1"
    start="clk_50.clk"
    end="hps_reset_manager_0.clock" />
  <connection
    kind="clock"
-   version="20.1"
+   version="21.1"
    start="clock_bridge_0.out_clk"
    end="address_span_extender_0.clock" />
  <connection
    kind="clock"
-   version="20.1"
+   version="21.1"
    start="clock_bridge_0.out_clk"
    end="hps.f2h_sdram0_clock" />
  <connection
    kind="reset"
-   version="20.1"
+   version="21.1"
    start="hps.h2f_reset"
    end="clk_50.clk_in_reset" />
  <connection
    kind="reset"
-   version="20.1"
+   version="21.1"
    start="hps.h2f_reset"
    end="hps_reset_manager_0.hps_fpga_reset" />
  <connection
    kind="reset"
-   version="20.1"
+   version="21.1"
    start="hps.h2f_reset"
    end="address_span_extender_0.reset" />
  <connection
    kind="reset"
-   version="20.1"
+   version="21.1"
    start="hps_reset_manager_0.hps_cold_reset"
    end="hps.f2h_cold_reset_req" />
  <connection
    kind="reset"
-   version="20.1"
+   version="21.1"
    start="hps_reset_manager_0.hps_warm_reset"
    end="hps.f2h_warm_reset_req" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
