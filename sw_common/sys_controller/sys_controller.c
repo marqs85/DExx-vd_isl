@@ -25,6 +25,7 @@
 #include "altera_avalon_timer.h"
 #include <sys/alt_timestamp.h>
 #include "system.h"
+#include "bscanf.h"
 #include "isl51002.h"
 #ifdef INC_ADV7513
 #include "adv7513.h"
@@ -114,6 +115,15 @@ volatile osd_regs *osd = (volatile osd_regs*)OSD_GENERATOR_0_BASE;
 struct mmc *mmc_dev;
 struct mmc * ocsdc_mmc_init(int base_addr, int clk_freq, unsigned int host_caps);
 
+#ifdef DE10N
+#define SDC_FREQ 50000000U
+// IO constraints do not cover high speed mode and 4-bit mode is not fully stable
+#define SDC_HOST_CAPS 0x00
+#else
+#define SDC_FREQ 100000000U
+#define SDC_HOST_CAPS (MMC_MODE_HS|MMC_MODE_HS_52MHz|MMC_MODE_4BIT)
+#endif
+
 uint16_t sys_ctrl;
 uint32_t sys_status;
 uint8_t sys_powered_on;
@@ -139,6 +149,9 @@ extern const char *avinput_str[];
 
 #ifdef VIP
 #include "src/scl_pp_coeffs.c"
+
+FIL file;
+char char_buff[256];
 
 const pp_coeff* scl_pp_coeff_list[][2][2] = {{{&pp_coeff_nearest, NULL}, {&pp_coeff_nearest, NULL}},
                                             {{&pp_coeff_lanczos3, NULL}, {&pp_coeff_lanczos3, NULL}},
@@ -312,6 +325,8 @@ void ui_disp_status(uint8_t refresh_osd_timer) {
 void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t *vm_conf, avconfig_t *avconfig)
 {
     int vip_enable, scl_target_pp_coeff, scl_ea, i, p, t, n;
+    int v0,v1,v2,v3;
+    char coeff_filename[16];
 
     hv_config_reg hv_in_config = {.data=0x00000000};
     hv_config2_reg hv_in_config2 = {.data=0x00000000};
@@ -473,27 +488,50 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
     vip_dli->motion_shift = avconfig->scl_dil_motion_shift;
 
     if (scl_target_pp_coeff != scl_loaded_pp_coeff) {
-        for (p=0; p<PP_PHASES; p++) {
-            for (t=0; t<PP_TAPS; t++)
-                vip_scl_pp->coeff_data[t] = scl_pp_coeff_list[scl_target_pp_coeff][0][0]->v[p][t];
+        if (scl_target_pp_coeff >= PP_COEFF_SIZE) { // Custom
+            snprintf(coeff_filename, sizeof(coeff_filename), "scaler%d.txt", (scl_target_pp_coeff + 1 - PP_COEFF_SIZE) );
+            if (!file_open(&file, coeff_filename)) {
+                p = 0;
+                while (file_get_string(&file, char_buff, sizeof(char_buff))) {
+                    n = bscanf(char_buff, "%d,%d,%d,%d", &v0, &v1, &v2, &v3);
+                    if (n == PP_TAPS) {
+                        vip_scl_pp->coeff_data[0] = v0;
+                        vip_scl_pp->coeff_data[1] = v1;
+                        vip_scl_pp->coeff_data[2] = v2;
+                        vip_scl_pp->coeff_data[3] = v3;
 
-            vip_scl_pp->h_phase = p;
+                        vip_scl_pp->h_phase = p;
+                        vip_scl_pp->v_phase = p;
 
-            for (t=0; t<PP_TAPS; t++)
-                vip_scl_pp->coeff_data[t] = scl_pp_coeff_list[scl_target_pp_coeff][1][0]->v[p][t];
-
-            vip_scl_pp->v_phase = p;
-
-            if (scl_ea) {
+                        if (++p == PP_PHASES)
+                            break;
+                    }
+                }
+                file_close(&file);
+            }
+        } else {
+            for (p=0; p<PP_PHASES; p++) {
                 for (t=0; t<PP_TAPS; t++)
-                    vip_scl_pp->coeff_data[t] = scl_pp_coeff_list[scl_target_pp_coeff][0][1]->v[p][t];
+                    vip_scl_pp->coeff_data[t] = scl_pp_coeff_list[scl_target_pp_coeff][0][0]->v[p][t];
 
-                vip_scl_pp->h_phase = p+(1<<15);
+                vip_scl_pp->h_phase = p;
 
                 for (t=0; t<PP_TAPS; t++)
-                    vip_scl_pp->coeff_data[t] = scl_pp_coeff_list[scl_target_pp_coeff][1][1]->v[p][t];
+                    vip_scl_pp->coeff_data[t] = scl_pp_coeff_list[scl_target_pp_coeff][1][0]->v[p][t];
 
-                vip_scl_pp->v_phase = p+(1<<15);
+                vip_scl_pp->v_phase = p;
+
+                if (scl_ea) {
+                    for (t=0; t<PP_TAPS; t++)
+                        vip_scl_pp->coeff_data[t] = scl_pp_coeff_list[scl_target_pp_coeff][0][1]->v[p][t];
+
+                    vip_scl_pp->h_phase = p+(1<<15);
+
+                    for (t=0; t<PP_TAPS; t++)
+                        vip_scl_pp->coeff_data[t] = scl_pp_coeff_list[scl_target_pp_coeff][1][1]->v[p][t];
+
+                    vip_scl_pp->v_phase = p+(1<<15);
+                }
             }
         }
 
@@ -698,16 +736,20 @@ int init_hw() {
 
     si5351_set_frac_mult(&si_dev, SI_PLLB, SI_CLK2, SI_XTAL, 0, 0, 0, &si_audio_mclk_96k_conf);
 
-    //init ocsdc driver (IO constraints only cover default mode)
-    mmc_dev = ocsdc_mmc_init(SDC_CONTROLLER_0_BASE, 50000000U, 0x00);
+    //init ocsdc driver
+    mmc_dev = ocsdc_mmc_init(SDC_CONTROLLER_0_BASE, SDC_FREQ, SDC_HOST_CAPS);
+#ifdef DE10N
     // timing is met only for 12.5MHz
-    mmc_dev->f_max = 50000000U / 4;
+    mmc_dev->f_max = SDC_FREQ / 4;
+#endif
     mmc_dev->has_init = 0;
     ret = init_sdcard();
+#ifdef DE10N
     if (ret != 0) {
         sniprintf(row1, US2066_ROW_LEN+1, "SD init fail");
         return ret;
     }
+#endif
 
     set_default_profile(1);
     set_default_settings();

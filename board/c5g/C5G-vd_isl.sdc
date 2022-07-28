@@ -17,8 +17,11 @@ create_generated_clock -source {pll_sys|pll_inst|altera_pll_i|general[0].gpll~PL
 create_generated_clock -source {pll_sys|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]} -divide_by 4 -duty_cycle 50.00 -name clk_vip {pll_sys|pll_inst|altera_pll_i|general[1].gpll~PLL_OUTPUT_COUNTER|divclk}
 create_generated_clock -source {pll_sys|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]} -divide_by 6 -duty_cycle 50.00 -name clk100 {pll_sys|pll_inst|altera_pll_i|general[2].gpll~PLL_OUTPUT_COUNTER|divclk}
 
+create_generated_clock -name sd_clk -divide_by 2 -source {pll_sys|pll_inst|altera_pll_i|general[2].gpll~PLL_OUTPUT_COUNTER|divclk} [get_pins sys:sys_inst|sdc_controller_top:sdc_controller_0|sdc_controller:sdc0|sd_clock_divider:clock_divider0|SD_CLK_O|q]
+
 create_generated_clock -name pclk_si_out -master_clock pclk_si -source [get_ports GPIO[0]] -multiply_by 1 [get_ports HDMI_TX_CLK]
 create_generated_clock -name pclk_si_out_hsmc -master_clock pclk_si -source [get_ports GPIO[0]] -multiply_by 1 [get_ports HDMI_TX_HSMC_CLK]
+create_generated_clock -name sd_clk_out -master_clock sd_clk -source [get_pins sys:sys_inst|sdc_controller_top:sdc_controller_0|sdc_controller:sdc0|sd_clock_divider:clock_divider0|SD_CLK_O|q] -multiply_by 1 [get_ports {SD_CLK}]
 
 # specify div2 capture and output clocks
 set pclk_capture_div_pin [get_pins pclk_capture_div2|q]
@@ -42,6 +45,12 @@ derive_clock_uncertainty
 #**************************************************************
 # Set IO Delay
 #**************************************************************
+
+# SD card (IO constraints from Kingston specsheet, slightly reduced t_ODLY)
+set_input_delay -clock sd_clk_out -min 2.5 [get_ports {SD_CMD SD_DAT[*]}] -add_delay
+set_input_delay -clock sd_clk_out -max 12 [get_ports {SD_CMD SD_DAT[*]}] -add_delay
+set_output_delay -clock sd_clk_out -min -2 [get_ports {SD_CMD SD_DAT[*]}] -add_delay
+set_output_delay -clock sd_clk_out -max 6 [get_ports {SD_CMD SD_DAT[*]}] -add_delay
 
 # ISL51002
 set ISL_dmin [expr 3.4-0.5*(1000/165)]
@@ -86,7 +95,7 @@ set_false_path -setup -to [get_registers sys:sys_inst|sys_alt_vip_cl_cvo_0:alt_v
 #**************************************************************
 set_clock_groups -asynchronous -group \
                             {clk50} \
-                            {clk100} \
+                            {clk100 sd_clk sd_clk_out} \
                             {clk_vip} \
                             {pclk_isl} \
                             {pclk_isl_div2} \

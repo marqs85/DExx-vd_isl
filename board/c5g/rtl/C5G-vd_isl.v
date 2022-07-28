@@ -237,8 +237,7 @@ reg resync_strobe_sync1_reg, resync_strobe_sync2_reg, resync_strobe_prev;
 wire resync_strobe_i;
 wire resync_strobe = resync_strobe_sync2_reg;
 
-assign LEDG = {framelock, 6'h0, (ir_code == 0)};
-assign LEDR = {10{(resync_led_ctr != 0)}};
+assign {LEDG[0], LEDG[4], LEDR[0]} = {framelock, (ir_code == 0), (resync_led_ctr != 0)};
 
 wire [11:0] xpos_sc;
 wire [10:0] ypos_sc;
@@ -246,6 +245,12 @@ wire osd_enable;
 wire [1:0] osd_color;
 
 reg emif_hwreset_n_sync1_reg, emif_hwreset_n_sync2_reg, emif_swreset_n_sync1_reg, emif_swreset_n_sync2_reg;
+
+wire sd_cmd_oe_o, sd_cmd_out_o, sd_dat_oe_o;
+wire [3:0] sd_dat_out_o;
+
+assign SD_CMD = sd_cmd_oe_o ? sd_cmd_out_o : 1'bz;
+assign SD_DAT = sd_dat_oe_o ? sd_dat_out_o : 4'bzzzz;
 
 // ISL51002 RGB digitizer
 reg [7:0] ISL_R, ISL_G, ISL_B;
@@ -546,12 +551,19 @@ pll pll_sys (
 sys sys_inst (
     .clk_clk                 (clk27),                 //              clk.clk
     .reset_reset_n           (sys_reset_n),            //            reset.reset_n
-    .clk_0_clk               (clk_vip),
-    .clk_1_clk               (clk100),
+    .clk_1_clk               (clk_vip),
+    .clk_2_clk               (clk100),
     /*.i2c_0_i2c_serial_sda_in (HDMI_I2C_SDA), // i2c_0_i2c_serial.sda_in
     .i2c_0_i2c_serial_scl_in (HDMI_I2C_SCL), //                 .scl_in
     .i2c_0_i2c_serial_sda_oe (sda_oe), //                 .sda_oe
     .i2c_0_i2c_serial_scl_oe (scl_oe), //                 .scl_oe*/
+    .sdc_controller_0_sd_sd_cmd_dat_i       (SD_CMD),
+    .sdc_controller_0_sd_sd_cmd_out_o       (sd_cmd_out_o),
+    .sdc_controller_0_sd_sd_cmd_oe_o        (sd_cmd_oe_o),
+    .sdc_controller_0_sd_sd_dat_dat_i       (SD_DAT),
+    .sdc_controller_0_sd_sd_dat_out_o       (sd_dat_out_o),
+    .sdc_controller_0_sd_sd_dat_oe_o        (sd_dat_oe_o),
+    .sdc_controller_0_sd_clk_o_clk          (SD_CLK),
     .i2c_opencores_0_export_scl_pad_io      (GPIO[5]),
     .i2c_opencores_0_export_sda_pad_io      (GPIO[4]),
     .i2c_opencores_0_export_spi_miso_pad_i  (1'b0),

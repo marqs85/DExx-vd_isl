@@ -5,3 +5,6 @@
 	path = ossc_pro
 	url = git@github.com:marqs85/ossc_pro.git
 	branch = vip_test
+[submodule "sw_common/sys_controller/bscanf"]
+	path = sw_common/sys_controller/bscanf
+	url = git@github.com:marqs85/bscanf.git

@@ -194,12 +194,12 @@ wire [1:0] osd_color;
 
 wire sdc_clk_o;
 wire sdc_clk_oe_o = 1'b1;
-wire sdc_cmd_oe_o, sdc_cmd_o, sdc_cmd_i;
-wire [3:0] sdc_dat_oe_o, sdc_dat_o, sdc_dat_i;
+wire sdc_dat_oe_o, sdc_cmd_oe_o, sdc_cmd_o, sdc_cmd_i;
+wire [3:0] sdc_dat_o, sdc_dat_i;
 
 wire [66:0] hps_h2f_loan_io_in;
 wire [66:0] hps_h2f_loan_io_out = {13'h0, resync_led, 5'h0, sdc_dat_o[3:2], sdc_clk_o, 5'h0, sdc_dat_o[1:0], 1'h0, sdc_cmd_o, 36'h0};
-wire [66:0] hps_h2f_loan_io_oe = {13'h0, 1'b1, 5'h0, sdc_dat_oe_o[3:2], sdc_clk_oe_o, 5'h0, sdc_dat_oe_o[1:0], 1'h0, sdc_cmd_oe_o, 36'h0};
+wire [66:0] hps_h2f_loan_io_oe = {13'h0, 1'b1, 5'h0, {2{sdc_dat_oe_o}}, sdc_clk_oe_o, 5'h0, {2{sdc_dat_oe_o}}, 1'h0, sdc_cmd_oe_o, 36'h0};
 
 assign sdc_dat_i[3:2] = hps_h2f_loan_io_in[47:46];
 assign sdc_dat_i[1:0] = hps_h2f_loan_io_in[39:38];

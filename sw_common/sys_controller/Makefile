@@ -160,6 +160,7 @@ C_SRCS += ../../../../sw_common/sys_controller/fatfs/source/diskio.c
 C_SRCS += ../../../../sw_common/sys_controller/fatfs/source/ff.c
 C_SRCS += ../../../../sw_common/sys_controller/fatfs/source/ffsystem.c
 C_SRCS += ../../../../sw_common/sys_controller/fatfs/source/ffunicode.c
+C_SRCS += ../../../../sw_common/sys_controller/bscanf/bscanf.c
 CXX_SRCS :=
 ASM_SRCS :=
 
@@ -184,8 +185,8 @@ APP_CFLAGS_DEFINED_SYMBOLS :=
 APP_CFLAGS_UNDEFINED_SYMBOLS :=
 APP_CFLAGS_OPTIMIZATION := -Os
 APP_CFLAGS_DEBUG_LEVEL :=
-APP_CFLAGS_WARNINGS := -Wall -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unused-function -Wno-packed-bitfield-compat
-APP_CFLAGS_USER_FLAGS := -fdata-sections -ffunction-sections -fshort-enums -fgnu89-inline
+APP_CFLAGS_WARNINGS := -Wall -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unused-function -Wno-packed-bitfield-compat -Wno-char-subscripts
+APP_CFLAGS_USER_FLAGS := -fdata-sections -ffunction-sections -fshort-enums -fgnu89-inline -flto
 
 APP_ASFLAGS_USER :=
 APP_LDFLAGS_USER := -Wl,--gc-sections
@@ -209,6 +210,7 @@ APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/ic_drivers/us2066
 APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/ic_drivers/adv7513
 APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/ic_drivers/sii1136
 APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/fatfs/source
+APP_INCLUDE_DIRS += ../../../../sw_common/sys_controller/bscanf
 
 APP_LIBRARY_DIRS :=
 APP_LIBRARY_NAMES :=
