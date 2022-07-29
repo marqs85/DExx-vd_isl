@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="sys" kind="sys" version="1.0" fabric="QSYS">
  <!-- Format version 21.1 842 (Future versions may contain additional information.) -->
- <!-- 2022.07.25.11:01:13 -->
+ <!-- 2022.07.29.21:40:29 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1658736073</value>
+  <value>1659120029</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -36955,178 +36955,6 @@ parameters are a RESULT of the module parameters. -->
    </port>
   </interface>
  </module>
- <module
-   name="reset_bridge_0"
-   kind="altera_reset_bridge"
-   version="21.1"
-   path="reset_bridge_0">
-  <!-- Describes a single module. Module parameters are
-the requested settings for a module instance. -->
-  <parameter name="ACTIVE_LOW_RESET">
-   <type>int</type>
-   <value>1</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="SYNCHRONOUS_EDGES">
-   <type>java.lang.String</type>
-   <value>none</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="NUM_RESET_OUTPUTS">
-   <type>int</type>
-   <value>1</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="USE_RESET_REQUEST">
-   <type>int</type>
-   <value>0</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="AUTO_CLK_CLOCK_RATE">
-   <type>java.lang.Long</type>
-   <value>-1</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>false</visible>
-   <valid>true</valid>
-   <sysinfo_type>CLOCK_RATE</sysinfo_type>
-   <sysinfo_arg>clk</sysinfo_arg>
-  </parameter>
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <interface name="in_reset" kind="reset_sink" version="21.1">
-   <!-- The connection points exposed by a module instance for the
-particular module parameters. Connection points and their
-parameters are a RESULT of the module parameters. -->
-   <parameter name="associatedClock">
-    <type>java.lang.String</type>
-    <value></value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="synchronousEdges">
-    <type>com.altera.sopcmodel.reset.Reset$Edges</type>
-    <value>NONE</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="deviceFamily">
-    <type>java.lang.String</type>
-    <value>UNKNOWN</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="generateLegacySim">
-    <type>boolean</type>
-    <value>false</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <type>reset</type>
-   <isStart>false</isStart>
-   <port>
-    <name>in_reset_n</name>
-    <direction>Input</direction>
-    <width>1</width>
-    <role>reset_n</role>
-   </port>
-  </interface>
-  <interface name="out_reset" kind="reset_source" version="21.1">
-   <!-- The connection points exposed by a module instance for the
-particular module parameters. Connection points and their
-parameters are a RESULT of the module parameters. -->
-   <parameter name="associatedClock">
-    <type>java.lang.String</type>
-    <value></value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="associatedDirectReset">
-    <type>java.lang.String</type>
-    <value>in_reset</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="associatedResetSinks">
-    <type>[Ljava.lang.String;</type>
-    <value>in_reset</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="synchronousEdges">
-    <type>com.altera.sopcmodel.reset.Reset$Edges</type>
-    <value>NONE</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="deviceFamily">
-    <type>java.lang.String</type>
-    <value>UNKNOWN</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <parameter name="generateLegacySim">
-    <type>boolean</type>
-    <value>false</value>
-    <derived>false</derived>
-    <enabled>true</enabled>
-    <visible>true</visible>
-    <valid>true</valid>
-   </parameter>
-   <type>reset</type>
-   <isStart>true</isStart>
-   <port>
-    <name>out_reset_n</name>
-    <direction>Output</direction>
-    <width>1</width>
-    <role>reset_n</role>
-   </port>
-  </interface>
- </module>
  <module name="sc_config_0" kind="sc_config" version="1.0" path="sc_config_0">
   <!-- Describes a single module. Module parameters are
 the requested settings for a module instance. -->
@@ -38921,7 +38749,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.CMacro.TIMESTAMP</name>
-   <value>1658736073</value>
+   <value>1659120029</value>
   </assignment>
   <assignment>
    <name>embeddedsw.dts.compatible</name>
@@ -38941,7 +38769,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.dts.params.timestamp</name>
-   <value>1658736073</value>
+   <value>1659120029</value>
   </assignment>
   <assignment>
    <name>embeddedsw.dts.vendor</name>
@@ -38957,7 +38785,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="timestamp">
    <type>int</type>
-   <value>1658736073</value>
+   <value>1659120029</value>
    <derived>true</derived>
    <enabled>false</enabled>
    <visible>false</visible>
@@ -43299,11 +43127,11 @@ parameters are a RESULT of the module parameters. -->
   <endConnectionPoint>status_update_irq</endConnectionPoint>
  </connection>
  <connection
-   name="clk_0.clk_reset/clk_1.clk_in_reset"
+   name="clk_2.clk_reset/alt_vip_cl_dil_0.av_mm_reset"
    kind="reset"
    version="21.1"
-   start="clk_0.clk_reset"
-   end="clk_1.clk_in_reset">
+   start="clk_2.clk_reset"
+   end="alt_vip_cl_dil_0.av_mm_reset">
   <parameter name="deviceFamily">
    <type>java.lang.String</type>
    <value>UNKNOWN</value>
@@ -43320,17 +43148,17 @@ parameters are a RESULT of the module parameters. -->
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
-  <startModule>clk_0</startModule>
+  <startModule>clk_2</startModule>
   <startConnectionPoint>clk_reset</startConnectionPoint>
-  <endModule>clk_1</endModule>
-  <endConnectionPoint>clk_in_reset</endConnectionPoint>
+  <endModule>alt_vip_cl_dil_0</endModule>
+  <endConnectionPoint>av_mm_reset</endConnectionPoint>
  </connection>
  <connection
-   name="clk_0.clk_reset/clk_2.clk_in_reset"
+   name="clk_1.clk_reset/alt_vip_cl_dil_0.av_st_reset"
    kind="reset"
    version="21.1"
-   start="clk_0.clk_reset"
-   end="clk_2.clk_in_reset">
+   start="clk_1.clk_reset"
+   end="alt_vip_cl_dil_0.av_st_reset">
   <parameter name="deviceFamily">
    <type>java.lang.String</type>
    <value>UNKNOWN</value>
@@ -43347,10 +43175,10 @@ parameters are a RESULT of the module parameters. -->
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
-  <startModule>clk_0</startModule>
+  <startModule>clk_1</startModule>
   <startConnectionPoint>clk_reset</startConnectionPoint>
-  <endModule>clk_2</endModule>
-  <endConnectionPoint>clk_in_reset</endConnectionPoint>
+  <endModule>alt_vip_cl_dil_0</endModule>
+  <endConnectionPoint>av_st_reset</endConnectionPoint>
  </connection>
  <connection
    name="clk_0.clk_reset/i2c_opencores_0.clock_reset"
@@ -43434,10 +43262,10 @@ parameters are a RESULT of the module parameters. -->
   <endConnectionPoint>clock_reset</endConnectionPoint>
  </connection>
  <connection
-   name="clk_0.clk_reset/mm_clock_crossing_bridge_0.m0_reset"
+   name="clk_1.clk_reset/mm_clock_crossing_bridge_0.m0_reset"
    kind="reset"
    version="21.1"
-   start="clk_0.clk_reset"
+   start="clk_1.clk_reset"
    end="mm_clock_crossing_bridge_0.m0_reset">
   <parameter name="deviceFamily">
    <type>java.lang.String</type>
@@ -43455,10 +43283,388 @@ parameters are a RESULT of the module parameters. -->
    <visible>true</visible>
    <valid>true</valid>
   </parameter>
-  <startModule>clk_0</startModule>
+  <startModule>clk_1</startModule>
   <startConnectionPoint>clk_reset</startConnectionPoint>
   <endModule>mm_clock_crossing_bridge_0</endModule>
   <endConnectionPoint>m0_reset</endConnectionPoint>
+ </connection>
+ <connection
+   name="clk_1.clk_reset/alt_vip_cl_cvi_0.main_reset"
+   kind="reset"
+   version="21.1"
+   start="clk_1.clk_reset"
+   end="alt_vip_cl_cvi_0.main_reset">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>clk_1</startModule>
+  <startConnectionPoint>clk_reset</startConnectionPoint>
+  <endModule>alt_vip_cl_cvi_0</endModule>
+  <endConnectionPoint>main_reset</endConnectionPoint>
+ </connection>
+ <connection
+   name="clk_1.clk_reset/alt_vip_cl_vfb_0.main_reset"
+   kind="reset"
+   version="21.1"
+   start="clk_1.clk_reset"
+   end="alt_vip_cl_vfb_0.main_reset">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>clk_1</startModule>
+  <startConnectionPoint>clk_reset</startConnectionPoint>
+  <endModule>alt_vip_cl_vfb_0</endModule>
+  <endConnectionPoint>main_reset</endConnectionPoint>
+ </connection>
+ <connection
+   name="clk_1.clk_reset/alt_vip_cl_scl_0.main_reset"
+   kind="reset"
+   version="21.1"
+   start="clk_1.clk_reset"
+   end="alt_vip_cl_scl_0.main_reset">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>clk_1</startModule>
+  <startConnectionPoint>clk_reset</startConnectionPoint>
+  <endModule>alt_vip_cl_scl_0</endModule>
+  <endConnectionPoint>main_reset</endConnectionPoint>
+ </connection>
+ <connection
+   name="clk_1.clk_reset/alt_vip_cl_cvo_0.main_reset"
+   kind="reset"
+   version="21.1"
+   start="clk_1.clk_reset"
+   end="alt_vip_cl_cvo_0.main_reset">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>clk_1</startModule>
+  <startConnectionPoint>clk_reset</startConnectionPoint>
+  <endModule>alt_vip_cl_cvo_0</endModule>
+  <endConnectionPoint>main_reset</endConnectionPoint>
+ </connection>
+ <connection
+   name="clk_2.clk_reset/alt_vip_cl_vfb_0.mem_reset"
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="alt_vip_cl_vfb_0.mem_reset">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>clk_2</startModule>
+  <startConnectionPoint>clk_reset</startConnectionPoint>
+  <endModule>alt_vip_cl_vfb_0</endModule>
+  <endConnectionPoint>mem_reset</endConnectionPoint>
+ </connection>
+ <connection
+   name="clk_2.clk_reset/mem_if_lpddr2_emif_0.mp_cmd_reset_n_0"
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_cmd_reset_n_0">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>clk_2</startModule>
+  <startConnectionPoint>clk_reset</startConnectionPoint>
+  <endModule>mem_if_lpddr2_emif_0</endModule>
+  <endConnectionPoint>mp_cmd_reset_n_0</endConnectionPoint>
+ </connection>
+ <connection
+   name="clk_2.clk_reset/mem_if_lpddr2_emif_0.mp_rfifo_reset_n_0"
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_0">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>clk_2</startModule>
+  <startConnectionPoint>clk_reset</startConnectionPoint>
+  <endModule>mem_if_lpddr2_emif_0</endModule>
+  <endConnectionPoint>mp_rfifo_reset_n_0</endConnectionPoint>
+ </connection>
+ <connection
+   name="clk_2.clk_reset/mem_if_lpddr2_emif_0.mp_rfifo_reset_n_1"
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_1">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>clk_2</startModule>
+  <startConnectionPoint>clk_reset</startConnectionPoint>
+  <endModule>mem_if_lpddr2_emif_0</endModule>
+  <endConnectionPoint>mp_rfifo_reset_n_1</endConnectionPoint>
+ </connection>
+ <connection
+   name="clk_2.clk_reset/mem_if_lpddr2_emif_0.mp_rfifo_reset_n_2"
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_2">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>clk_2</startModule>
+  <startConnectionPoint>clk_reset</startConnectionPoint>
+  <endModule>mem_if_lpddr2_emif_0</endModule>
+  <endConnectionPoint>mp_rfifo_reset_n_2</endConnectionPoint>
+ </connection>
+ <connection
+   name="clk_2.clk_reset/mem_if_lpddr2_emif_0.mp_rfifo_reset_n_3"
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_3">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>clk_2</startModule>
+  <startConnectionPoint>clk_reset</startConnectionPoint>
+  <endModule>mem_if_lpddr2_emif_0</endModule>
+  <endConnectionPoint>mp_rfifo_reset_n_3</endConnectionPoint>
+ </connection>
+ <connection
+   name="clk_2.clk_reset/mem_if_lpddr2_emif_0.mp_wfifo_reset_n_0"
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_0">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>clk_2</startModule>
+  <startConnectionPoint>clk_reset</startConnectionPoint>
+  <endModule>mem_if_lpddr2_emif_0</endModule>
+  <endConnectionPoint>mp_wfifo_reset_n_0</endConnectionPoint>
+ </connection>
+ <connection
+   name="clk_2.clk_reset/mem_if_lpddr2_emif_0.mp_wfifo_reset_n_1"
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_1">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>clk_2</startModule>
+  <startConnectionPoint>clk_reset</startConnectionPoint>
+  <endModule>mem_if_lpddr2_emif_0</endModule>
+  <endConnectionPoint>mp_wfifo_reset_n_1</endConnectionPoint>
+ </connection>
+ <connection
+   name="clk_2.clk_reset/mem_if_lpddr2_emif_0.mp_wfifo_reset_n_2"
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_2">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>clk_2</startModule>
+  <startConnectionPoint>clk_reset</startConnectionPoint>
+  <endModule>mem_if_lpddr2_emif_0</endModule>
+  <endConnectionPoint>mp_wfifo_reset_n_2</endConnectionPoint>
+ </connection>
+ <connection
+   name="clk_2.clk_reset/mem_if_lpddr2_emif_0.mp_wfifo_reset_n_3"
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_3">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>clk_2</startModule>
+  <startConnectionPoint>clk_reset</startConnectionPoint>
+  <endModule>mem_if_lpddr2_emif_0</endModule>
+  <endConnectionPoint>mp_wfifo_reset_n_3</endConnectionPoint>
  </connection>
  <connection
    name="clk_0.clk_reset/nios2_gen2_0.reset"
@@ -43674,6 +43880,33 @@ parameters are a RESULT of the module parameters. -->
   <startModule>clk_0</startModule>
   <startConnectionPoint>clk_reset</startConnectionPoint>
   <endModule>pio_2</endModule>
+  <endConnectionPoint>reset</endConnectionPoint>
+ </connection>
+ <connection
+   name="clk_2.clk_reset/avalon_bridge_mod_0.reset"
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="avalon_bridge_mod_0.reset">
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>UNKNOWN</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <startModule>clk_2</startModule>
+  <startConnectionPoint>clk_reset</startConnectionPoint>
+  <endModule>avalon_bridge_mod_0</endModule>
   <endConnectionPoint>reset</endConnectionPoint>
  </connection>
  <connection
@@ -43946,465 +44179,6 @@ parameters are a RESULT of the module parameters. -->
   <endModule>sc_config_0</endModule>
   <endConnectionPoint>reset_sink</endConnectionPoint>
  </connection>
- <connection
-   name="reset_bridge_0.out_reset/alt_vip_cl_dil_0.av_mm_reset"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="alt_vip_cl_dil_0.av_mm_reset">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>alt_vip_cl_dil_0</endModule>
-  <endConnectionPoint>av_mm_reset</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/alt_vip_cl_dil_0.av_st_reset"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="alt_vip_cl_dil_0.av_st_reset">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>alt_vip_cl_dil_0</endModule>
-  <endConnectionPoint>av_st_reset</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/alt_vip_cl_cvi_0.main_reset"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="alt_vip_cl_cvi_0.main_reset">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>alt_vip_cl_cvi_0</endModule>
-  <endConnectionPoint>main_reset</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/alt_vip_cl_vfb_0.main_reset"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="alt_vip_cl_vfb_0.main_reset">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>alt_vip_cl_vfb_0</endModule>
-  <endConnectionPoint>main_reset</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/alt_vip_cl_scl_0.main_reset"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="alt_vip_cl_scl_0.main_reset">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>alt_vip_cl_scl_0</endModule>
-  <endConnectionPoint>main_reset</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/alt_vip_cl_cvo_0.main_reset"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="alt_vip_cl_cvo_0.main_reset">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>alt_vip_cl_cvo_0</endModule>
-  <endConnectionPoint>main_reset</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/alt_vip_cl_vfb_0.mem_reset"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="alt_vip_cl_vfb_0.mem_reset">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>alt_vip_cl_vfb_0</endModule>
-  <endConnectionPoint>mem_reset</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/mem_if_lpddr2_emif_0.mp_cmd_reset_n_0"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_cmd_reset_n_0">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>mem_if_lpddr2_emif_0</endModule>
-  <endConnectionPoint>mp_cmd_reset_n_0</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/mem_if_lpddr2_emif_0.mp_rfifo_reset_n_0"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_0">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>mem_if_lpddr2_emif_0</endModule>
-  <endConnectionPoint>mp_rfifo_reset_n_0</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/mem_if_lpddr2_emif_0.mp_rfifo_reset_n_1"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_1">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>mem_if_lpddr2_emif_0</endModule>
-  <endConnectionPoint>mp_rfifo_reset_n_1</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/mem_if_lpddr2_emif_0.mp_rfifo_reset_n_2"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_2">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>mem_if_lpddr2_emif_0</endModule>
-  <endConnectionPoint>mp_rfifo_reset_n_2</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/mem_if_lpddr2_emif_0.mp_rfifo_reset_n_3"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_3">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>mem_if_lpddr2_emif_0</endModule>
-  <endConnectionPoint>mp_rfifo_reset_n_3</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/mem_if_lpddr2_emif_0.mp_wfifo_reset_n_0"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_0">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>mem_if_lpddr2_emif_0</endModule>
-  <endConnectionPoint>mp_wfifo_reset_n_0</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/mem_if_lpddr2_emif_0.mp_wfifo_reset_n_1"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_1">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>mem_if_lpddr2_emif_0</endModule>
-  <endConnectionPoint>mp_wfifo_reset_n_1</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/mem_if_lpddr2_emif_0.mp_wfifo_reset_n_2"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_2">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>mem_if_lpddr2_emif_0</endModule>
-  <endConnectionPoint>mp_wfifo_reset_n_2</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/mem_if_lpddr2_emif_0.mp_wfifo_reset_n_3"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_3">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>mem_if_lpddr2_emif_0</endModule>
-  <endConnectionPoint>mp_wfifo_reset_n_3</endConnectionPoint>
- </connection>
- <connection
-   name="reset_bridge_0.out_reset/avalon_bridge_mod_0.reset"
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="avalon_bridge_mod_0.reset">
-  <parameter name="deviceFamily">
-   <type>java.lang.String</type>
-   <value>UNKNOWN</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <parameter name="generateLegacySim">
-   <type>boolean</type>
-   <value>false</value>
-   <derived>false</derived>
-   <enabled>true</enabled>
-   <visible>true</visible>
-   <valid>true</valid>
-  </parameter>
-  <startModule>reset_bridge_0</startModule>
-  <startConnectionPoint>out_reset</startConnectionPoint>
-  <endModule>avalon_bridge_mod_0</endModule>
-  <endConnectionPoint>reset</endConnectionPoint>
- </connection>
  <plugin>
   <instanceCount>1</instanceCount>
   <name>alt_vip_cl_cvi</name>
@@ -44422,7 +44196,7 @@ parameters are a RESULT of the module parameters. -->
   <version>21.1</version>
  </plugin>
  <plugin>
-  <instanceCount>37</instanceCount>
+  <instanceCount>36</instanceCount>
   <name>reset_sink</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
@@ -44598,7 +44372,7 @@ parameters are a RESULT of the module parameters. -->
   <version>21.1</version>
  </plugin>
  <plugin>
-  <instanceCount>4</instanceCount>
+  <instanceCount>3</instanceCount>
   <name>reset_source</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
@@ -44659,14 +44433,6 @@ parameters are a RESULT of the module parameters. -->
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IModule</subtype>
   <displayName>PIO (Parallel I/O) Intel FPGA IP</displayName>
-  <version>21.1</version>
- </plugin>
- <plugin>
-  <instanceCount>1</instanceCount>
-  <name>altera_reset_bridge</name>
-  <type>com.altera.entityinterfaces.IElementClass</type>
-  <subtype>com.altera.entityinterfaces.IModule</subtype>
-  <displayName>Reset Bridge</displayName>
   <version>21.1</version>
  </plugin>
  <plugin>
@@ -44734,7 +44500,7 @@ parameters are a RESULT of the module parameters. -->
   <version>21.1</version>
  </plugin>
  <plugin>
-  <instanceCount>41</instanceCount>
+  <instanceCount>39</instanceCount>
   <name>reset</name>
   <type>com.altera.entityinterfaces.IElementClass</type>
   <subtype>com.altera.entityinterfaces.IConnection</subtype>

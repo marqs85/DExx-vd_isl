@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Jul 25, 2022 12:56:11 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1658742971727</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Jul 29, 2022 9:59:21 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1659121161956</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/markus/Code/DExx-vd_isl/board/c5g/software/sys_controller_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../sys.sopcinfo</SopcDesignFile>

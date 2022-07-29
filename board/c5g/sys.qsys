@@ -13,7 +13,7 @@
    {
       datum _sortIndex
       {
-         value = "23";
+         value = "22";
          type = "int";
       }
    }
@@ -29,7 +29,7 @@
    {
       datum _sortIndex
       {
-         value = "27";
+         value = "26";
          type = "int";
       }
    }
@@ -45,7 +45,7 @@
    {
       datum _sortIndex
       {
-         value = "24";
+         value = "23";
          type = "int";
       }
    }
@@ -61,7 +61,7 @@
    {
       datum _sortIndex
       {
-         value = "26";
+         value = "25";
          type = "int";
       }
    }
@@ -77,7 +77,7 @@
    {
       datum _sortIndex
       {
-         value = "25";
+         value = "24";
          type = "int";
       }
    }
@@ -93,7 +93,7 @@
    {
       datum _sortIndex
       {
-         value = "21";
+         value = "20";
          type = "int";
       }
    }
@@ -229,7 +229,7 @@
    {
       datum _sortIndex
       {
-         value = "22";
+         value = "21";
          type = "int";
       }
    }
@@ -359,14 +359,6 @@
       {
          value = "50599648";
          type = "String";
-      }
-   }
-   element reset_bridge_0
-   {
-      datum _sortIndex
-      {
-         value = "20";
-         type = "int";
       }
    }
    element sc_config_0
@@ -504,11 +496,6 @@
    type="reset"
    dir="end" />
  <interface
-   name="mem_if_lpddr2_emif_0_mpfe_reset"
-   internal="reset_bridge_0.in_reset"
-   type="reset"
-   dir="end" />
- <interface
    name="mem_if_lpddr2_emif_0_pll_ref_clk"
    internal="mem_if_lpddr2_emif_0.pll_ref_clk"
    type="clock"
@@ -559,6 +546,8 @@
    type="conduit"
    dir="end" />
  <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
+ <interface name="reset_1" internal="clk_1.clk_in_reset" type="reset" dir="end" />
+ <interface name="reset_2" internal="clk_2.clk_in_reset" type="reset" dir="end" />
  <interface
    name="sc_config_0_sc_if"
    internal="sc_config_0.sc_if"
@@ -1489,17 +1478,6 @@
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="32" />
  </module>
- <module
-   name="reset_bridge_0"
-   kind="altera_reset_bridge"
-   version="21.1"
-   enabled="1">
-  <parameter name="ACTIVE_LOW_RESET" value="1" />
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="-1" />
-  <parameter name="NUM_RESET_OUTPUTS" value="1" />
-  <parameter name="SYNCHRONOUS_EDGES" value="none" />
-  <parameter name="USE_RESET_REQUEST" value="0" />
- </module>
  <module name="sc_config_0" kind="sc_config" version="1.0" enabled="1" />
  <module
    name="sdc_controller_0"
@@ -2074,13 +2052,13 @@
  <connection
    kind="reset"
    version="21.1"
-   start="clk_0.clk_reset"
-   end="clk_1.clk_in_reset" />
+   start="clk_2.clk_reset"
+   end="alt_vip_cl_dil_0.av_mm_reset" />
  <connection
    kind="reset"
    version="21.1"
-   start="clk_0.clk_reset"
-   end="clk_2.clk_in_reset" />
+   start="clk_1.clk_reset"
+   end="alt_vip_cl_dil_0.av_st_reset" />
  <connection
    kind="reset"
    version="21.1"
@@ -2099,8 +2077,78 @@
  <connection
    kind="reset"
    version="21.1"
-   start="clk_0.clk_reset"
+   start="clk_1.clk_reset"
    end="mm_clock_crossing_bridge_0.m0_reset" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_1.clk_reset"
+   end="alt_vip_cl_cvi_0.main_reset" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_1.clk_reset"
+   end="alt_vip_cl_vfb_0.main_reset" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_1.clk_reset"
+   end="alt_vip_cl_scl_0.main_reset" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_1.clk_reset"
+   end="alt_vip_cl_cvo_0.main_reset" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="alt_vip_cl_vfb_0.mem_reset" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_cmd_reset_n_0" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_0" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_1" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_2" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_3" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_0" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_1" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_2" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_3" />
  <connection
    kind="reset"
    version="21.1"
@@ -2129,6 +2177,11 @@
    start="clk_0.clk_reset"
    end="intel_generic_serial_flash_interface_top_0.reset" />
  <connection kind="reset" version="21.1" start="clk_0.clk_reset" end="pio_2.reset" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_2.clk_reset"
+   end="avalon_bridge_mod_0.reset" />
  <connection
    kind="reset"
    version="21.1"
@@ -2189,91 +2242,6 @@
    version="21.1"
    start="nios2_gen2_0.debug_reset_request"
    end="i2c_0.reset_sink" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="alt_vip_cl_dil_0.av_mm_reset" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="alt_vip_cl_dil_0.av_st_reset" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="alt_vip_cl_cvi_0.main_reset" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="alt_vip_cl_vfb_0.main_reset" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="alt_vip_cl_scl_0.main_reset" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="alt_vip_cl_cvo_0.main_reset" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="alt_vip_cl_vfb_0.mem_reset" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_cmd_reset_n_0" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_0" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_1" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_2" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_rfifo_reset_n_3" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_0" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_1" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_2" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="mem_if_lpddr2_emif_0.mp_wfifo_reset_n_3" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="reset_bridge_0.out_reset"
-   end="avalon_bridge_mod_0.reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />

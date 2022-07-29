@@ -550,9 +550,11 @@ pll pll_sys (
 
 sys sys_inst (
     .clk_clk                 (clk27),                 //              clk.clk
-    .reset_reset_n           (sys_reset_n),            //            reset.reset_n
     .clk_1_clk               (clk_vip),
     .clk_2_clk               (clk100),
+    .reset_reset_n           (sys_reset_n),
+    .reset_1_reset_n         (emif_mpfe_reset_n),
+    .reset_2_reset_n         (emif_mpfe_reset_n),
     /*.i2c_0_i2c_serial_sda_in (HDMI_I2C_SDA), // i2c_0_i2c_serial.sda_in
     .i2c_0_i2c_serial_scl_in (HDMI_I2C_SCL), //                 .scl_in
     .i2c_0_i2c_serial_sda_oe (sda_oe), //                 .sda_oe
@@ -618,7 +620,6 @@ sys sys_inst (
     .mem_if_lpddr2_emif_0_deep_powerdn_local_deep_powerdn_chip (1'b1),
     .mem_if_lpddr2_emif_0_deep_powerdn_local_deep_powerdn_ack  (emif_status_powerdn_ack),
     .mem_if_lpddr2_emif_0_pll_sharing_pll_locked               (emif_pll_locked),
-    .mem_if_lpddr2_emif_0_mpfe_reset_reset_n       (emif_mpfe_reset_n),
     .memory_mem_ca                                 (DDR2LP_CA),
     .memory_mem_ck                                 (DDR2LP_CK_p),
     .memory_mem_ck_n                               (DDR2LP_CK_n),

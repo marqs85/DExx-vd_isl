@@ -47,7 +47,7 @@
 #include "userdata.h"
 
 #define FW_VER_MAJOR 0
-#define FW_VER_MINOR 58
+#define FW_VER_MINOR 59
 
 //fix PD and cec
 #define ADV7513_MAIN_BASE 0x72
@@ -117,8 +117,8 @@ struct mmc * ocsdc_mmc_init(int base_addr, int clk_freq, unsigned int host_caps)
 
 #ifdef DE10N
 #define SDC_FREQ 50000000U
-// IO constraints do not cover high speed mode and 4-bit mode is not fully stable
-#define SDC_HOST_CAPS 0x00
+// IO constraints do not cover high speed mode
+#define SDC_HOST_CAPS (MMC_MODE_4BIT)
 #else
 #define SDC_FREQ 100000000U
 #define SDC_HOST_CAPS (MMC_MODE_HS|MMC_MODE_HS_52MHz|MMC_MODE_4BIT)

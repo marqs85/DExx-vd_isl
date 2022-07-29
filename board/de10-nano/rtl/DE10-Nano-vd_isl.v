@@ -104,7 +104,7 @@ module DE10_Nano_vd_isl (
 //  REG/WIRE declarations
 //=======================================================
 
-wire clk27, PCLK_sc, pclk_out;
+wire clk27, clk_vip, clk_100, PCLK_sc, pclk_out;
 wire SI_PCLK_i = GPIO_0[0];
 wire ISL_PCLK_i = GPIO_0[2];
 wire sys_reset_n = 1'b1;
@@ -166,7 +166,7 @@ wire [5:0] emif_rd_burstcount, emif_wr_burstcount;
 wire emif_rd_read, emif_rd_waitrequest, emif_rd_readdatavalid, emif_wr_write, emif_wr_waitrequest;
 
 wire scl_oe, sda_oe;
-wire pll_lock;
+wire pll_locked;
 wire nios_reset_req;
 
 wire cvi_overflow, cvo_underflow;
@@ -468,13 +468,19 @@ pll pll_sys (
     .refclk(FPGA_CLK1_50),
     .rst(1'b0),
     .outclk_0(clk27),
-    .locked(pll_lock)
+    .outclk_1(clk_vip),
+    .outclk_2(clk_100),
+    .locked(pll_locked)
 );
 
 sys sys_inst (
     .clk_clk                 (clk27),
     .clk_1_clk               (FPGA_CLK1_50),
+    .clk_2_clk               (clk_vip),
+    .clk_3_clk               (clk_100),
     .reset_reset_n           (sys_reset_n),
+    .reset_2_reset_n         (vip_reset_n),
+    .reset_3_reset_n         (vip_reset_n),
     /*.i2c_0_i2c_serial_sda_in (HDMI_I2C_SDA), // i2c_0_i2c_serial.sda_in
     .i2c_0_i2c_serial_scl_in (HDMI_I2C_SCL), //                 .scl_in
     .i2c_0_i2c_serial_sda_oe (sda_oe), //                 .sda_oe
@@ -597,8 +603,7 @@ sys sys_inst (
     .alt_vip_cl_cvo_0_clocked_video_vid_h                      (),
     .alt_vip_cl_cvo_0_clocked_video_vid_v                      (),
     .alt_vip_cl_cvo_0_genlock_sof_locked                       (1'b1),
-    .alt_vip_cl_cvo_0_genlock_sof                              (sof_scaler_capt),
-    .vip_reset_reset_n                                         (vip_reset_n)
+    .alt_vip_cl_cvo_0_genlock_sof                              (sof_scaler_capt)
 `endif
 );
 
