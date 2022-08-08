@@ -105,25 +105,25 @@ module DE10_Nano_vd_isl (
 //=======================================================
 
 wire clk27, clk_vip, clk_100, PCLK_sc, pclk_out;
-wire SI_PCLK_i = GPIO_0[0];
-wire ISL_PCLK_i = GPIO_0[2];
+wire SI_PCLK_i = GPIO_1[0];
+wire ISL_PCLK_i = GPIO_1[2];
 wire sys_reset_n = 1'b1;
-wire [7:0] ISL_R_i = {GPIO_0[22], GPIO_0[23], GPIO_0[24], GPIO_0[25], GPIO_0[26], GPIO_0[27], GPIO_0[28], GPIO_0[29]};
-wire [7:0] ISL_G_i = {GPIO_0[14], GPIO_0[15], GPIO_0[16], GPIO_0[17], GPIO_0[18], GPIO_0[19], GPIO_0[20], GPIO_0[21]};
-wire [7:0] ISL_B_i = {GPIO_0[6], GPIO_0[7], GPIO_0[8], GPIO_0[9], GPIO_0[10], GPIO_0[11], GPIO_0[12], GPIO_0[13]};
-wire ISL_HS_i = GPIO_0[30];
-wire ISL_HSYNC_i = GPIO_0[31];
-wire ISL_VSYNC_i = GPIO_0[32];
-wire ISL_FID_i = GPIO_0[35];
-wire ISL_INT_N_i = GPIO_0[33];
-wire IR_RX_i = GPIO_0[34];
+wire [7:0] ISL_R_i = {GPIO_1[22], GPIO_1[23], GPIO_1[24], GPIO_1[25], GPIO_1[26], GPIO_1[27], GPIO_1[28], GPIO_1[29]};
+wire [7:0] ISL_G_i = {GPIO_1[14], GPIO_1[15], GPIO_1[16], GPIO_1[17], GPIO_1[18], GPIO_1[19], GPIO_1[20], GPIO_1[21]};
+wire [7:0] ISL_B_i = {GPIO_1[6], GPIO_1[7], GPIO_1[8], GPIO_1[9], GPIO_1[10], GPIO_1[11], GPIO_1[12], GPIO_1[13]};
+wire ISL_HS_i = GPIO_1[30];
+wire ISL_HSYNC_i = GPIO_1[31];
+wire ISL_VSYNC_i = GPIO_1[32];
+wire ISL_FID_i = GPIO_1[35];
+wire ISL_INT_N_i = GPIO_1[33];
+wire IR_RX_i = GPIO_1[34];
 wire pclk_capture = ISL_PCLK_i;
 wire SPDIF_EXT_i = ARDUINO_IO[4];
 
 // Minimize impendance to GND on FPGA end
 // (may improve signal integrity with older revision boards but has opposite effect with v1.3->)
-//assign GPIO_0[1] = 1'b0;
-//assign GPIO_0[3] = 1'b0;
+//assign GPIO_1[1] = 1'b0;
+//assign GPIO_1[3] = 1'b0;
 
 wire [15:0] sys_ctrl;
 /*wire sys_poweron = sys_ctrl[0];
@@ -143,10 +143,10 @@ wire csc_enable = sys_ctrl[13];
 wire framelock = sys_ctrl[14];
 
 //reg [1:0] clk_osc_div = 2'h0;
-/*wire SCL = GPIO_0[5] & HDMI_I2C_SCL;
-wire SDA = GPIO_0[4] & HDMI_I2C_SDA;*/
-/*assign GPIO_0[5] = scl_oe ? 1'b0 : 1'bz;
-assign GPIO_0[4] = sda_oe ? 1'b0 : 1'bz;*/
+/*wire SCL = GPIO_1[5] & HDMI_I2C_SCL;
+wire SDA = GPIO_1[4] & HDMI_I2C_SDA;*/
+/*assign GPIO_1[5] = scl_oe ? 1'b0 : 1'bz;
+assign GPIO_1[4] = sda_oe ? 1'b0 : 1'bz;*/
 /*assign HDMI_I2C_SCL = scl_oe ? 1'b0 : 1'bz;
 assign HDMI_I2C_SDA = sda_oe ? 1'b0 : 1'bz;*/
 
@@ -502,8 +502,8 @@ sys sys_inst (
     .hps_io_hps_io_gpio_inst_LOANIO46       (HPS_SD_DATA[2]),
     .hps_io_hps_io_gpio_inst_LOANIO47       (HPS_SD_DATA[3]),
     .hps_io_hps_io_gpio_inst_LOANIO53       (HPS_LED),
-    .i2c_opencores_0_export_scl_pad_io      (GPIO_0[5]),
-    .i2c_opencores_0_export_sda_pad_io      (GPIO_0[4]),
+    .i2c_opencores_0_export_scl_pad_io      (GPIO_1[5]),
+    .i2c_opencores_0_export_sda_pad_io      (GPIO_1[4]),
     .i2c_opencores_0_export_spi_miso_pad_i  (1'b0),
     .i2c_opencores_1_export_scl_pad_io      (HDMI_I2C_SCL),
     .i2c_opencores_1_export_sda_pad_io      (HDMI_I2C_SDA),
