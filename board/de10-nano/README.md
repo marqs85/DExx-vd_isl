@@ -4,12 +4,13 @@ DExx-vd_isl on DE10-Nano
 Hardware notes
 -----------------
 * DE10-Nano has no series resistors between GPIO and FPGA (make sure JP1 is open)
-* Uses GPIO0 block and nearby Arduino header
-  * TODO: test feasibility of separate fw built to use GPIO1 (useful for people using a Mister RAM expansion on GPIO0)
+* Uses GPIO0 block by default and Arduino header (D[7:4]) closest to FPGA
+  * GPIO1 can be used with FW from de10n_gpio1 branch (useful for people using a Mister RAM expansion on GPIO0)
 * Uses Nios2 soft-CPU to be in line with other board adaptations
   * TODO: evaluate if hard ARM core could be utilized with minimal configuration/code changes
 * DE10-Nano user LEDs are too tightly packed and all same color so they are not much of use
 * SPDIF input of ADV7513 is not connected (board can be modified to support SPDIF, see below)
+* Due to booting from HPS, EPCQ flash is not accessible. Settings are stored on SD card
 
 
 SPDIF mod

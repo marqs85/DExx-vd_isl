@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ip>
+ <presets version="12.1">
+  <preset
+     name="Micron MT8LSDT1664HG module"
+     kind="altera_avalon_new_sdram_controller"
+     version="all"
+     description="Micron MT8LSDT1664HG module">
+   <parameter name="casLatency" value="2" />
+   <parameter name="columnWidth" value="9" />
+   <parameter name="dataWidth" value="64" />
+   <parameter name="initNOPDelay" value="0.0" />
+   <parameter name="initRefreshCommands" value="2" />
+   <parameter name="numberOfBanks" value="4" />
+   <parameter name="numberOfChipSelects" value="2" />
+   <parameter name="powerUpDelay" value="100.0" />
+   <parameter name="refreshPeriod" value="15.625" />
+   <parameter name="registerDataIn" value="true" />
+   <parameter name="rowWidth" value="12" />
+   <parameter name="TAC" value="5.4" />
+   <parameter name="TMRD" value="3" />
+   <parameter name="TRCD" value="15.0" />
+   <parameter name="TRFC" value="66.0" />
+   <parameter name="TRP" value="15.0" />
+   <parameter name="TWR" value="14.0" />
+  </preset>
+    <preset
+     name="Four SDR100 8MByte x16 chips"
+     kind="altera_avalon_new_sdram_controller"
+     version="all"
+     description="Four SDR100 8MByte x16 chips">
+   <parameter name="casLatency" value="2" />
+   <parameter name="columnWidth" value="8" />
+   <parameter name="dataWidth" value="64" />
+   <parameter name="initNOPDelay" value="0.0" />
+   <parameter name="initRefreshCommands" value="2" />
+   <parameter name="numberOfBanks" value="4" />
+   <parameter name="numberOfChipSelects" value="1" />
+   <parameter name="powerUpDelay" value="100.0" />
+   <parameter name="refreshPeriod" value="15.625" />
+   <parameter name="registerDataIn" value="true" />
+   <parameter name="rowWidth" value="12" />
+   <parameter name="TAC" value="5.4" />
+   <parameter name="TMRD" value="3" />
+   <parameter name="TRCD" value="20.0" />
+   <parameter name="TRFC" value="70.0" />
+   <parameter name="TRP" value="20.0" />
+   <parameter name="TWR" value="14.0" />
+  </preset>
+    <preset
+     name="single Micron MT48LC2M32B2 7 chip"
+     kind="altera_avalon_new_sdram_controller"
+     version="all"
+     description="single Micron MT48LC2M32B2 7 chip">
+   <parameter name="casLatency" value="3" />
+   <parameter name="columnWidth" value="8" />
+   <parameter name="dataWidth" value="32" />
+   <parameter name="initNOPDelay" value="0.0" />
+   <parameter name="initRefreshCommands" value="2" />
+   <parameter name="numberOfBanks" value="4" />
+   <parameter name="numberOfChipSelects" value="1" />
+   <parameter name="powerUpDelay" value="100.0" />
+   <parameter name="refreshPeriod" value="15.625" />
+   <parameter name="registerDataIn" value="true" />
+   <parameter name="rowWidth" value="11" />
+   <parameter name="TAC" value="5.5" />
+   <parameter name="TMRD" value="3" />
+   <parameter name="TRCD" value="20.0" />
+   <parameter name="TRFC" value="70.0" />
+   <parameter name="TRP" value="20.0" />
+   <parameter name="TWR" value="14.0" />
+  </preset>
+    <preset
+     name="single Micron MT48LC4M32B2 7 chip"
+     kind="altera_avalon_new_sdram_controller"
+     version="all"
+     description="single Micron MT48LC2M32B2 7 chip">
+   <parameter name="casLatency" value="3" />
+   <parameter name="columnWidth" value="8" />
+   <parameter name="dataWidth" value="32" />
+   <parameter name="initNOPDelay" value="0.0" />
+   <parameter name="initRefreshCommands" value="2" />
+   <parameter name="numberOfBanks" value="4" />
+   <parameter name="numberOfChipSelects" value="1" />
+   <parameter name="powerUpDelay" value="100.0" />
+   <parameter name="refreshPeriod" value="15.625" />
+   <parameter name="registerDataIn" value="true" />
+   <parameter name="rowWidth" value="12" />
+   <parameter name="TAC" value="5.5" />
+   <parameter name="TMRD" value="3" />
+   <parameter name="TRCD" value="20.0" />
+   <parameter name="TRFC" value="70.0" />
+   <parameter name="TRP" value="20.0" />
+   <parameter name="TWR" value="14.0" />
+  </preset>
+    <preset
+     name="single NEC D4564163 A80 chip 64Mb x 16"
+     kind="altera_avalon_new_sdram_controller"
+     version="all"
+     description="single NEC D4564163 A80 chip 64Mb x 16">
+   <parameter name="casLatency" value="2" />
+   <parameter name="columnWidth" value="8" />
+   <parameter name="dataWidth" value="16" />
+   <parameter name="initNOPDelay" value="0.0" />
+   <parameter name="initRefreshCommands" value="2" />
+   <parameter name="numberOfBanks" value="4" />
+   <parameter name="numberOfChipSelects" value="1" />
+   <parameter name="powerUpDelay" value="100.0" />
+   <parameter name="refreshPeriod" value="31.25" />
+   <parameter name="registerDataIn" value="true" />
+   <parameter name="rowWidth" value="12" />
+   <parameter name="TAC" value="5.4" />
+   <parameter name="TMRD" value="3" />
+   <parameter name="TRCD" value="20.0" />
+   <parameter name="TRFC" value="70.0" />
+   <parameter name="TRP" value="20.0" />
+   <parameter name="TWR" value="14.0" />
+  </preset>
+    <preset
+     name="single Alliance AS4LC1M16S1 10 chip"
+     kind="altera_avalon_new_sdram_controller"
+     version="all"
+     description="single Alliance AS4LC1M16S1 10 chip">
+   <parameter name="casLatency" value="3" />
+   <parameter name="columnWidth" value="8" />
+   <parameter name="dataWidth" value="16" />
+   <parameter name="initNOPDelay" value="0.0" />
+   <parameter name="initRefreshCommands" value="8" />
+   <parameter name="numberOfBanks" value="2" />
+   <parameter name="numberOfChipSelects" value="1" />
+   <parameter name="powerUpDelay" value="200.0" />
+   <parameter name="refreshPeriod" value="15.625" />
+   <parameter name="registerDataIn" value="true" />
+   <parameter name="rowWidth" value="11" />
+   <parameter name="TAC" value="6.0" />
+   <parameter name="TMRD" value="2" />
+   <parameter name="TRCD" value="30.0" />
+   <parameter name="TRFC" value="80.0" />
+   <parameter name="TRP" value="30.0" />
+   <parameter name="TWR" value="20.0" />
+  </preset>
+    <preset
+     name="single Alliance AS4LC2M8S0 10 chip"
+     kind="altera_avalon_new_sdram_controller"
+     version="all"
+     description="single Alliance AS4LC2M8S0 10 chip">
+   <parameter name="casLatency" value="3" />
+   <parameter name="columnWidth" value="9" />
+   <parameter name="dataWidth" value="8" />
+   <parameter name="initNOPDelay" value="0.0" />
+   <parameter name="initRefreshCommands" value="8" />
+   <parameter name="numberOfBanks" value="2" />
+   <parameter name="numberOfChipSelects" value="1" />
+   <parameter name="powerUpDelay" value="200.0" />
+   <parameter name="refreshPeriod" value="31.25" />
+   <parameter name="registerDataIn" value="true" />
+   <parameter name="rowWidth" value="11" />
+   <parameter name="TAC" value="6.0" />
+   <parameter name="TMRD" value="2" />
+   <parameter name="TRCD" value="30.0" />
+   <parameter name="TRFC" value="80.0" />
+   <parameter name="TRP" value="30.0" />
+   <parameter name="TWR" value="20.0" />
+  </preset>
+ </presets>
+</ip>
