@@ -47,7 +47,7 @@
 #include "userdata.h"
 
 #define FW_VER_MAJOR 0
-#define FW_VER_MINOR 60
+#define FW_VER_MINOR 61
 
 //fix PD and cec
 #define ADV7513_MAIN_BASE 0x72
@@ -249,7 +249,14 @@ typedef struct {
     uint32_t rsv2[2];
     uint32_t motion_scale;
 #endif
-} vip_dli_ii_regs;
+} vip_dil_ii_regs;
+
+typedef struct {
+    uint32_t ctrl;
+    uint32_t status;
+    uint32_t irq;
+    uint32_t config;
+} vip_il_ii_regs;
 
 typedef struct {
     uint32_t ctrl;
@@ -265,9 +272,10 @@ typedef struct {
 } vip_vfb_ii_regs;
 
 volatile vip_cvi_ii_regs *vip_cvi = (volatile vip_cvi_ii_regs*)ALT_VIP_CL_CVI_0_BASE;
-volatile vip_dli_ii_regs *vip_dli = (volatile vip_dli_ii_regs*)ALT_VIP_CL_DIL_0_BASE;
+volatile vip_dil_ii_regs *vip_dil = (volatile vip_dil_ii_regs*)ALT_VIP_CL_DIL_0_BASE;
 volatile vip_vfb_ii_regs *vip_fb = (volatile vip_vfb_ii_regs*)ALT_VIP_CL_VFB_0_BASE;
 volatile vip_scl_ii_regs *vip_scl_pp = (volatile vip_scl_ii_regs*)ALT_VIP_CL_SCL_0_BASE;
+volatile vip_il_ii_regs *vip_il = (volatile vip_il_ii_regs*)ALT_VIP_CL_INTERLACER_0_BASE;
 volatile vip_cvo_ii_regs *vip_cvo = (volatile vip_cvo_ii_regs*)ALT_VIP_CL_CVO_0_BASE;
 #endif
 
@@ -450,7 +458,8 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
 
 #ifdef VIP
     vip_cvi->ctrl = vip_enable;
-    vip_dli->ctrl = vip_enable;
+    vip_dil->ctrl = vip_enable;
+    vip_il->ctrl = vip_enable;
 
     if (avconfig->scl_alg == 0)
         scl_target_pp_coeff = ((vm_in->group >= GROUP_240P) && (vm_in->group <= GROUP_384P)) ? 0 : 2; // Nearest or Lanchos3_sharp
@@ -471,21 +480,23 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
 
 #ifndef VIP_DIL_B
     if (avconfig->scl_dil_alg == 0) {
-        vip_dli->mode = (1<<1);
+        vip_dil->mode = (1<<1);
     } else if (avconfig->scl_dil_alg == 1) {
-        vip_dli->mode = (1<<2);
+        vip_dil->mode = (1<<2);
     } else if (avconfig->scl_dil_alg == 3) {
-        vip_dli->mode = (1<<0);
+        vip_dil->mode = (1<<0);
     } else {
-        vip_dli->mode = 0;
+        vip_dil->mode = 0;
     }
 #else
-    vip_dli->motion_scale = avconfig->scl_dil_motion_scale;
-    vip_dli->cadence_detect_enable = avconfig->scl_dil_cadence_detect_enable;
-    vip_dli->visualize_motion = avconfig->scl_dil_visualize_motion;
+    vip_dil->motion_scale = avconfig->scl_dil_motion_scale;
+    vip_dil->cadence_detect_enable = avconfig->scl_dil_cadence_detect_enable;
+    vip_dil->visualize_motion = avconfig->scl_dil_visualize_motion;
 #endif
 
-    vip_dli->motion_shift = avconfig->scl_dil_motion_shift;
+    vip_dil->motion_shift = avconfig->scl_dil_motion_shift;
+
+    vip_il->config = !vm_out->timings.interlaced;
 
     if (scl_target_pp_coeff != scl_loaded_pp_coeff) {
         if (scl_target_pp_coeff >= PP_COEFF_SIZE) { // Custom
@@ -541,17 +552,15 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
     vip_scl_pp->edge_thold = avconfig->scl_edge_thold;
 
     vip_scl_pp->width = vm_conf->x_size;
-    vip_scl_pp->height = vm_conf->y_size;
+    vip_scl_pp->height = vm_conf->y_size<<vm_out->timings.interlaced;
 
     vip_fb->input_rate = vm_in->timings.v_hz_x100;
     vip_fb->output_rate = vm_out->timings.v_hz_x100;
     //vip_fb->locked = vm_conf->framelock;  // causes cvo fifo underflows
     vip_fb->locked = 0;
-    if (vm_conf->framelock)
-        vip_cvo->ctrl |= (1<<4);
 
     h_blank = vm_out->timings.h_total-vm_conf->x_size;
-    v_blank = vm_out->timings.v_total-vm_conf->y_size;
+    v_blank = (vm_out->timings.v_total>>vm_out->timings.interlaced)-vm_conf->y_size;
     h_frontporch = h_blank-vm_conf->x_offset-vm_out->timings.h_backporch-vm_out->timings.h_synclen;
     v_frontporch = v_blank-vm_conf->y_offset-vm_out->timings.v_backporch-vm_out->timings.v_synclen;
 
@@ -562,23 +571,35 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
         (vip_cvo->h_frontporch != h_frontporch) ||
         (vip_cvo->v_frontporch != v_frontporch) ||
         (vip_cvo->h_blank != h_blank) ||
-        (vip_cvo->v_blank != v_blank))
+        (vip_cvo->v_blank != v_blank) ||
+        (vip_cvo->mode_ctrl != vm_out->timings.interlaced))
     {
         vip_cvo->banksel = 0;
         vip_cvo->valid = 0;
-        vip_cvo->mode_ctrl = 0;
+        vip_cvo->mode_ctrl = vm_out->timings.interlaced;
         vip_cvo->h_active = vm_conf->x_size;
         vip_cvo->v_active = vm_conf->y_size;
+        vip_cvo->v_active_f1 = vm_conf->y_size;
         vip_cvo->h_synclen = vm_out->timings.h_synclen;
         vip_cvo->v_synclen = vm_out->timings.v_synclen;
+        vip_cvo->v_synclen_f0 = vm_out->timings.v_synclen;
         vip_cvo->h_frontporch = h_frontporch;
         vip_cvo->v_frontporch = v_frontporch;
+        vip_cvo->v_frontporch_f0 = v_frontporch+1;
         vip_cvo->h_blank = h_blank;
         vip_cvo->v_blank = v_blank;
+        vip_cvo->v_blank_f0 = v_blank+1;
+        vip_cvo->active_start = 0;
+        vip_cvo->v_blank_start = vm_conf->y_size;
+        vip_cvo->fid_r = vm_conf->y_size + v_frontporch;
+        vip_cvo->fid_f = 2*vm_conf->y_size + vip_cvo->v_blank_f0 + vip_cvo->v_frontporch_f0;
         vip_cvo->h_polarity = 0;
         vip_cvo->v_polarity = 0;
         vip_cvo->valid = 1;
     }
+
+    if (vm_conf->framelock)
+        vip_cvo->ctrl |= (1<<4);
 #endif
 }
 
