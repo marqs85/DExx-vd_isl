@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Sep 18, 2022 11:04:09 PM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1663531449411</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Sep 29, 2022 9:18:32 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1664475512255</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>/home/markus/Code/DExx-vd_isl/board/de10-nano/software/sys_controller_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../sys.sopcinfo</SopcDesignFile>
@@ -1012,6 +1012,12 @@
                 <addressSpan>64</addressSpan>
                 <attributes/>
         </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>alt_vip_cl_interlacer_0</slaveDescriptor>
+                <addressRange>0x01000740 - 0x0100074F</addressRange>
+                <addressSpan>16</addressSpan>
+                <attributes/>
+        </MemoryMap>
         <LinkerSection>
                 <sectionName>.text</sectionName>
                 <regionName>onchip_memory2_0</regionName>
@@ -1055,5 +1061,9 @@
         <DriverPackageInfo>
                 <name>none</name>
                 <moduleName>alt_vip_cl_cvi_0</moduleName>
+        </DriverPackageInfo>
+        <DriverPackageInfo>
+                <name>none</name>
+                <moduleName>alt_vip_cl_interlacer_0</moduleName>
         </DriverPackageInfo>
 </sch:Settings>

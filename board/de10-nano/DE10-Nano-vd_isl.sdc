@@ -7,7 +7,7 @@ create_clock -period 20 -name clk50_2 [get_ports FPGA_CLK2_50]
 create_clock -period 20 -name clk50_3 [get_ports FPGA_CLK3_50]
 
 create_clock -period 108MHz -name pclk_isl [get_ports GPIO_1[2]]
-create_clock -period 185MHz -name pclk_si [get_ports GPIO_1[0]]
+create_clock -period 200MHz -name pclk_si [get_ports GPIO_1[0]]
 
 #**************************************************************
 # Create Generated Clock
