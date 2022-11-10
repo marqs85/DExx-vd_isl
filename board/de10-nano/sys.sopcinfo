@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="sys" kind="sys" version="1.0" fabric="QSYS">
  <!-- Format version 21.1 842 (Future versions may contain additional information.) -->
- <!-- 2022.09.29.21:10:10 -->
+ <!-- 2022.11.12.05:06:11 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1664474999</value>
+  <value>1668222360</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -10346,6 +10346,12 @@ parameters are a RESULT of the module parameters. -->
     <role>clk_o</role>
    </port>
    <port>
+    <name>reset_o</name>
+    <direction>Output</direction>
+    <width>1</width>
+    <role>reset_o</role>
+   </port>
+   <port>
     <name>wr_address</name>
     <direction>Input</direction>
     <width>32</width>
@@ -11122,7 +11128,7 @@ parameters are a RESULT of the module parameters. -->
 the requested settings for a module instance. -->
   <parameter name="clockFrequency">
    <type>long</type>
-   <value>148500000</value>
+   <value>135000000</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -11220,7 +11226,7 @@ parameters are a RESULT of the module parameters. -->
    </parameter>
    <parameter name="clockRate">
     <type>java.lang.Long</type>
-    <value>148500000</value>
+    <value>135000000</value>
     <derived>true</derived>
     <enabled>true</enabled>
     <visible>false</visible>
@@ -11298,7 +11304,7 @@ parameters are a RESULT of the module parameters. -->
    </parameter>
    <parameter name="clockRate">
     <type>long</type>
-    <value>148500000</value>
+    <value>135000000</value>
     <derived>false</derived>
     <enabled>true</enabled>
     <visible>true</visible>
@@ -11796,7 +11802,7 @@ parameters are a RESULT of the module parameters. -->
 the requested settings for a module instance. -->
   <parameter name="AUTO_GENERATION_ID">
    <type>java.lang.Integer</type>
-   <value>1664474999</value>
+   <value>1668222360</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -99168,7 +99174,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.CMacro.TIMESTAMP</name>
-   <value>1664474999</value>
+   <value>1668222360</value>
   </assignment>
   <assignment>
    <name>embeddedsw.dts.compatible</name>
@@ -99188,7 +99194,7 @@ the requested settings for a module instance. -->
   </assignment>
   <assignment>
    <name>embeddedsw.dts.params.timestamp</name>
-   <value>1664474999</value>
+   <value>1668222360</value>
   </assignment>
   <assignment>
    <name>embeddedsw.dts.vendor</name>
@@ -99204,7 +99210,7 @@ the requested settings for a module instance. -->
   </parameter>
   <parameter name="timestamp">
    <type>int</type>
-   <value>1664474999</value>
+   <value>1668222360</value>
    <derived>true</derived>
    <enabled>false</enabled>
    <visible>false</visible>

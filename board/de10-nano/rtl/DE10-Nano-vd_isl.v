@@ -159,7 +159,7 @@ wire [7:0] ir_code_cnt;
 reg pclk_capture_div2, pclk_out_div2;
 
 /* EMIF IF for LM */
-wire emif_br_clk;
+wire emif_br_clk, emif_br_reset;
 wire [27:0] emif_rd_addr, emif_wr_addr;
 wire [255:0] emif_rd_rdata, emif_wr_wdata;
 wire [5:0] emif_rd_burstcount, emif_wr_burstcount;
@@ -295,8 +295,9 @@ assign pclk_out = PCLK_sc;
 assign HDMI_TX_CLK = pclk_out;
 
 
-// VIP
+// VIP / LB
 wire vip_select = misc_config[15];
+wire lb_enable = ~testpattern_enable & ~vip_select;
 
 always @(posedge pclk_capture) begin
     pclk_capture_div2 <= pclk_capture_div2 ^ 1'b1;
@@ -532,6 +533,7 @@ sys sys_inst (
     .osd_generator_0_osd_if_osd_enable      (osd_enable),
     .osd_generator_0_osd_if_osd_color       (osd_color),
     .emif_bridge_0_clk_o                    (emif_br_clk),
+    .emif_bridge_0_reset_o                  (emif_br_reset),
     .emif_bridge_0_wr_address               ({4'h0, emif_wr_addr}),
     .emif_bridge_0_wr_write                 (emif_wr_write),
     .emif_bridge_0_wr_write_data            (emif_wr_wdata),
@@ -637,6 +639,7 @@ scanconverter #(
     .sl_config2(sl_config2),
     .sl_config3(sl_config3),
     .testpattern_enable(testpattern_enable),
+    .lb_enable(lb_enable),
 `ifdef VIP
     .ext_sync_mode(vip_select),
     .ext_frame_change_i(vip_frame_start),
@@ -661,6 +664,7 @@ scanconverter #(
     .ypos_o(ypos_sc),
     .resync_strobe(resync_strobe_i),
     .emif_br_clk(emif_br_clk),
+    .emif_br_reset(emif_br_reset),
     .emif_rd_addr(emif_rd_addr),
     .emif_rd_read(emif_rd_read),
     .emif_rd_rdata(emif_rd_rdata),

@@ -809,7 +809,7 @@
   <parameter name="resetSynchronousEdges" value="NONE" />
  </module>
  <module name="clk_2" kind="clock_source" version="21.1" enabled="1">
-  <parameter name="clockFrequency" value="148500000" />
+  <parameter name="clockFrequency" value="135000000" />
   <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
   <parameter name="resetSynchronousEdges" value="NONE" />
