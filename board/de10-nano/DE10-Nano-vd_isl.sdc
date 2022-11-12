@@ -67,7 +67,7 @@ set hdmitx_data_outputs [get_ports {HDMI_TX_D* HDMI_TX_HS HDMI_TX_VS HDMI_TX_DE}
 set_output_delay -clock pclk_si_out -min $hdmitx_dmin $hdmitx_data_outputs -add_delay
 set_output_delay -clock pclk_si_out -max $hdmitx_dmax $hdmitx_data_outputs -add_delay
 
-set_false_path -from [get_ports {GPIO_1[34] KEY* ARDUINO_IO[7] ARDUINO_IO[6] ARDUINO_IO[5] ARDUINO_IO[4]}]
+set_false_path -from [get_ports {GPIO_1[32] GPIO_1[34] KEY* ARDUINO_IO[7] ARDUINO_IO[6] ARDUINO_IO[5] ARDUINO_IO[4]}]
 set_false_path -to [get_ports {LED* HPS_LED}]
 
 # TODO: set I2C constraints

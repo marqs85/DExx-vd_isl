@@ -25,3 +25,10 @@ mw 0xFFD08664 0 1
 
 # connect loanIO to USERLED pin
 mw 0xFFD086A8 0 1
+
+# enable clock gating on IRQ ctrl, L2 ctrl and SCU
+mw 0xFFFEC000 0x60 1
+mw 0xFFFEFF80 0x3 1
+
+# reduce ARM frequency to 100MHz
+mw 0xFFD040E0 0xf 1

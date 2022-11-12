@@ -47,7 +47,7 @@
 #include "userdata.h"
 
 #define FW_VER_MAJOR 0
-#define FW_VER_MINOR 61
+#define FW_VER_MINOR 62
 
 //fix PD and cec
 #define ADV7513_MAIN_BASE 0x72
@@ -76,6 +76,8 @@ isl51002_dev isl_dev = {.i2cm_base = I2C_OPENCORES_0_BASE,
 si5351_dev si_dev = {.i2cm_base = I2C_OPENCORES_0_BASE,
                      .i2c_addr = SI5351_BASE,
                      .xtal_freq = 27000000LU};
+
+#define SI_PCLK_PIN SI_CLK4
 
 #ifdef INC_ADV7513
 adv7513_dev advtx_dev = {.i2cm_base = I2C_OPENCORES_1_BASE,
@@ -1042,9 +1044,9 @@ void mainloop()
                 printf("PCLK_OUT: %luHz\n", pclk_o_hz);
 
                 if (vm_conf.si_pclk_mult == 0)
-                    si5351_set_frac_mult(&si_dev, SI_PLLA, SI_CLK4, SI_XTAL, 0, pclk_o_hz/1000, si_dev.xtal_freq/1000, NULL);
+                    si5351_set_frac_mult(&si_dev, SI_PLLA, SI_PCLK_PIN, SI_XTAL, 0, pclk_o_hz/1000, si_dev.xtal_freq/1000, NULL);
                 else
-                    si5351_set_integer_mult(&si_dev, SI_PLLA, SI_CLK4, SI_XTAL, 0, (vm_conf.si_pclk_mult > 0) ? vm_conf.si_pclk_mult : 1, (vm_conf.si_pclk_mult < 0) ? (-1)*vm_conf.si_pclk_mult : 0);
+                    si5351_set_integer_mult(&si_dev, SI_PLLA, SI_PCLK_PIN, SI_XTAL, 0, (vm_conf.si_pclk_mult > 0) ? vm_conf.si_pclk_mult : 1, (vm_conf.si_pclk_mult < 0) ? (-1)*vm_conf.si_pclk_mult : 0);
 
                 update_osd_size(&vmode_out);
                 update_sc_config(&vmode_in, &vmode_out, &vm_conf, cur_avconfig);
@@ -1149,14 +1151,14 @@ void mainloop()
                         if (vm_conf.si_pclk_mult == 0)
                             si5351_set_frac_mult(&si_dev,
                                                  SI_PLLA,
-                                                 SI_CLK4,
+                                                 SI_PCLK_PIN,
                                                  si_clk_src,
                                                  pclk_i_hz,
                                                  vm_conf.framelock ? vmode_out.timings.h_total*vmode_out.timings.v_total*(vmode_in.timings.interlaced+1)*vm_conf.framelock : pclk_o_hz/1000,
                                                  vm_conf.framelock ? pll_h_total*vmode_in.timings.v_total*(vmode_out.timings.interlaced+1) : si_dev.xtal_freq/1000,
                                                  NULL);
                         else
-                            si5351_set_integer_mult(&si_dev, SI_PLLA, SI_CLK4, si_clk_src, pclk_i_hz, (vm_conf.si_pclk_mult > 0) ? vm_conf.si_pclk_mult : 1, (vm_conf.si_pclk_mult < 0) ? (-1)*vm_conf.si_pclk_mult : 0);
+                            si5351_set_integer_mult(&si_dev, SI_PLLA, SI_PCLK_PIN, si_clk_src, pclk_i_hz, (vm_conf.si_pclk_mult > 0) ? vm_conf.si_pclk_mult : 1, (vm_conf.si_pclk_mult < 0) ? (-1)*vm_conf.si_pclk_mult : 0);
 
                         if (vm_conf.framelock)
                             sys_ctrl |= SCTRL_FRAMELOCK;
