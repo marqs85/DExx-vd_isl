@@ -13,7 +13,7 @@
    {
       datum _sortIndex
       {
-         value = "22";
+         value = "23";
          type = "int";
       }
    }
@@ -29,7 +29,7 @@
    {
       datum _sortIndex
       {
-         value = "27";
+         value = "28";
          type = "int";
       }
    }
@@ -45,7 +45,7 @@
    {
       datum _sortIndex
       {
-         value = "23";
+         value = "24";
          type = "int";
       }
    }
@@ -61,7 +61,7 @@
    {
       datum _sortIndex
       {
-         value = "26";
+         value = "27";
          type = "int";
       }
    }
@@ -77,7 +77,7 @@
    {
       datum _sortIndex
       {
-         value = "25";
+         value = "26";
          type = "int";
       }
    }
@@ -93,7 +93,7 @@
    {
       datum _sortIndex
       {
-         value = "24";
+         value = "25";
          type = "int";
       }
    }
@@ -374,6 +374,14 @@
          type = "String";
       }
    }
+   element reset_bridge_0
+   {
+      datum _sortIndex
+      {
+         value = "22";
+         type = "int";
+      }
+   }
    element sc_config_0
    {
       datum _sortIndex
@@ -542,6 +550,11 @@
  <interface
    name="sfi_0_atom_ports"
    internal="intel_generic_serial_flash_interface_top_0.atom_ports" />
+ <interface
+   name="vip_dil_reset"
+   internal="reset_bridge_0.in_reset"
+   type="reset"
+   dir="end" />
  <module
    name="alt_vip_cl_cvi_0"
    kind="alt_vip_cl_cvi"
@@ -650,7 +663,7 @@
   <parameter name="INCOMING_VIDEO_IS_YCBCR" value="0" />
   <parameter name="MAX_HEIGHT" value="1080" />
   <parameter name="MAX_SYMBOLS_PER_PACKET" value="10" />
-  <parameter name="MAX_WIDTH" value="1920" />
+  <parameter name="MAX_WIDTH" value="2048" />
   <parameter name="MA_READ_MASTER_BURST_TARGET" value="32" />
   <parameter name="MA_READ_MASTER_FIFO_DEPTH" value="64" />
   <parameter name="MEM_BASE_ADDR" value="134217728" />
@@ -722,8 +735,8 @@
   <parameter name="IS_422" value="0" />
   <parameter name="LIMITED_READBACK" value="1" />
   <parameter name="LOAD_AT_RUNTIME" value="1" />
-  <parameter name="MAX_IN_HEIGHT" value="1080" />
-  <parameter name="MAX_IN_WIDTH" value="1920" />
+  <parameter name="MAX_IN_HEIGHT" value="1440" />
+  <parameter name="MAX_IN_WIDTH" value="2048" />
   <parameter name="MAX_OUT_HEIGHT" value="1440" />
   <parameter name="MAX_OUT_WIDTH" value="2560" />
   <parameter name="NO_BLANKING" value="0" />
@@ -768,7 +781,7 @@
   <parameter name="LINE_BASED_BUFFERING" value="0" />
   <parameter name="MAX_HEIGHT" value="1440" />
   <parameter name="MAX_SYMBOLS_PER_PACKET" value="10" />
-  <parameter name="MAX_WIDTH" value="2560" />
+  <parameter name="MAX_WIDTH" value="2048" />
   <parameter name="MEM_BASE_ADDR" value="268435456" />
   <parameter name="MEM_BUFFER_OFFSET" value="134217728" />
   <parameter name="MEM_PORT_WIDTH" value="256" />
@@ -1146,7 +1159,7 @@
   <parameter name="resetValue" value="0" />
   <parameter name="simDoTestBenchWiring" value="false" />
   <parameter name="simDrivenValue" value="0" />
-  <parameter name="width" value="16" />
+  <parameter name="width" value="32" />
  </module>
  <module name="pio_1" kind="altera_avalon_pio" version="21.1" enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
@@ -1175,6 +1188,17 @@
   <parameter name="simDoTestBenchWiring" value="false" />
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="32" />
+ </module>
+ <module
+   name="reset_bridge_0"
+   kind="altera_reset_bridge"
+   version="21.1"
+   enabled="1">
+  <parameter name="ACTIVE_LOW_RESET" value="1" />
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="-1" />
+  <parameter name="NUM_RESET_OUTPUTS" value="1" />
+  <parameter name="SYNCHRONOUS_EDGES" value="none" />
+  <parameter name="USE_RESET_REQUEST" value="0" />
  </module>
  <module name="sc_config_0" kind="sc_config" version="1.0" enabled="1" />
  <module
@@ -1709,16 +1733,6 @@
  <connection
    kind="reset"
    version="21.1"
-   start="clk_3.clk_reset"
-   end="alt_vip_cl_dil_0.av_mm_reset" />
- <connection
-   kind="reset"
-   version="21.1"
-   start="clk_2.clk_reset"
-   end="alt_vip_cl_dil_0.av_st_reset" />
- <connection
-   kind="reset"
-   version="21.1"
    start="clk_0.clk_reset"
    end="i2c_opencores_0.clock_reset" />
  <connection
@@ -1864,6 +1878,16 @@
    version="21.1"
    start="ddr3_0.h2f_reset"
    end="clk_1.clk_in_reset" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="reset_bridge_0.out_reset"
+   end="alt_vip_cl_dil_0.av_mm_reset" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="reset_bridge_0.out_reset"
+   end="alt_vip_cl_dil_0.av_st_reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />

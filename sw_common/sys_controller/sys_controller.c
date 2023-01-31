@@ -47,7 +47,7 @@
 #include "userdata.h"
 
 #define FW_VER_MAJOR 0
-#define FW_VER_MINOR 62
+#define FW_VER_MINOR 64
 
 //fix PD and cec
 #define ADV7513_MAIN_BASE 0x72
@@ -126,7 +126,7 @@ struct mmc * ocsdc_mmc_init(int base_addr, int clk_freq, unsigned int host_caps)
 #define SDC_HOST_CAPS (MMC_MODE_HS|MMC_MODE_HS_52MHz|MMC_MODE_4BIT)
 #endif
 
-uint16_t sys_ctrl;
+uint32_t sys_ctrl;
 uint32_t sys_status;
 uint8_t sys_powered_on;
 
@@ -166,6 +166,8 @@ int scl_loaded_pp_coeff = -1;
 #define PP_TAPS 4
 #define PP_PHASES 64
 #define SCL_ALG_COEFF_START 3
+
+#define VIP_WDOG_VALUE 10
 
 typedef struct {
     uint32_t ctrl;
@@ -605,6 +607,44 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
 #endif
 }
 
+#ifdef VIP
+void vip_dil_hard_reset() {
+    // Hard-reset VIP DIL which occasionally gets stuck
+    sys_ctrl &= ~SCTRL_VIP_DIL_RESET_N;
+    IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);
+    usleep(10);
+
+    sys_ctrl |= SCTRL_VIP_DIL_RESET_N;
+    IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);
+}
+
+int vip_wdog_update() {
+    static uint8_t vip_wdog_ctr = 0;
+    static uint32_t vip_frame_cnt_prev = 0;
+
+    // CVI producing data, input stable and valid resolution
+    const uint32_t cvi_status_mask = (1<<0)|(1<<8)|(1<<10);
+
+    uint32_t vip_frame_cnt = vip_fb->frame_cnt;
+
+    // Increase WDOG counter if frame count is not increased
+    if (((vip_cvi->status & cvi_status_mask) == cvi_status_mask) && (vip_frame_cnt == vip_frame_cnt_prev))
+        vip_wdog_ctr++;
+    else
+        vip_wdog_ctr = 0;
+
+    vip_frame_cnt_prev = vip_frame_cnt;
+
+    if (vip_wdog_ctr >= VIP_WDOG_VALUE) {
+        vip_dil_hard_reset();
+        vip_wdog_ctr = 0;
+        return 1;
+    }
+
+    return 0;
+}
+#endif
+
 int init_emif()
 {
     alt_timestamp_type start_ts;
@@ -699,7 +739,7 @@ int init_hw() {
     sys_ctrl = 0x00;
     IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);
     usleep(400000);
-    sys_ctrl |= SCTRL_EMIF_MPFE_RESET_N;
+    sys_ctrl |= SCTRL_EMIF_MPFE_RESET_N|SCTRL_VIP_DIL_RESET_N;
     IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);
 
     I2C_init(I2C_OPENCORES_0_BASE,ALT_CPU_FREQ,400000);
@@ -1215,6 +1255,11 @@ void mainloop()
             read_controls();
             setup_rc_flag = 0;
         }
+
+#ifdef VIP
+        if (vip_wdog_update())
+            update_sc_config(&vmode_in, &vmode_out, &vm_conf, cur_avconfig);
+#endif
 
         while (alt_timestamp() < start_ts + MAINLOOP_INTERVAL_US*(TIMER_0_FREQ/1000000)) {}
     }

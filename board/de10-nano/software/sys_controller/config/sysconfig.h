@@ -7,6 +7,7 @@
 #define DE10N
 #define INC_ADV7513
 #define VIP
+#define LM_EMIF_EXTRA_DELAY
 
 #if ALT_VIP_CL_DIL_0_SPAN == 256
 #define VIP_DIL_B
