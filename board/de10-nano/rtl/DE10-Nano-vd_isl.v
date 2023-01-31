@@ -125,14 +125,14 @@ wire SPDIF_EXT_i = ARDUINO_IO[4];
 //assign GPIO_1[1] = 1'b0;
 //assign GPIO_1[3] = 1'b0;
 
-wire [15:0] sys_ctrl;
+wire [31:0] sys_ctrl;
 /*wire sys_poweron = sys_ctrl[0];
 wire isl_reset_n = sys_ctrl[1];
 wire hdmirx_reset_n = sys_ctrl[2];
 wire emif_hwreset_n = sys_ctrl[3];
 wire emif_swreset_n = sys_ctrl[4];
 wire emif_powerdn_req = sys_ctrl[5];*/
-wire vip_reset_n = sys_ctrl[6];
+wire emif_mpfe_reset_n = sys_ctrl[6];
 //wire capture_sel = sys_ctrl[7];
 wire isl_hsync_pol = sys_ctrl[8];
 wire isl_vsync_pol = sys_ctrl[9];
@@ -141,6 +141,7 @@ wire isl_vsync_type = sys_ctrl[10];
 wire testpattern_enable = sys_ctrl[12];
 wire csc_enable = sys_ctrl[13];
 wire framelock = sys_ctrl[14];
+wire vip_dil_reset_n = sys_ctrl[25];
 
 //reg [1:0] clk_osc_div = 2'h0;
 /*wire SCL = GPIO_1[5] & HDMI_I2C_SCL;
@@ -480,8 +481,8 @@ sys sys_inst (
     .clk_2_clk               (clk_vip),
     .clk_3_clk               (clk_100),
     .reset_reset_n           (sys_reset_n),
-    .reset_2_reset_n         (vip_reset_n),
-    .reset_3_reset_n         (vip_reset_n),
+    .reset_2_reset_n         (emif_mpfe_reset_n),
+    .reset_3_reset_n         (emif_mpfe_reset_n),
     /*.i2c_0_i2c_serial_sda_in (HDMI_I2C_SDA), // i2c_0_i2c_serial.sda_in
     .i2c_0_i2c_serial_scl_in (HDMI_I2C_SCL), //                 .scl_in
     .i2c_0_i2c_serial_sda_oe (sda_oe), //                 .sda_oe
@@ -569,6 +570,7 @@ sys sys_inst (
     pclk_capture
 `endif
     ),
+    .vip_dil_reset_reset_n                                     (vip_dil_reset_n),
     .alt_vip_cl_cvi_0_clocked_video_vid_data                   (VIP_DATA_i),
     .alt_vip_cl_cvi_0_clocked_video_vid_de                     (VIP_DE_i),
     .alt_vip_cl_cvi_0_clocked_video_vid_datavalid              (!dc_fifo_in_rdempty_prev),
@@ -610,8 +612,8 @@ sys sys_inst (
 );
 
 scanconverter #(
-    .EMIF_ENABLE(0),
-    .NUM_LINE_BUFFERS(40)
+    .EMIF_ENABLE(1),
+    .NUM_LINE_BUFFERS(2048)
   ) scanconverter_inst (
     .PCLK_CAP_i(pclk_capture),
     .PCLK_OUT_i(SI_PCLK_i),
