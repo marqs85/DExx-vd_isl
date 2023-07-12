@@ -47,7 +47,7 @@
 #include "userdata.h"
 
 #define FW_VER_MAJOR 0
-#define FW_VER_MINOR 64
+#define FW_VER_MINOR 66
 
 //fix PD and cec
 #define ADV7513_MAIN_BASE 0x72
@@ -339,6 +339,7 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
     int vip_enable, scl_target_pp_coeff, scl_ea, i, p, t, n;
     int v0,v1,v2,v3;
     char coeff_filename[16];
+    uint32_t h_blank, v_blank, h_frontporch, v_frontporch;
 
     hv_config_reg hv_in_config = {.data=0x00000000};
     hv_config2_reg hv_in_config2 = {.data=0x00000000};
@@ -353,8 +354,11 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
     sl_config2_reg sl_config2 = {.data=0x00000000};
     sl_config3_reg sl_config3 = {.data=0x00000000};
 
+#ifdef VIP
     vip_enable = !enable_tp && (avconfig->oper_mode == 1);
-    uint32_t h_blank, v_blank, h_frontporch, v_frontporch;
+#else
+    vip_enable = 0;
+#endif
 
     // Set input params
     hv_in_config.h_total = vm_in->timings.h_total;
@@ -466,7 +470,7 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
     vip_il->ctrl = vip_enable;
 
     if (avconfig->scl_alg == 0)
-        scl_target_pp_coeff = ((vm_in->group >= GROUP_240P) && (vm_in->group <= GROUP_384P)) ? 0 : 2; // Nearest or Lanchos3_sharp
+        scl_target_pp_coeff = ((vm_in->group >= GROUP_240P) && (vm_in->group <= GROUP_288P)) ? 0 : 2; // Nearest or Lanchos3_sharp
     else if (avconfig->scl_alg < SCL_ALG_COEFF_START)
         scl_target_pp_coeff = 0; // Nearest for integer scale
     else
@@ -1149,15 +1153,19 @@ void mainloop()
                     else if (oper_mode == OPERMODE_SCALER)
                         sniprintf(op_status, 4, "SCL");
 
-                    if (oper_mode != OPERMODE_INVALID) {
+                    sniprintf(row2, US2066_ROW_LEN+1, "%lu.%.2lukHz %u.%.2uHz %c%c", (h_hz+5)/1000, ((h_hz+5)%1000)/10,
+                                                                                        (vmode_in.timings.v_hz_x100/100),
+                                                                                        (vmode_in.timings.v_hz_x100%100),
+                                                                                        isl_dev.ss.h_polarity ? '-' : '+',
+                                                                                        (target_isl_sync == SYNC_HV) ? (isl_dev.ss.v_polarity ? '-' : '+') : (isl_dev.ss.sog_trilevel ? '3' : ' '));
+
+                    if (oper_mode == OPERMODE_INVALID) {
+                        sniprintf(row1, US2066_ROW_LEN+1, "%-9s Out of rng", avinput_str[avinput]);
+                        ui_disp_status(1);
+                    } else {
                         printf("\nInput: %s -> Output: %s (opermode %d)\n", vmode_in.name, vmode_out.name, oper_mode);
 
                         sniprintf(row1, US2066_ROW_LEN+1, "%s %4u-%c %s", avinput_str[avinput], isl_dev.ss.v_total, isl_dev.ss.interlace_flag ? 'i' : 'p', op_status);
-                        sniprintf(row2, US2066_ROW_LEN+1, "%lu.%.2lukHz %u.%.2uHz %c%c", (h_hz+5)/1000, ((h_hz+5)%1000)/10,
-                                                                                            (vmode_in.timings.v_hz_x100/100),
-                                                                                            (vmode_in.timings.v_hz_x100%100),
-                                                                                            isl_dev.ss.h_polarity ? '-' : '+',
-                                                                                            (target_isl_sync == SYNC_HV) ? (isl_dev.ss.v_polarity ? '-' : '+') : (isl_dev.ss.sog_trilevel ? '3' : ' '));
                         ui_disp_status(1);
 
                         pll_h_total = (vm_conf.h_skip+1) * vmode_in.timings.h_total + (((vm_conf.h_skip+1) * vmode_in.timings.h_total_adj * 5 + 50) / 100);
