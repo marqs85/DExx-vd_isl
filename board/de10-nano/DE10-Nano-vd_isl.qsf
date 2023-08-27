@@ -743,6 +743,8 @@ set_global_assignment -name QIP_FILE ../../rtl_common/char_rom.qip
 set_global_assignment -name QIP_FILE ../../rtl_common/dc_fifo_out.qip
 set_global_assignment -name QIP_FILE ../../rtl_common/dc_fifo_in.qip
 set_global_assignment -name QIP_FILE ../../rtl_common/dc_fifo_emif_wr.qip
+set_global_assignment -name QIP_FILE ../../rtl_common/lpm_mult_hybr_ref_pre.qip
+set_global_assignment -name QIP_FILE ../../rtl_common/lpm_mult_hybr_ref.qip
 set_global_assignment -name QIP_FILE ../../rtl_common/lpm_mult_sl.qip
 set_global_assignment -name QIP_FILE ../../rtl_common/linebuf_double.qip
 set_global_assignment -name QIP_FILE software/sys_controller/mem_init/meminit.qip
@@ -757,4 +759,5 @@ set_global_assignment -name SDC_FILE "DE10-Nano-vd_isl.sdc"
 set_global_assignment -name CDF_FILE "DE10-Nano-vd_isl.cdf"
 set_global_assignment -name SIGNALTAP_FILE output_files/stp1.stp
 set_global_assignment -name SEED 3
+
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
