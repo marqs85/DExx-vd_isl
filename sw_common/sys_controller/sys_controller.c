@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2019-2022  Markus Hiienkari <mhiienka@niksula.hut.fi>
+// Copyright (C) 2019-2024  Markus Hiienkari <mhiienka@niksula.hut.fi>
 //
 // This file is part of Open Source Scan Converter project.
 //
@@ -47,7 +47,7 @@
 #include "userdata.h"
 
 #define FW_VER_MAJOR 0
-#define FW_VER_MINOR 67
+#define FW_VER_MINOR 73
 
 //fix PD and cec
 #define ADV7513_MAIN_BASE 0x72
@@ -149,18 +149,26 @@ extern char menu_row1[US2066_ROW_LEN+1], menu_row2[US2066_ROW_LEN+1];
 
 extern const char *avinput_str[];
 
-#ifdef VIP
-#include "src/scl_pp_coeffs.c"
-
 FIL file;
 char char_buff[256];
+
+#include "src/shmask_arrays.c"
+
+const shmask_data_arr* shmask_data_arr_list[] = {NULL, &shmask_agrille, &shmask_tv, &shmask_pvm, &shmask_pvm_2530, &shmask_xc_3315c, &shmask_c_1084, &shmask_jvc, &shmask_vga};
+shmask_data_arr shmask_data_arr_custom;
+shmask_data_arr *shmask_data_arr_ptr = &shmask_data_arr_custom;
+int shmask_loaded_array = 0;
+#define SHMASKS_SIZE  (sizeof(shmask_data_arr_list) / sizeof((shmask_data_arr_list)[0]))
+
+#ifdef VIP
+#include "src/scl_pp_coeffs.c"
 
 const pp_coeff* scl_pp_coeff_list[][2][2] = {{{&pp_coeff_nearest, NULL}, {&pp_coeff_nearest, NULL}},
                                             {{&pp_coeff_lanczos3, NULL}, {&pp_coeff_lanczos3, NULL}},
                                             {{&pp_coeff_lanczos3_13, NULL}, {&pp_coeff_lanczos3_13, NULL}},
                                             {{&pp_coeff_lanczos3, &pp_coeff_lanczos3_13}, {&pp_coeff_lanczos3, &pp_coeff_lanczos3_13}},
                                             {{&pp_coeff_lanczos4, NULL}, {&pp_coeff_lanczos4, NULL}},
-                                            {{&pp_coeff_nearest, NULL}, {&pp_coeff_sl_sharp, NULL}}};
+                                            {{&pp_coeff_gs_sharp, NULL}, {&pp_coeff_gs_sharp, NULL}}};
 int scl_loaded_pp_coeff = -1;
 #define PP_COEFF_SIZE  (sizeof(scl_pp_coeff_list) / sizeof((scl_pp_coeff_list)[0]))
 #define PP_TAPS 4
@@ -338,7 +346,7 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
 {
     int vip_enable, scl_target_pp_coeff, scl_ea, i, p, t, n;
     int v0,v1,v2,v3;
-    char coeff_filename[16];
+    char target_filename[16];
     uint32_t h_blank, v_blank, h_frontporch, v_frontporch;
 
     hv_config_reg hv_in_config = {.data=0x00000000};
@@ -349,6 +357,7 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
     hv_config3_reg hv_out_config3 = {.data=0x00000000};
     xy_config_reg xy_out_config = {.data=0x00000000};
     xy_config2_reg xy_out_config2 = {.data=0x00000000};
+    xy_config3_reg xy_out_config3 = {.data=0x00000000};
     misc_config_reg misc_config = {.data=0x00000000};
     sl_config_reg sl_config = {.data=0x00000000};
     sl_config2_reg sl_config2 = {.data=0x00000000};
@@ -360,18 +369,66 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
     vip_enable = 0;
 #endif
 
+    if (avconfig->shmask_mode && (avconfig->shmask_mode != shmask_loaded_array)) {
+        if (avconfig->shmask_mode >= SHMASKS_SIZE) { // Custom
+            sniprintf(target_filename, sizeof(target_filename), "shmask%d.txt", (avconfig->shmask_mode + 1 - SHMASKS_SIZE) );
+            if (!file_open(&file, target_filename)) {
+                i = 0;
+                while (file_get_string(&file, char_buff, sizeof(char_buff))) {
+                    if (char_buff[0] == '#')
+                        continue;
+                    if (!i && (bscanf(char_buff, "%d,%d", &v0, &v1) == 2)) {
+                        shmask_data_arr_custom.iv_x = v0-1;
+                        shmask_data_arr_custom.iv_y = v1-1;
+                        i = 1;
+                    } else if (i && (v1 > 0)) {
+                        p = shmask_data_arr_custom.iv_y+1-v1;
+                        if (bscanf(char_buff, "%hx,%hx,%hx,%hx,%hx,%hx,%hx,%hx,%hx,%hx,%hx,%hx,%hx,%hx,%hx,%hx", &shmask_data_arr_custom.v[p][0],
+                                                                                                                 &shmask_data_arr_custom.v[p][1],
+                                                                                                                 &shmask_data_arr_custom.v[p][2],
+                                                                                                                 &shmask_data_arr_custom.v[p][3],
+                                                                                                                 &shmask_data_arr_custom.v[p][4],
+                                                                                                                 &shmask_data_arr_custom.v[p][5],
+                                                                                                                 &shmask_data_arr_custom.v[p][6],
+                                                                                                                 &shmask_data_arr_custom.v[p][7],
+                                                                                                                 &shmask_data_arr_custom.v[p][8],
+                                                                                                                 &shmask_data_arr_custom.v[p][9],
+                                                                                                                 &shmask_data_arr_custom.v[p][10],
+                                                                                                                 &shmask_data_arr_custom.v[p][11],
+                                                                                                                 &shmask_data_arr_custom.v[p][12],
+                                                                                                                 &shmask_data_arr_custom.v[p][13],
+                                                                                                                 &shmask_data_arr_custom.v[p][14],
+                                                                                                                 &shmask_data_arr_custom.v[p][15]) == v0)
+                            v1--;
+                    }
+                }
+                file_close(&file);
+            }
+
+            shmask_data_arr_ptr = &shmask_data_arr_custom;
+        } else {
+            shmask_data_arr_ptr = (shmask_data_arr*)shmask_data_arr_list[avconfig->shmask_mode];
+        }
+
+        for (p=0; p<=shmask_data_arr_ptr->iv_y; p++) {
+            for (t=0; t<=shmask_data_arr_ptr->iv_x; t++)
+                sc->shmask_data_array.data[p][t] = shmask_data_arr_ptr->v[p][t];
+        }
+
+        shmask_loaded_array = avconfig->shmask_mode;
+    }
+
     // Set input params
     hv_in_config.h_total = vm_in->timings.h_total;
     hv_in_config.h_active = vm_in->timings.h_active;
     hv_in_config.h_synclen = vm_in->timings.h_synclen;
     hv_in_config2.h_backporch = vm_in->timings.h_backporch;
-    hv_in_config2.v_active = vm_in->timings.v_active;
+    hv_in_config3.v_active = vm_in->timings.v_active;
     hv_in_config3.v_synclen = vm_in->timings.v_synclen;
-    hv_in_config3.v_backporch = vm_in->timings.v_backporch;
+    hv_in_config2.v_backporch = vm_in->timings.v_backporch;
     hv_in_config2.interlaced = vm_in->timings.interlaced;
-    hv_in_config3.v_startline = vm_in->timings.v_synclen+vm_in->timings.v_backporch+12;
-    hv_in_config3.h_skip = vm_conf->h_skip;
-    hv_in_config3.h_sample_sel = vm_conf->h_sample_sel;
+    hv_in_config2.h_skip = vm_conf->h_skip;
+    hv_in_config2.h_sample_sel = vm_conf->h_sample_sel;
 
     // Set output params
     hv_out_config.h_total = vm_out->timings.h_total;
@@ -379,20 +436,20 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
     hv_out_config.h_synclen = vm_out->timings.h_synclen;
     hv_out_config2.h_backporch = vm_out->timings.h_backporch;
     hv_out_config2.v_total = vm_out->timings.v_total;
-    hv_out_config2.v_active = vm_out->timings.v_active;
+    hv_out_config3.v_active = vm_out->timings.v_active;
     hv_out_config3.v_synclen = vm_out->timings.v_synclen;
-    hv_out_config3.v_backporch = vm_out->timings.v_backporch;
+    hv_out_config2.v_backporch = vm_out->timings.v_backporch;
     hv_out_config2.interlaced = vm_out->timings.interlaced;
     hv_out_config3.v_startline = vm_conf->framesync_line;
 
     xy_out_config.x_size = vm_conf->x_size;
     xy_out_config.y_size = vm_conf->y_size;
-    xy_out_config.y_offset = vm_conf->y_offset;
+    xy_out_config2.y_offset = vm_conf->y_offset;
     xy_out_config2.x_offset = vm_conf->x_offset;
-    xy_out_config2.x_start_lb = vm_conf->x_start_lb;
-    xy_out_config2.y_start_lb = vm_conf->y_start_lb;
-    xy_out_config2.x_rpt = vm_conf->x_rpt;
-    xy_out_config2.y_rpt = vm_conf->y_rpt;
+    xy_out_config3.x_start_lb = vm_conf->x_start_lb;
+    xy_out_config3.y_start_lb = vm_conf->y_start_lb;
+    xy_out_config.x_rpt = vm_conf->x_rpt;
+    xy_out_config.y_rpt = vm_conf->y_rpt;
 
     misc_config.mask_br = avconfig->mask_br;
     misc_config.mask_color = avconfig->mask_color;
@@ -403,6 +460,9 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
     misc_config.vip_enable = vip_enable;
     misc_config.bfi_enable = avconfig->bfi_enable & ((uint32_t)vm_out->timings.v_hz_x100*5 >= (uint32_t)vm_in->timings.v_hz_x100*9);
     misc_config.bfi_str = avconfig->bfi_str;
+    misc_config.shmask_enable = (avconfig->shmask_mode != 0);
+    misc_config.shmask_iv_x = shmask_data_arr_ptr->iv_x;
+    misc_config.shmask_iv_y = shmask_data_arr_ptr->iv_y;
 
     // set default/custom scanline interval
     sl_def_iv_y = (vm_conf->y_rpt > 0) ? vm_conf->y_rpt : 1;
@@ -452,6 +512,15 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
         sl_config3.sl_c_overlay = 0;
     }
 
+    h_blank = vm_out->timings.h_total-vm_conf->x_size;
+    v_blank = (vm_out->timings.v_total>>vm_out->timings.interlaced)-vm_conf->y_size;
+    h_frontporch = h_blank-vm_conf->x_offset-vm_out->timings.h_backporch-vm_out->timings.h_synclen;
+    v_frontporch = v_blank-vm_conf->y_offset-vm_out->timings.v_backporch-vm_out->timings.v_synclen;
+
+    // VIP frame reader swaps buffers at the end of read frame while writer apparently does it just before frame to be written (?)
+    // SOF needs to be offset accordingly to minimize FB latency
+    hv_in_config3.v_startline = vm_in->timings.v_synclen+vm_in->timings.v_backporch+20+((v_frontporch*100*vm_in->timings.v_total)/(100*vm_out->timings.v_total));
+
     sc->hv_in_config = hv_in_config;
     sc->hv_in_config2 = hv_in_config2;
     sc->hv_in_config3 = hv_in_config3;
@@ -460,6 +529,7 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
     sc->hv_out_config3 = hv_out_config3;
     sc->xy_out_config = xy_out_config;
     sc->xy_out_config2 = xy_out_config2;
+    sc->xy_out_config3 = xy_out_config3;
     sc->misc_config = misc_config;
     sc->sl_config = sl_config;
     sc->sl_config2 = sl_config2;
@@ -509,8 +579,8 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
 
     if (scl_target_pp_coeff != scl_loaded_pp_coeff) {
         if (scl_target_pp_coeff >= PP_COEFF_SIZE) { // Custom
-            snprintf(coeff_filename, sizeof(coeff_filename), "scaler%d.txt", (scl_target_pp_coeff + 1 - PP_COEFF_SIZE) );
-            if (!file_open(&file, coeff_filename)) {
+            snprintf(target_filename, sizeof(target_filename), "scaler%d.txt", (scl_target_pp_coeff + 1 - PP_COEFF_SIZE) );
+            if (!file_open(&file, target_filename)) {
                 p = 0;
                 while (file_get_string(&file, char_buff, sizeof(char_buff))) {
                     n = bscanf(char_buff, "%d,%d,%d,%d", &v0, &v1, &v2, &v3);
@@ -567,11 +637,6 @@ void update_sc_config(mode_data_t *vm_in, mode_data_t *vm_out, vm_proc_config_t 
     vip_fb->output_rate = vm_out->timings.v_hz_x100;
     //vip_fb->locked = vm_conf->framelock;  // causes cvo fifo underflows
     vip_fb->locked = 0;
-
-    h_blank = vm_out->timings.h_total-vm_conf->x_size;
-    v_blank = (vm_out->timings.v_total>>vm_out->timings.interlaced)-vm_conf->y_size;
-    h_frontporch = h_blank-vm_conf->x_offset-vm_out->timings.h_backporch-vm_out->timings.h_synclen;
-    v_frontporch = v_blank-vm_conf->y_offset-vm_out->timings.v_backporch-vm_out->timings.v_synclen;
 
     if ((vip_cvo->h_active != vm_conf->x_size) ||
         (vip_cvo->v_active != vm_conf->y_size) ||
@@ -982,11 +1047,12 @@ void mainloop()
     video_sync target_isl_sync=0;
     video_format target_format=0;
     status_t status;
-    avconfig_t *cur_avconfig;
+    avconfig_t *cur_avconfig, *tgt_avconfig;
     si5351_clk_src si_clk_src;
     alt_timestamp_type start_ts;
 
     cur_avconfig = get_current_avconfig();
+    tgt_avconfig = get_target_avconfig();
 
     // remote setup
     if ((~IORD_ALTERA_AVALON_PIO_DATA(PIO_1_BASE) >> CONTROLS_BTN_OFFS) & JOY_DOWN) {
@@ -1073,9 +1139,11 @@ void mainloop()
 
             IOWR_ALTERA_AVALON_PIO_DATA(PIO_0_BASE, sys_ctrl);
 
-            strncpy(row1, avinput_str[avinput], US2066_ROW_LEN+1);
-            strncpy(row2, "    NO SYNC", US2066_ROW_LEN+1);
-            ui_disp_status(1);
+            if (!enable_tp) {
+                strlcpy(row1, avinput_str[avinput], US2066_ROW_LEN+1);
+                strlcpy(row2, "    NO SYNC", US2066_ROW_LEN+1);
+                ui_disp_status(1);
+            }
         }
 
         update_settings(0);
@@ -1101,7 +1169,12 @@ void mainloop()
 #ifdef INC_SII1136
                 sii1136_init_mode(&siitx_dev, vmode_out.tx_pixelrep, vmode_out.hdmitx_pixr_ifr, vmode_out.vic, pclk_o_hz);
 #endif
-                sniprintf(row2, US2066_ROW_LEN+1, "%ux%u%c %u.%.2uHz", vmode_out.timings.h_active, vmode_out.timings.v_active<<vmode_out.timings.interlaced, vmode_out.timings.interlaced ? 'i' : ' ', (vmode_out.timings.v_hz_x100/100), (vmode_out.timings.v_hz_x100%100));
+                sniprintf(row1, US2066_ROW_LEN+1, "TP  %s", vmode_out.name);
+                sniprintf(row2, US2066_ROW_LEN+1, "%ux%u%c %u.%.2uHz", ((vmode_out.timings.h_active*(1<<vmode_out.tx_pixelrep))/(1<<vmode_out.hdmitx_pixr_ifr)),
+                                                                       vmode_out.timings.v_active<<vmode_out.timings.interlaced,
+                                                                       vmode_out.timings.interlaced ? 'i' : ' ',
+                                                                       (vmode_out.timings.v_hz_x100/100),
+                                                                       (vmode_out.timings.v_hz_x100%100));
                 ui_disp_status(1);
             }
         } else if (enable_isl) {
@@ -1113,15 +1186,15 @@ void mainloop()
                 } else {
                     isl_enable_power(&isl_dev, 0);
                     isl_enable_outputs(&isl_dev, 0);
-                    strncpy(row1, avinput_str[avinput], US2066_ROW_LEN+1);
-                    strncpy(row2, "    NO SYNC", US2066_ROW_LEN+1);
+                    strlcpy(row1, avinput_str[avinput], US2066_ROW_LEN+1);
+                    strlcpy(row2, "    NO SYNC", US2066_ROW_LEN+1);
                     ui_disp_status(1);
                     printf("ISL51002 sync lost\n");
                 }
             }
 
             if (isl_dev.sync_active) {
-                if (isl_get_sync_stats(&isl_dev, sc->fe_status.vtotal, sc->fe_status.interlace_flag, sc->fe_status2.pcnt_frame) || (status & MODE_CHANGE)) {
+                if (isl_get_sync_stats(&isl_dev, sc->fe_status.vtotal, sc->fe_status.interlace_flag, sc->fe_status.pcnt_frame) || (status & MODE_CHANGE)) {
                     h_skip_prev = vm_conf.h_skip;
                     sampler_phase_prev = vmode_in.sampler_phase;
 
