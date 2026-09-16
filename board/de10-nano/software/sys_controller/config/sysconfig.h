@@ -23,6 +23,7 @@
 #define printf(...)
 #else
 #include <stdio.h>
+#include "alt_printf.h"
 //#include "utils.h"
 #define OS_PRINTF printf
 #define ErrorF printf
@@ -30,6 +31,12 @@
 //#define printf alt_printf
 //#define printf dd_printf
 #endif
+
+#ifdef VIP_DIL_CADENCE_VOFILM
+#define VIP_DIL_B
+#endif
+
+#define sniprintf snprintf
 
 #define MAINLOOP_INTERVAL_US   10000
 

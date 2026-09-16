@@ -1,6 +1,8 @@
 `define ENABLE_HPS
 `define VIP
 `define PIXPAR2
+`define GPIO GPIO_0
+`define PO_RESET_WIDTH 27000
 
 module DE10_Nano_vd_isl (
 
@@ -70,12 +72,14 @@ module DE10_Nano_vd_isl (
       inout              HPS_I2C0_SDAT,
       inout              HPS_I2C1_SCLK,
       inout              HPS_I2C1_SDAT,
+      inout              HPS_LTC_GPIO,
       inout              HPS_KEY,*/
+`ifdef HPS_LOANIO
       inout              HPS_LED,
-      /*inout              HPS_LTC_GPIO,*/
       inout              HPS_SD_CLK,
       inout              HPS_SD_CMD,
       inout       [3:0]  HPS_SD_DATA,
+`endif
       /*output             HPS_SPIM_CLK,
       input              HPS_SPIM_MISO,
       output             HPS_SPIM_MOSI,
@@ -104,50 +108,61 @@ module DE10_Nano_vd_isl (
 //  REG/WIRE declarations
 //=======================================================
 
+reg [15:0] po_reset_ctr = 0;
+reg po_reset_n = 1'b0;
+wire pll_locked;
+wire sys_reset_n = (po_reset_n & pll_locked);
+
 wire clk27, clk_vip, clk_100, PCLK_sc, pclk_out;
-wire SI_PCLK_i = GPIO_0[0];
-wire ISL_PCLK_i = GPIO_0[2];
-wire sys_reset_n = 1'b1;
-wire [7:0] ISL_R_i = {GPIO_0[22], GPIO_0[23], GPIO_0[24], GPIO_0[25], GPIO_0[26], GPIO_0[27], GPIO_0[28], GPIO_0[29]};
-wire [7:0] ISL_G_i = {GPIO_0[14], GPIO_0[15], GPIO_0[16], GPIO_0[17], GPIO_0[18], GPIO_0[19], GPIO_0[20], GPIO_0[21]};
-wire [7:0] ISL_B_i = {GPIO_0[6], GPIO_0[7], GPIO_0[8], GPIO_0[9], GPIO_0[10], GPIO_0[11], GPIO_0[12], GPIO_0[13]};
-wire ISL_HS_i = GPIO_0[30];
-wire ISL_HSYNC_i = GPIO_0[31];
-wire ISL_VSYNC_i = GPIO_0[32];
-wire ISL_FID_i = GPIO_0[35];
-wire ISL_INT_N_i = GPIO_0[33];
-wire IR_RX_i = GPIO_0[34];
+
+wire SI_PCLK_i = `GPIO[0];
+wire ISL_PCLK_i = `GPIO[2];
+wire [7:0] ISL_R_i = {`GPIO[22], `GPIO[23], `GPIO[24], `GPIO[25], `GPIO[26], `GPIO[27], `GPIO[28], `GPIO[29]};
+wire [7:0] ISL_G_i = {`GPIO[14], `GPIO[15], `GPIO[16], `GPIO[17], `GPIO[18], `GPIO[19], `GPIO[20], `GPIO[21]};
+wire [7:0] ISL_B_i = {`GPIO[6], `GPIO[7], `GPIO[8], `GPIO[9], `GPIO[10], `GPIO[11], `GPIO[12], `GPIO[13]};
+wire ISL_HS_i = `GPIO[30];
+wire ISL_HSYNC_i = `GPIO[31];
+wire ISL_VSYNC_i = `GPIO[32];
+wire ISL_FID_i = `GPIO[35];
+wire ISL_INT_N_i = `GPIO[33];
+wire IR_RX_i = `GPIO[34];
+
 wire pclk_capture = ISL_PCLK_i;
 wire SPDIF_EXT_i = ARDUINO_IO[4];
 
 // Minimize impendance to GND on FPGA end
 // (may improve signal integrity with older revision boards but has opposite effect with v1.3->)
-//assign GPIO_0[1] = 1'b0;
-//assign GPIO_0[3] = 1'b0;
+//assign `GPIO[1] = 1'b0;
+//assign `GPIO[3] = 1'b0;
 
 wire [31:0] sys_ctrl;
-/*wire sys_poweron = sys_ctrl[0];
-wire isl_reset_n = sys_ctrl[1];
-wire hdmirx_reset_n = sys_ctrl[2];
-wire emif_hwreset_n = sys_ctrl[3];
-wire emif_swreset_n = sys_ctrl[4];
-wire emif_powerdn_req = sys_ctrl[5];*/
+//wire sys_poweron = sys_ctrl[0];
+//wire isl_reset_n = sys_ctrl[1];
+//wire hdmirx_reset_n = sys_ctrl[2];
+//wire emif_hwreset_n = sys_ctrl[3];
+//wire emif_swreset_n = sys_ctrl[4];
+//wire emif_powerdn_req = sys_ctrl[5];
 wire emif_mpfe_reset_n = sys_ctrl[6];
-//wire capture_sel = sys_ctrl[7];
-wire isl_hsync_pol = sys_ctrl[8];
-wire isl_vsync_pol = sys_ctrl[9];
-wire isl_vsync_type = sys_ctrl[10];
-//wire audmux_sel = sys_ctrl[11];
-wire testpattern_enable = sys_ctrl[12];
-wire csc_enable = sys_ctrl[13];
-wire framelock = sys_ctrl[14];
-wire vip_dil_reset_n = sys_ctrl[25];
+wire vip_dil_reset_n = sys_ctrl[7];
+//wire [1:0] vid_src = sys_ctrl[9:8];
+//wire [1:0] aud_src = sys_ctrl[11:10];
+//wire audmux_sel = sys_ctrl[12];
+wire hdmi_csync = sys_ctrl[12]; // different offset in Pro
+wire isl_hsync_pol = sys_ctrl[13];
+wire isl_vsync_pol = sys_ctrl[14];
+wire isl_vsync_type = sys_ctrl[15];
+wire testpattern_enable = sys_ctrl[16];
+wire csc_enable = sys_ctrl[17];
+wire framelock = sys_ctrl[18];
+//wire dram_refresh_enable = sys_ctrl[19];
+//wire [3:0] fan_duty = sys_ctrl[23:20];
+//wire [3:0] led_duty = sys_ctrl[27:24];
 
 //reg [1:0] clk_osc_div = 2'h0;
-/*wire SCL = GPIO_0[5] & HDMI_I2C_SCL;
-wire SDA = GPIO_0[4] & HDMI_I2C_SDA;*/
-/*assign GPIO_0[5] = scl_oe ? 1'b0 : 1'bz;
-assign GPIO_0[4] = sda_oe ? 1'b0 : 1'bz;*/
+/*wire SCL = `GPIO[5] & HDMI_I2C_SCL;
+wire SDA = `GPIO[4] & HDMI_I2C_SDA;*/
+/*assign `GPIO[5] = scl_oe ? 1'b0 : 1'bz;
+assign `GPIO[4] = sda_oe ? 1'b0 : 1'bz;*/
 /*assign HDMI_I2C_SCL = scl_oe ? 1'b0 : 1'bz;
 assign HDMI_I2C_SDA = sda_oe ? 1'b0 : 1'bz;*/
 
@@ -167,35 +182,39 @@ wire [5:0] emif_rd_burstcount, emif_wr_burstcount;
 wire emif_rd_read, emif_rd_waitrequest, emif_rd_readdatavalid, emif_wr_write, emif_wr_waitrequest;
 
 wire scl_oe, sda_oe;
-wire pll_locked;
-wire nios_reset_req;
 
-wire cvi_overflow, cvo_underflow;
+wire cvi_overflow, cvo_underflow, cvo_sof;
+
+reg [2:0] cvo_resync_ctr;
+wire cvo_resync = (cvo_resync_ctr == '1);
 
 wire vs_flag = testpattern_enable ? 1'b0 : ~ISL_VSYNC_post;
 
 wire [31:0] controls = {2'h0, btn_sync2_reg, ir_code_cnt, ir_code};
-wire [31:0] sys_status = {32'h0};
+wire [31:0] sys_status = {cvi_overflow, cvo_underflow, cvo_resync, 29'h0};
 
 wire [31:0] hv_in_config, hv_in_config2, hv_in_config3, hv_out_config, hv_out_config2, hv_out_config3, xy_out_config, xy_out_config2, xy_out_config3;
-wire [31:0] misc_config, sl_config, sl_config2, sl_config3;
+wire [31:0] misc_config, misc_config2, sl_config, sl_config2, sl_config3, sl_config4;
 
 reg [23:0] resync_led_ctr;
 reg resync_strobe_sync1_reg, resync_strobe_sync2_reg, resync_strobe_prev;
 wire resync_strobe_i;
 wire resync_strobe = resync_strobe_sync2_reg;
 
-wire resync_led;
-assign {LED[0], LED[7], resync_led} = {framelock, (ir_code == 0), (resync_led_ctr != 0)};
+assign {LED[0], LED[4], LED[7]} = {framelock, (ir_code == 0), (resync_led_ctr != 0)};
 
 wire [11:0] xpos_sc;
 wire [11:0] ypos_sc;
 wire osd_enable;
-wire [1:0] osd_color;
+wire [2:0] osd_color;
 wire [3:0] x_ctr_shmask, y_ctr_shmask;
 wire [10:0] shmask_data;
 
-wire sdc_clk_o;
+wire [31:0] lumacode_data;
+wire [7:0] lumacode_addr;
+wire lumacode_rden;
+
+/*wire sdc_clk_o;
 wire sdc_clk_oe_o = 1'b1;
 wire sdc_dat_oe_o, sdc_cmd_oe_o, sdc_cmd_o, sdc_cmd_i;
 wire [3:0] sdc_dat_o, sdc_dat_i;
@@ -206,7 +225,16 @@ wire [66:0] hps_h2f_loan_io_oe = {13'h0, 1'b1, 5'h0, {2{sdc_dat_oe_o}}, sdc_clk_
 
 assign sdc_dat_i[3:2] = hps_h2f_loan_io_in[47:46];
 assign sdc_dat_i[1:0] = hps_h2f_loan_io_in[39:38];
-assign sdc_cmd_i = hps_h2f_loan_io_in[36];
+assign sdc_cmd_i = hps_h2f_loan_io_in[36];*/
+
+// Power-on reset pulse generation
+always @(posedge clk27)
+begin
+    if (po_reset_ctr == `PO_RESET_WIDTH)
+        po_reset_n <= 1'b1;
+    else
+        po_reset_ctr <= po_reset_ctr + 1'b1;
+end
 
 // ISL51002 RGB digitizer
 reg [7:0] ISL_R, ISL_G, ISL_B;
@@ -214,8 +242,6 @@ reg ISL_HS;
 reg ISL_VS_sync1_reg, ISL_VS_sync2_reg;
 reg ISL_HSYNC_sync1_reg, ISL_HSYNC_sync2_reg;
 reg ISL_VSYNC_sync1_reg, ISL_VSYNC_sync2_reg;
-reg ISL_FID_sync1_reg, ISL_FID_sync2_reg;
-reg ISL_DE;
 always @(posedge ISL_PCLK_i) begin
     ISL_R <= ISL_R_i;
     ISL_G <= ISL_G_i;
@@ -232,14 +258,12 @@ always @(posedge clk27) begin
     ISL_HSYNC_sync2_reg <= ISL_HSYNC_sync1_reg;
     ISL_VSYNC_sync1_reg <= ISL_VSYNC_i;
     ISL_VSYNC_sync2_reg <= ISL_VSYNC_sync1_reg;
-    ISL_FID_sync1_reg <= ISL_FID_i;
-    ISL_FID_sync2_reg <= ISL_FID_sync1_reg;
 end
 
 wire [7:0] ISL_R_post, ISL_G_post, ISL_B_post;
 wire ISL_HSYNC_post, ISL_VSYNC_post, ISL_DE_post, ISL_FID_post, ISL_datavalid_post;
 wire ISL_fe_interlace, ISL_fe_frame_change, ISL_sof_scaler;
-wire [19:0] ISL_fe_pcnt_frame;
+wire [19:0] ISL_fe_pcnt_field;
 wire [10:0] ISL_fe_vtotal, ISL_fe_xpos, ISL_fe_ypos;
 isl51002_frontend u_isl_frontend ( 
     .PCLK_i(ISL_PCLK_i),
@@ -263,6 +287,8 @@ isl51002_frontend u_isl_frontend (
     .hv_in_config2(hv_in_config2),
     .hv_in_config3(hv_in_config3),
     .misc_config(misc_config),
+    .misc_config2(misc_config2),
+    .lumacode_data(lumacode_data),
     .R_o(ISL_R_post),
     .G_o(ISL_G_post),
     .B_o(ISL_B_post),
@@ -277,7 +303,9 @@ isl51002_frontend u_isl_frontend (
     .vtotal(ISL_fe_vtotal),
     .frame_change(ISL_fe_frame_change),
     .sof_scaler(ISL_sof_scaler),
-    .pcnt_frame(ISL_fe_pcnt_frame)
+    .pcnt_field(ISL_fe_pcnt_field),
+    .lumacode_addr(lumacode_addr),
+    .lumacode_rden(lumacode_rden)
 );
 
 wire [7:0] R_capt = ISL_R_post;
@@ -300,7 +328,7 @@ assign HDMI_TX_CLK = pclk_out;
 
 
 // VIP / LB
-wire vip_select = misc_config[15];
+wire vip_select = misc_config2[3];
 wire lb_enable = ~testpattern_enable & ~vip_select;
 
 always @(posedge pclk_capture) begin
@@ -394,37 +422,41 @@ wire VSYNC_vip = VIP_VSYNC_o;
 wire DE_vip = VIP_DE_o;
 `endif // PIXPAR2
 
-reg VSYNC_vip_prev;
+reg VSYNC_vip_prev, cvo_sof_prev;
 wire vip_frame_start = VSYNC_vip_prev & ~VSYNC_vip & ~HSYNC_vip;
 
 always @(posedge pclk_out) begin
     VSYNC_vip_prev <= VSYNC_vip;
 end
+
+always @(posedge pclk_out_div2) begin
+    if (cvo_sof_prev & ~cvo_sof) begin
+        if (sof_scaler_capt)
+            cvo_resync_ctr <= '0;
+        else if (~sof_scaler_capt & (cvo_resync_ctr != '1))
+            cvo_resync_ctr <= cvo_resync_ctr + 1'b1;
+    end
+
+    cvo_sof_prev <= cvo_sof;
+end
 `endif // VIP
 
 // output data assignment (2 stages and launch on negedge for timing closure)
 reg [7:0] R_out, G_out, B_out;
-reg HSYNC_out, VSYNC_out, DE_out;
+reg HSYNC_out, VSYNC_out, CSYNC_out, DE_out;
 wire [7:0] R_sc, G_sc, B_sc;
-wire HSYNC_sc, VSYNC_sc, DE_sc;
+wire HSYNC_sc, VSYNC_sc, CSYNC_sc, DE_sc;
 
 always @(negedge pclk_out) begin
     if (osd_enable) begin
-        if (osd_color == 2'h0) begin
-            {R_out, G_out, B_out} <= 24'h000000;
-        end else if (osd_color == 2'h1) begin
-            {R_out, G_out, B_out} <= 24'h0000ff;
-        end else if (osd_color == 2'h2) begin
-            {R_out, G_out, B_out} <= 24'hffff00;
-        end else begin
-            {R_out, G_out, B_out} <= 24'hffffff;
-        end
+        {R_out, G_out, B_out} <= {{8{osd_color[2]}}, {8{osd_color[1]}}, {8{osd_color[0]}}};
     end else begin
         {R_out, G_out, B_out} <= {R_sc, G_sc, B_sc};
     end
 
     HSYNC_out <= HSYNC_sc;
     VSYNC_out <= VSYNC_sc;
+    CSYNC_out <= CSYNC_sc;
     DE_out <= DE_sc;
 end
 
@@ -432,7 +464,7 @@ always @(negedge pclk_out) begin
     HDMI_TX_D[23:16] <= R_out;
     HDMI_TX_D[15:8] <= G_out;
     HDMI_TX_D[7:0] <= B_out;
-    HDMI_TX_HS <= HSYNC_out;
+    HDMI_TX_HS <= hdmi_csync ? CSYNC_out : HSYNC_out;
     HDMI_TX_VS <= VSYNC_out;
     HDMI_TX_DE <= DE_out;
 end
@@ -479,36 +511,18 @@ pll pll_sys (
 );
 
 sys sys_inst (
-    .clk_clk                 (clk27),
-    .clk_1_clk               (FPGA_CLK1_50),
-    .clk_2_clk               (clk_vip),
-    .clk_3_clk               (clk_100),
+    .clk_27m_clk             (clk27),
+    .clk_vip_clk             (clk_vip),
+    .clk_emif_clk            (clk_100),
     .reset_reset_n           (sys_reset_n),
-    .reset_2_reset_n         (emif_mpfe_reset_n),
-    .reset_3_reset_n         (emif_mpfe_reset_n),
+    .reset_emif_reset_n      (emif_mpfe_reset_n),
+    .reset_vip_reset_n       (emif_mpfe_reset_n),
     /*.i2c_0_i2c_serial_sda_in (HDMI_I2C_SDA), // i2c_0_i2c_serial.sda_in
     .i2c_0_i2c_serial_scl_in (HDMI_I2C_SCL), //                 .scl_in
     .i2c_0_i2c_serial_sda_oe (sda_oe), //                 .sda_oe
     .i2c_0_i2c_serial_scl_oe (scl_oe), //                 .scl_oe*/
-    .sdc_controller_0_sd_sd_cmd_dat_i       (sdc_cmd_i),
-    .sdc_controller_0_sd_sd_cmd_out_o       (sdc_cmd_o),
-    .sdc_controller_0_sd_sd_cmd_oe_o        (sdc_cmd_oe_o),
-    .sdc_controller_0_sd_sd_dat_dat_i       (sdc_dat_i),
-    .sdc_controller_0_sd_sd_dat_out_o       (sdc_dat_o),
-    .sdc_controller_0_sd_sd_dat_oe_o        (sdc_dat_oe_o),
-    .sdc_controller_0_sd_clk_o_clk          (sdc_clk_o),
-    .hps_h2f_loan_io_in                     (hps_h2f_loan_io_in),
-    .hps_h2f_loan_io_out                    (hps_h2f_loan_io_out),
-    .hps_h2f_loan_io_oe                     (hps_h2f_loan_io_oe),
-    .hps_io_hps_io_gpio_inst_LOANIO36       (HPS_SD_CMD), 
-    .hps_io_hps_io_gpio_inst_LOANIO38       (HPS_SD_DATA[0]),
-    .hps_io_hps_io_gpio_inst_LOANIO39       (HPS_SD_DATA[1]),
-    .hps_io_hps_io_gpio_inst_LOANIO45       (HPS_SD_CLK),
-    .hps_io_hps_io_gpio_inst_LOANIO46       (HPS_SD_DATA[2]),
-    .hps_io_hps_io_gpio_inst_LOANIO47       (HPS_SD_DATA[3]),
-    .hps_io_hps_io_gpio_inst_LOANIO53       (HPS_LED),
-    .i2c_opencores_0_export_scl_pad_io      (GPIO_0[5]),
-    .i2c_opencores_0_export_sda_pad_io      (GPIO_0[4]),
+    .i2c_opencores_0_export_scl_pad_io      (`GPIO[5]),
+    .i2c_opencores_0_export_sda_pad_io      (`GPIO[4]),
     .i2c_opencores_0_export_spi_miso_pad_i  (1'b0),
     .i2c_opencores_1_export_scl_pad_io      (HDMI_I2C_SCL),
     .i2c_opencores_1_export_sda_pad_io      (HDMI_I2C_SDA),
@@ -516,8 +530,7 @@ sys sys_inst (
     .pio_0_sys_ctrl_out_export              (sys_ctrl),
     .pio_1_controls_in_export               (controls),
     .pio_2_sys_status_in_export             (sys_status),
-    .sc_config_0_sc_if_fe_status_i          ({ISL_fe_pcnt_frame, ISL_fe_interlace, ISL_fe_vtotal}),
-    .sc_config_0_sc_if_lt_status_i          (32'h00000000),
+    .sc_config_0_sc_if_fe_status_i          ({ISL_fe_pcnt_field, ISL_fe_interlace, ISL_fe_vtotal}),
     .sc_config_0_sc_if_hv_in_config_o       (hv_in_config),
     .sc_config_0_sc_if_hv_in_config2_o      (hv_in_config2),
     .sc_config_0_sc_if_hv_in_config3_o      (hv_in_config3),
@@ -528,13 +541,19 @@ sys sys_inst (
     .sc_config_0_sc_if_xy_out_config2_o     (xy_out_config2),
     .sc_config_0_sc_if_xy_out_config3_o     (xy_out_config3),
     .sc_config_0_sc_if_misc_config_o        (misc_config),
+    .sc_config_0_sc_if_misc_config2_o       (misc_config2),
     .sc_config_0_sc_if_sl_config_o          (sl_config),
     .sc_config_0_sc_if_sl_config2_o         (sl_config2),
     .sc_config_0_sc_if_sl_config3_o         (sl_config3),
+    .sc_config_0_sc_if_sl_config4_o         (sl_config4),
     .sc_config_0_shmask_if_vclk             (PCLK_sc),
     .sc_config_0_shmask_if_shmask_xpos      (x_ctr_shmask),
     .sc_config_0_shmask_if_shmask_ypos      (y_ctr_shmask),
     .sc_config_0_shmask_if_shmask_data      (shmask_data),
+    .sc_config_0_lc_ram_if_lumacode_clk_i   (ISL_PCLK_i),
+    .sc_config_0_lc_ram_if_lumacode_addr_i  (lumacode_addr),
+    .sc_config_0_lc_ram_if_lumacode_rden_i  (lumacode_rden),
+    .sc_config_0_lc_ram_if_lumacode_data_o  (lumacode_data),
     .osd_generator_0_osd_if_vclk            (PCLK_sc),
     .osd_generator_0_osd_if_xpos            (xpos_sc),
     .osd_generator_0_osd_if_ypos            (ypos_sc),
@@ -568,8 +587,9 @@ sys sys_inst (
     .memory_mem_dqs_n                       ( HPS_DDR3_DQS_N),                      //                .mem_dqs_n
     .memory_mem_odt                         ( HPS_DDR3_ODT),                        //                .mem_odt
     .memory_mem_dm                          ( HPS_DDR3_DM),                         //                .mem_dm
-    .memory_oct_rzqin                       ( HPS_DDR3_RZQ),                        //                .oct_rzqin
+    .memory_oct_rzqin                       ( HPS_DDR3_RZQ)                         //                .oct_rzqin
 `ifdef VIP
+    ,
     .alt_vip_cl_cvi_0_clocked_video_vid_clk                    (
 `ifdef PIXPAR2
     pclk_capture_div2
@@ -606,7 +626,7 @@ sys sys_inst (
     .alt_vip_cl_cvo_0_clocked_video_vid_std                    (),
     .alt_vip_cl_cvo_0_clocked_video_vid_vcoclk_div             (),
     .alt_vip_cl_cvo_0_clocked_video_vid_sof_locked             (),
-    .alt_vip_cl_cvo_0_clocked_video_vid_sof                    (),
+    .alt_vip_cl_cvo_0_clocked_video_vid_sof                    (cvo_sof),
     .alt_vip_cl_cvo_0_clocked_video_vid_datavalid              (VIP_DE_o),
     .alt_vip_cl_cvo_0_clocked_video_vid_v_sync                 (VIP_VSYNC_o),
     .alt_vip_cl_cvo_0_clocked_video_vid_h_sync                 (VIP_HSYNC_o),
@@ -631,8 +651,8 @@ scanconverter #(
     .HSYNC_i(HSYNC_capt),
     .VSYNC_i(VSYNC_capt),
     .DE_i(DE_capt),
-    .datavalid_i(datavalid_capt),
     .FID_i(FID_capt),
+    .datavalid_i(datavalid_capt),
     .interlaced_in_i(interlace_flag_capt),
     .frame_change_i(frame_change_capt),
     .xpos_i(xpos_capt),
@@ -648,6 +668,7 @@ scanconverter #(
     .sl_config(sl_config),
     .sl_config2(sl_config2),
     .sl_config3(sl_config3),
+    .sl_config4(sl_config4),
     .testpattern_enable(testpattern_enable),
     .lb_enable(lb_enable),
 `ifdef VIP
@@ -669,6 +690,7 @@ scanconverter #(
     .B_o(B_sc),
     .HSYNC_o(HSYNC_sc),
     .VSYNC_o(VSYNC_sc),
+    .CSYNC_o(CSYNC_sc),
     .DE_o(DE_sc),
     .xpos_o(xpos_sc),
     .ypos_o(ypos_sc),

@@ -1,30 +1,65 @@
 # u-boot script
 
+load_addr_tmp=0x01800000
+load_addr_bin=0x00100040
+pc_reset=0x00100060
+
+# check which GPIO block is selected
+mw.l 0xffd05014 0x1bbefebd 1
+setexpr gpio_val *0xff709050 '&' 0x00000800
+if itest $gpio_val == 0x00000800
+then
+    rbf=DE10-Nano-vd_isl_gpio0.rbf
+else
+    rbf=DE10-Nano-vd_isl_gpio1.rbf
+fi
+mw.l 0xffd05014 0x1fbefebd 1
+
+echo ------ Checking network ------
+if test -n "$ipaddr_host"
+then
+    ping $ipaddr_host
+    host_unavail=$?
+else
+    host_unavail=1
+fi
+
+echo ------ Loading FPGA bitstream ------
+if itest $host_unavail == 1
+then
+    load_from_sd=1
+else
+    tftp $load_addr_tmp $ipaddr_host:$rbf
+    load_from_sd=$?
+fi
+if itest $load_from_sd == 1
+then
+    fatload mmc 0:1 $load_addr_tmp $rbf
+    echo Loading $rbf from SD
+fi
+
 echo ------ Programming FPGA ------
-fpgadata=0x2000000
-rbf=DE10-Nano-vd_isl.rbf
-fatload mmc 0:1 $fpgadata $rbf
-fpga load 0 $fpgadata $filesize
-bridge enable
+fpga load 0 $load_addr_tmp $filesize
+bridge enable all
 
 # hand over SD from HPS to FPGA
-mw 0xFFD08474 0 1
-mw 0xFFD08478 0 1
-mw 0xFFD0847C 0 1
-mw 0xFFD0845C 0 1
-mw 0xFFD08458 0 1
-mw 0xFFD08450 0 1
+#mw 0xFFD08474 0 1
+#mw 0xFFD08478 0 1
+#mw 0xFFD0847C 0 1
+#mw 0xFFD0845C 0 1
+#mw 0xFFD08458 0 1
+#mw 0xFFD08450 0 1
 
 # connect loanIO to SD pins
-mw 0xFFD08688 0 1
-mw 0xFFD08690 0 1
-mw 0xFFD0868C 0 1
-mw 0xFFD08670 0 1
-mw 0xFFD0866C 0 1
-mw 0xFFD08664 0 1
+#mw 0xFFD08688 0 1
+#mw 0xFFD08690 0 1
+#mw 0xFFD0868C 0 1
+#mw 0xFFD08670 0 1
+#mw 0xFFD0866C 0 1
+#mw 0xFFD08664 0 1
 
 # connect loanIO to USERLED pin
-mw 0xFFD086A8 0 1
+#mw 0xFFD086A8 0 1
 
 # enable clock gating on IRQ ctrl, L2 ctrl and SCU
 mw 0xFFFEC000 0x60 1
@@ -32,3 +67,25 @@ mw 0xFFFEFF80 0x3 1
 
 # reduce ARM frequency to 100MHz
 mw 0xFFD040E0 0xf 1
+
+echo ------ Loading application ------
+#elf=DE10-Nano-vd_isl.elf
+bin=DE10-Nano-vd_isl.bin
+if itest $host_unavail == 1
+then
+    load_from_sd=1
+else
+    #tftp $load_addr_tmp $ipaddr_host:$elf
+    tftp $load_addr_bin $ipaddr_host:$bin
+    load_from_sd=$?
+fi
+if itest $load_from_sd == 1
+then
+    #fatload mmc 0:1 $load_addr_tmp $elf
+    fatload mmc 0:1 $load_addr_bin $bin
+    echo Loading $bin from SD
+fi
+
+echo ------ Starting application ------
+#bootelf $load_addr_tmp
+go $pc_reset

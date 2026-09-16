@@ -8,3 +8,6 @@
 [submodule "sw_common/sys_controller/bscanf"]
 	path = sw_common/sys_controller/bscanf
 	url = git@github.com:marqs85/bscanf.git
+[submodule "board/de10-nano/software/sys_controller_bsp/intel-socfpga-hwlib"]
+	path = board/de10-nano/software/sys_controller_bsp/intel-socfpga-hwlib
+	url = git@github.com:altera-opensource/intel-socfpga-hwlib.git
